@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
+    "framer-motion": "^12.43.0",
     "gsap": "latest",
     "lenis": "latest",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^7.18.4",
+    "recharts": "^3.10.1",
     "vite": "latest"
   }
 }

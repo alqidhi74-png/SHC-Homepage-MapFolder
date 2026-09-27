@@ -123,7 +123,7 @@
 }
 .shc-dashboard img, .shc-dashboard svg, .shc-dashboard video, .shc-dashboard canvas, .shc-dashboard audio, .shc-dashboard iframe, .shc-dashboard embed, .shc-dashboard object {
   display: block;
-  vertical-align: middle;
+  
 }
 .shc-dashboard img, .shc-dashboard video {
   max-width: 100%;
@@ -324,6 +324,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+   line-clamp: 2;
 }
 .shc-dashboard .block {
   display: block;
@@ -1836,3 +1837,451 @@
   isolation: isolate;
 }
 .shc-dashboard button:not(:disabled), .shc-dashboard [role="button"]:not(:disabled) { cursor: pointer; }
+
+/* =========================================================
+   Dashboard Logout
+========================================================= */
+
+.logout-sidebar-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.625rem 0.75rem;
+
+  border: 0;
+  border-radius: 0.75rem;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.58);
+
+  font: inherit;
+  font-size: 0.875rem;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.logout-sidebar-button:hover {
+  background: rgba(220, 70, 70, 0.1);
+  color: #ffb8b8;
+}
+
+.logout-sidebar-button:active {
+  transform: scale(0.98);
+}
+
+
+/* =========================================================
+   Modal Backdrop
+========================================================= */
+
+.logout-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: grid;
+  place-items: center;
+
+  padding: 24px;
+
+  background: rgba(4, 18, 14, 0.62);
+
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  animation: logoutBackdropIn 220ms ease both;
+}
+
+
+/* =========================================================
+   Modal
+========================================================= */
+
+.logout-modal {
+  width: min(430px, 100%);
+
+  position: relative;
+
+  padding: 34px 32px 28px;
+
+  border: 1px solid rgba(177, 145, 74, 0.22);
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(191, 157, 83, 0.09),
+      transparent 46%
+    ),
+    #ffffff;
+
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.28),
+    0 8px 30px rgba(0, 0, 0, 0.12);
+
+  text-align: center;
+
+  animation: logoutModalIn 280ms
+    cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+
+/* =========================================================
+   Icon
+========================================================= */
+
+.logout-modal-icon {
+  width: 64px;
+  height: 64px;
+
+  margin: 0 auto 20px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(191, 157, 83, 0.18),
+      rgba(191, 157, 83, 0.06)
+    );
+
+  border: 1px solid rgba(191, 157, 83, 0.28);
+
+  color: #8d6d2e;
+}
+
+.logout-modal-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+
+/* =========================================================
+   Text
+========================================================= */
+
+.logout-modal-eyebrow {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #a18140;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.logout-modal-content h2 {
+  margin: 0;
+
+  color: #12251f;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.logout-modal-content p {
+  max-width: 320px;
+
+  margin: 12px auto 0;
+
+  color: #66736f;
+
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   Buttons
+========================================================= */
+
+.logout-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-top: 28px;
+}
+
+.logout-modal-actions button {
+  min-height: 46px;
+
+  border-radius: 13px;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.logout-modal-actions button:active {
+  transform: scale(0.98);
+}
+
+.logout-modal-cancel {
+  border: 1px solid #dfe5e2;
+
+  background: #f6f8f7;
+
+  color: #263a33;
+}
+
+.logout-modal-cancel:hover {
+  background: #edf2ef;
+  border-color: #d2dcd7;
+}
+
+.logout-modal-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid rgba(161, 48, 48, 0.18);
+
+  background: #a53f3f;
+
+  color: white;
+
+  box-shadow:
+    0 8px 20px rgba(165, 63, 63, 0.18);
+}
+
+.logout-modal-confirm:hover {
+  background: #933636;
+
+  box-shadow:
+    0 10px 24px rgba(165, 63, 63, 0.24);
+}
+
+.logout-modal-confirm svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+/* =========================================================
+   Dark Mode
+========================================================= */
+
+.shc-dashboard-dark .logout-modal {
+  border-color: rgba(207, 177, 105, 0.18);
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(207, 177, 105, 0.1),
+      transparent 46%
+    ),
+    #14261f;
+
+  box-shadow:
+    0 35px 100px rgba(0, 0, 0, 0.55);
+}
+
+.shc-dashboard-dark .logout-modal-content h2 {
+  color: #f6f4ed;
+}
+
+.shc-dashboard-dark .logout-modal-content p {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.shc-dashboard-dark .logout-modal-cancel {
+  border-color: rgba(255, 255, 255, 0.09);
+
+  background: rgba(255, 255, 255, 0.055);
+
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.shc-dashboard-dark .logout-modal-cancel:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+
+/* =========================================================
+   Animation
+========================================================= */
+
+@keyframes logoutBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes logoutModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================================================
+   Mobile
+========================================================= */
+
+@media (max-width: 640px) {
+  .logout-modal-backdrop {
+    padding: 18px;
+  }
+
+  .logout-modal {
+    padding: 28px 22px 22px;
+
+    border-radius: 20px;
+  }
+
+  .logout-modal-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .logout-modal-confirm {
+    order: -1;
+  }
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .logout-modal,
+  .logout-modal-backdrop {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   Mobile Logout
+========================================================= */
+
+.mobile-logout-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mobile-logout-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mobile-logout-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 13px;
+
+  background: rgba(165, 63, 63, 0.08);
+  color: #a53f3f;
+}
+
+.mobile-logout-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.mobile-logout-info h3 {
+  margin: 0;
+
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.mobile-logout-info p {
+  margin: 5px 0 0;
+
+  color: var(--color-ink-subtle);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.mobile-logout-button {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid rgba(165, 63, 63, 0.16);
+  border-radius: 13px;
+
+  background: rgba(165, 63, 63, 0.08);
+  color: #a53f3f;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.mobile-logout-button:hover {
+  background: rgba(165, 63, 63, 0.13);
+}
+
+.mobile-logout-button:active {
+  transform: scale(0.98);
+}
+
+.mobile-logout-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+/* Dark Mode */
+
+.shc-dashboard-dark .mobile-logout-icon {
+  background: rgba(255, 100, 100, 0.09);
+  color: #ffaaaa;
+}
+
+.shc-dashboard-dark .mobile-logout-button {
+  border-color: rgba(255, 120, 120, 0.15);
+  background: rgba(255, 100, 100, 0.07);
+  color: #ffaaaa;
+}
