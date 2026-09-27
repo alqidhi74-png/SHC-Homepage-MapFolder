@@ -1,0 +1,9 @@
+تم وضع مشروع الخريطة كما هو داخل:
+src/Map
+
+الرابط من زر "الخريطة الذكية":
+- أثناء npm run dev: /src/Map/map.html
+- بعد npm run build: /Map/map.html
+
+لم يتم تحويل map.html أو city3d.html أو ملفات CSS/JS إلى React.
+ملف scripts/copy-map.mjs ينسخ src/Map إلى dist/Map عند البناء فقط.

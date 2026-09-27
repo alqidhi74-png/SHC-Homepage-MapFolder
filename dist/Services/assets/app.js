@@ -1,0 +1,757 @@
+/* ============================================================
+   مدينة السلطان هيثم — بوابة الخدمات
+   app.js — سلوك مشترك بين كل صفحات الخدمات:
+   الترجمة (AR/EN) · عرض الجوال/الكمبيوتر · حالة الطلب (sessionStorage)
+   · مسار الصفحات (الفصول) · طبقة البيانات (Mock API)
+   · تسجيل الدخول · الهيدر التفاعلي مع التمرير · الانتقالات بين الصفحات
+   ============================================================ */
+
+/* ---------------- بيانات الخدمات (مشتركة) ---------------- */
+const SERVICE_CATALOG = {
+  'realestate-reg': {
+    cat: 'realestate', catLabel: 'المعاملات العقارية', title: 'تسجيل ملكية عقار',
+    desc: 'خدمة نقل وتسجيل ملكية قطعة أرض أو عقار باسم المالك الجديد، بعد استيفاء المستندات المطلوبة والتحقق من سند الملكية السابق.',
+    days: '5 أيام', fee: '20 ر.ع', dept: 'قسم العقارات', requestType: 'تسجيل ملكية',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><path d="M4 21V9l8-6 8 6v12"/><path d="M9 21v-6h6v6"/></svg>',
+    docs: ['البطاقة الشخصية', 'سند الملكية الحالي', 'المخطط / الوثيقة المطلوبة']
+  },
+  'planning-res': {
+    cat: 'planning', catLabel: 'الموافقات التخطيطية', title: 'موافقة تخطيطية — بناء سكني',
+    desc: 'موافقة تخطيطية أولية لإنشاء مبنى سكني جديد ضمن قطعة الأرض، وفق اشتراطات التخطيط في المدينة.',
+    days: '10 أيام', fee: '45 ر.ع', dept: 'قسم التخطيط', requestType: 'موافقة تخطيطية',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M8 9V6a4 4 0 018 0v3"/></svg>',
+    docs: ['البطاقة الشخصية', 'سند الملكية', 'مخطط الموقع']
+  },
+  'permits-work': {
+    cat: 'permits', catLabel: 'التصاريح', title: 'تصريح عمل مؤقت',
+    desc: 'استخراج تصريح عمل لفترة محددة لأصحاب الأعمال داخل حدود مدينة السلطان هيثم.',
+    days: '3 أيام', fee: '15 ر.ع', dept: 'قسم التراخيص', requestType: 'تصريح عمل',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>',
+    docs: ['البطاقة الشخصية', 'عقد الإيجار أو سند الملكية', 'صورة النشاط']
+  },
+  'business-lic': {
+    cat: 'business', catLabel: 'تراخيص الأعمال', title: 'رخصة نشاط تجاري',
+    desc: 'إصدار أو تجديد رخصة مزاولة نشاط تجاري داخل حدود المدينة بعد استكمال المتطلبات.',
+    days: '4 أيام', fee: '30 ر.ع', dept: 'قسم التراخيص', requestType: 'رخصة نشاط تجاري',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>',
+    docs: ['البطاقة الشخصية', 'سجل تجاري', 'صورة واجهة المحل']
+  }
+};
+
+/* ---------------- حالة الطلب المشتركة بين الصفحات ---------------- */
+const STATE_KEY = 'sh_request_state';
+function defaultState() {
+  return { serviceId: 'realestate-reg', parcel: '', type: '', desc: '', docs: {}, ack: false, signed: false, requestNumber: '', submittedAt: '', citizen: null };
+}
+function loadState() {
+  try {
+    const raw = sessionStorage.getItem(STATE_KEY);
+    if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+  } catch (_) {}
+  return defaultState();
+}
+/* يرجع true عند نجاح الحفظ — مهم لأن sessionStorage محدود (~5MB) ويمكن أن يمتلئ بالصور */
+function saveState(state) {
+  try { sessionStorage.setItem(STATE_KEY, JSON.stringify(state)); return true; } catch (_) { return false; }
+}
+
+/* أدوات صغيرة مشتركة */
+function escapeHtml(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function formatBytes(n) {
+  if (!n && n !== 0) return '';
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(0) + ' KB';
+  return (n / 1024 / 1024).toFixed(1) + ' MB';
+}
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- مسار الصفحات (الفصول) — مصدر واحد للترقيم والنصوص ---------------- */
+const PAGE_FLOW = {
+  'services-catalog.html':    { n: 1, page: 'catalog',        accent: '#B39157', ch: 'الفصل الأول · دليل الخدمات',        chEn: 'CHAPTER 1 · SERVICES GUIDE',  line: 'اختر الخدمة، والباقي مرتّب لك',              lineEn: 'Pick a service — we take care of the rest' },
+  'service-details.html':     { n: 2, page: 'detail',         accent: '#3D4E1E', ch: 'الفصل الثاني · تفاصيل الخدمة',      chEn: 'CHAPTER 2 · SERVICE DETAILS', line: 'اعرف المستندات والمدة قبل أن تبدأ',          lineEn: 'Know the documents and timeline before you start' },
+  'citizen-data.html':        { n: 3, page: 'citizen',        accent: '#D9C27E', ch: 'الفصل الثالث · بيانات المواطن',     chEn: 'CHAPTER 3 · YOUR DETAILS',    line: 'بياناتك جاهزة — راجعها وأكمل الناقص فقط',    lineEn: 'Your details are ready — review and fill the gaps' },
+  'request-documents.html':   { n: 4, page: 'request-docs',   accent: '#F1BB4D', ch: 'الفصل الرابع · المستندات',          chEn: 'CHAPTER 4 · DOCUMENTS',       line: 'أرفق وثائقك — خطوة واحدة من الاعتماد',       lineEn: 'Attach your documents — one step from approval' },
+  'request-review.html':      { n: 5, page: 'request-review', accent: '#AC6492', ch: 'الفصل الخامس · المراجعة والتوقيع',  chEn: 'CHAPTER 5 · REVIEW & SIGN',   line: 'راجع، أقرّ، ووقّع إلكترونياً',               lineEn: 'Review, confirm and sign electronically' },
+  'request-confirmation.html':{ n: 6, page: 'confirm',        accent: '#3D4E1E', ch: 'الفصل السادس · تأكيد الطلب',        chEn: 'CHAPTER 6 · CONFIRMATION',    line: 'طلبك في الطريق، واحتفظ بإيصالك',             lineEn: 'Your request is on its way — keep your receipt' },
+  'request-tracking.html':    { n: 7, page: 'track',          accent: '#F8633E', ch: 'الفصل السابع · تتبع الطلب',         chEn: 'CHAPTER 7 · TRACKING',        line: 'تابع مسار طلبك من الاستلام حتى الاعتماد',   lineEn: 'Follow your request from receipt to approval' },
+};
+const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+function toArabicDigits(n) { return String(n).replace(/\d/g, d => AR_DIGITS[d]); }
+function currentPageFile() {
+  const page = document.body?.dataset.page;
+  const hit = Object.keys(PAGE_FLOW).find(k => PAGE_FLOW[k].page === page);
+  return hit || decodeURIComponent(location.pathname.split('/').pop() || '');
+}
+function flowByN(n) { return Object.keys(PAGE_FLOW).find(k => PAGE_FLOW[k].n === n); }
+function chapterLabel(info) { return currentLang === 'en' ? info.chEn : info.ch; }
+function chapterLine(info) { return currentLang === 'en' ? info.lineEn : info.line; }
+
+/* يرسم شريط الفصل (الرقم، العنوان، السطر، شريط التقدم) من PAGE_FLOW */
+function renderChapterStrip() {
+  const file = currentPageFile();
+  const info = PAGE_FLOW[file];
+  const strip = document.querySelector('.chapter-strip');
+  if (!info || !strip) return;
+  strip.style.setProperty('--ch-accent', info.accent);
+  const mark = strip.querySelector('.ch-mark');
+  if (mark) mark.textContent = currentLang === 'en' ? info.n : toArabicDigits(info.n);
+  const b = strip.querySelector('.ch-text b');
+  if (b) b.textContent = chapterLabel(info);
+  const p = strip.querySelector('.ch-text p');
+  if (p) p.textContent = chapterLine(info);
+  const spine = strip.querySelector('.ch-spine');
+  if (spine) {
+    spine.innerHTML = Object.values(PAGE_FLOW)
+      .map(x => `<i class="${x.n <= info.n ? 'on' : ''}${x.n === info.n ? ' here' : ''}" title="${escapeHtml(chapterLabel(x))}"></i>`).join('');
+    spine.setAttribute('aria-label', (currentLang === 'en' ? 'Step ' : 'الخطوة ') + info.n + ' / ' + Object.keys(PAGE_FLOW).length);
+  }
+  /* زر الرجوع: نص الستارة = الفصل السابق */
+  const back = document.getElementById('back-arrow-btn');
+  const prevFile = flowByN(info.n - 1);
+  if (back && prevFile) {
+    back.dataset.chapter = chapterLabel(PAGE_FLOW[prevFile]);
+    back.dataset.line = chapterLine(PAGE_FLOW[prevFile]);
+    back.dataset.fallback = prevFile;
+  }
+}
+
+/* ---------------- الترجمة AR / EN ---------------- */
+const DICT = {
+  'brand-ar': { ar: 'مدينة السلطان هيثم', en: 'Sultan Haitham City' },
+  'brand-en': { ar: 'SULTAN HAITHAM CITY', en: 'AN EVERLASTING GIFT' },
+  'svc-title': { ar: 'دليل خدمات المدينة', en: 'City Services Guide' },
+  'svc-sub': { ar: 'اختر الخدمة التي ترغب بتقديم طلب لها', en: 'Choose the service you would like to apply for' },
+  'svc-search-ph': { ar: 'ابحث عن خدمة...', en: 'Search a service...' },
+  'filter-all': { ar: 'الكل', en: 'All' },
+  'filter-permits': { ar: 'التصاريح', en: 'Permits' },
+  'filter-realestate': { ar: 'المعاملات العقارية', en: 'Real Estate' },
+  'filter-business': { ar: 'تراخيص الأعمال', en: 'Business Licenses' },
+  'filter-planning': { ar: 'الموافقات التخطيطية', en: 'Planning Approvals' },
+  'start-request': { ar: 'ابدأ الطلب', en: 'Start Request' },
+  'services-guide': { ar: 'دليل الخدمات', en: 'Services Guide' },
+  'req-docs-title': { ar: 'المستندات المطلوبة', en: 'Required Documents' },
+  'expected-duration': { ar: 'المدة المتوقعة', en: 'Expected Duration' },
+  'fees': { ar: 'الرسوم', en: 'Fees' },
+  'dept': { ar: 'القسم المختص', en: 'Responsible Department' },
+  'step-data': { ar: 'البيانات', en: 'Details' },
+  'step-docs': { ar: 'المستندات', en: 'Documents' },
+  'step-review': { ar: 'المراجعة', en: 'Review' },
+  'step-confirm': { ar: 'التأكيد', en: 'Confirmation' },
+  'request-data-title': { ar: 'بيانات الطلب', en: 'Request Details' },
+  'name': { ar: 'الاسم', en: 'Name' },
+  'civil-id': { ar: 'الرقم المدني', en: 'Civil ID' },
+  'phone': { ar: 'رقم الهاتف', en: 'Phone Number' },
+  'parcel-no': { ar: 'رقم القطعة', en: 'Parcel Number' },
+  'request-type': { ar: 'نوع الطلب', en: 'Request Type' },
+  'request-desc': { ar: 'وصف الطلب', en: 'Request Description' },
+  'next': { ar: 'التالي', en: 'Next' },
+  'prev': { ar: 'السابق', en: 'Previous' },
+  'req-docs-heading': { ar: 'المستندات المطلوبة', en: 'Required Documents' },
+  'dropzone-title': { ar: 'اسحب الملفات هنا أو انقر لاختيارها', en: 'Drag files here or click to choose' },
+  'upload': { ar: 'رفع', en: 'Upload' },
+  'replace': { ar: 'استبدال', en: 'Replace' },
+  'preview': { ar: 'معاينة', en: 'Preview' },
+  'delete': { ar: 'حذف', en: 'Delete' },
+  'review-title': { ar: 'بيانات مقدم الطلب', en: "Applicant's Information" },
+  'edit': { ar: 'تعديل', en: 'Edit' },
+  'request-data-h': { ar: 'بيانات الطلب', en: 'Request Data' },
+  'documents': { ar: 'المستندات', en: 'Documents' },
+  'ack-text': { ar: 'أقر بأن جميع البيانات صحيحة وأوافق على الشروط والأحكام', en: 'I confirm all the details are accurate and I agree to the terms' },
+  'e-sign': { ar: 'توقيع إلكتروني', en: 'E-Signature' },
+  'submit-request': { ar: 'إرسال الطلب', en: 'Submit Request' },
+  'confirm-title': { ar: 'تم إرسال الطلب بنجاح', en: 'Request Submitted Successfully' },
+  'confirm-sub': { ar: 'سيتم إشعارك بأي تحديث على حالة الطلب', en: 'You will be notified of any updates to your request' },
+  'service-type': { ar: 'نوع الخدمة', en: 'Service Type' },
+  'submit-date': { ar: 'تاريخ التقديم', en: 'Submission Date' },
+  'status': { ar: 'الحالة', en: 'Status' },
+  'status-review': { ar: 'قيد المراجعة', en: 'Under Review' },
+  'track-request': { ar: 'تتبع الطلب', en: 'Track Request' },
+  'download-receipt': { ar: 'تحميل الإيصال', en: 'Download Receipt' },
+  'track-title': { ar: 'تتبع الطلب', en: 'Track Request' },
+  'track-sub': { ar: 'أدخل رقم الطلب لعرض حالته ومسار معالجته', en: 'Enter the request number to view its status and progress' },
+  'search': { ar: 'بحث', en: 'Search' },
+  /* صفحة بيانات المواطن */
+  'cz-title': { ar: 'بيانات المواطن', en: 'Citizen Details' },
+  'cz-sub': { ar: 'جلبنا بياناتك من حسابك — لا حاجة لإعادة إدخال ما هو موجود', en: 'We pulled your details from your account — no need to re-enter them' },
+  'save-continue': { ar: 'حفظ ومتابعة', en: 'Save & Continue' },
+  'applicant': { ar: 'مقدم الطلب', en: 'Applicant' },
+  'hero-title': { ar: 'دليل الخدمات', en: 'Services Guide' },
+  'hero-sub': { ar: 'كل خدمات المدينة في مكان واحد — ابدأ طلبك خلال دقائق', en: 'Every city service in one place — start in minutes' },
+  'dz-sub': { ar: 'الصيغ المدعومة: JPG · PNG · PDF — الحجم الأقصى 10 ميجابايت · يُملأ أول مستند ناقص تلقائياً', en: 'Supported: JPG · PNG · PDF — max 10 MB · fills the first missing document' },
+  'desc-ph': { ar: 'اكتب تفاصيل إضافية...', en: 'Add any extra details...' },
+  'explore': { ar: 'استكشف الخدمات', en: 'Explore services' },
+};
+
+let currentLang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+
+function applyLang(lang) {
+  currentLang = lang;
+  document.body.setAttribute('data-lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (DICT[key]) el.innerHTML = DICT[key][lang];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.dataset.i18nPh;
+    if (DICT[key]) el.placeholder = DICT[key][lang];
+  });
+  const btn = document.getElementById('header-lang-btn');
+  if (btn) btn.textContent = lang === 'ar' ? 'EN' : 'AR';
+  try { localStorage.setItem('sh_lang', lang); } catch (_) {}
+  renderChapterStrip();
+  document.dispatchEvent(new CustomEvent('sh:langchange', { detail: { lang } }));
+}
+function toggleLanguage() { applyLang(currentLang === 'ar' ? 'en' : 'ar'); }
+
+/* ---------------- حالة تسجيل الدخول (مشتركة بين الصفحات) ---------------- */
+const LOGIN_KEY = 'sh_logged_in';
+const MOCK_USER = { id: 'u-1001', name: 'سالم الحارثي', initials: 'س' };
+function isLoggedIn() { try { return localStorage.getItem(LOGIN_KEY) === '1'; } catch (_) { return false; } }
+function setLoggedIn(v) { try { localStorage.setItem(LOGIN_KEY, v ? '1' : '0'); } catch (_) {} }
+function currentUser() { return isLoggedIn() ? MOCK_USER : null; }
+
+/* طلبات وهمية لعرضها في قائمة "طلباتي" وفي إشعارات المستخدم */
+const MY_REQUESTS = [
+  { num: 'SR-2026-0045', type: 'تسجيل ملكية', status: 'قيد المعالجة', badge: 'progress' },
+  { num: 'SR-2026-0032', type: 'رخصة نشاط تجاري', status: 'مكتمل', badge: 'done' },
+  { num: 'SR-2026-0019', type: 'تصريح عمل مؤقت', status: 'مكتمل', badge: 'done' },
+];
+
+/* ============================================================
+   طبقة البيانات (Mock API)
+   ------------------------------------------------------------
+   المشروع لا يحتوي على backend أو قاعدة بيانات — كل البيانات وهمية.
+   لذلك عُزلت كل عمليات "الخادم" هنا خلف واجهة Promise واحدة:
+   عند توفر API حقيقية، استبدل جسم الدوال بـ fetch() فقط، وتبقى
+   الصفحات كما هي.
+   للاختبار: أضف ?simulate=error أو ?simulate=empty أو ?simulate=save-error للرابط.
+   ============================================================ */
+const API_LATENCY = 650;
+function simFlag() { try { return new URLSearchParams(location.search).get('simulate') || ''; } catch (_) { return ''; } }
+let simErrorConsumed = false;   /* الخطأ الوهمي يحدث مرة واحدة فقط حتى تعمل "إعادة المحاولة" */
+function simulateRequest(produce, { fail = false, ms = API_LATENCY } = {}) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (fail) { reject(new Error('NETWORK_ERROR')); return; }
+      try { resolve(typeof produce === 'function' ? produce() : produce); } catch (e) { reject(e); }
+    }, ms);
+  });
+}
+
+/* سجل مدني وهمي — بعض الحقول ناقصة عمداً لإظهار سلوك "أكمل الناقص فقط" */
+const CITIZEN_SEED = {
+  'u-1001': {
+    fullName: 'سالم بن سعيد الحارثي', civilId: '12345678', dob: '1990-04-12', nationality: 'عُماني',
+    phone: '91234567', email: '', governorate: 'مسقط', wilayat: '', address: ''
+  }
+};
+const CITIZEN_DB_KEY = id => 'sh_db_citizen_' + id;
+
+const AuthAPI = {
+  login() { return simulateRequest(() => ({ ...MOCK_USER }), { ms: 700 }); },
+};
+const CitizenAPI = {
+  getProfile(userId) {
+    const flag = simFlag();
+    const fail = flag === 'error' && !simErrorConsumed;
+    if (fail) simErrorConsumed = true;
+    return simulateRequest(() => {
+      if (flag === 'empty') return null;
+      try { const saved = localStorage.getItem(CITIZEN_DB_KEY(userId)); if (saved) return JSON.parse(saved); } catch (_) {}
+      return CITIZEN_SEED[userId] ? { ...CITIZEN_SEED[userId] } : null;
+    }, { fail });
+  },
+  saveProfile(userId, data) {
+    const flag = simFlag();
+    const fail = flag === 'save-error' && !simErrorConsumed;
+    if (fail) simErrorConsumed = true;
+    return simulateRequest(() => {
+      const record = { ...data, updatedAt: new Date().toISOString() };
+      localStorage.setItem(CITIZEN_DB_KEY(userId), JSON.stringify(record));
+      return record;
+    }, { fail, ms: 800 });
+  },
+};
+
+/* تعريف حقول نموذج المواطن — مصدر واحد تستخدمه صفحة البيانات وصفحة المراجعة */
+const OMAN_GOVERNORATES = ['مسقط', 'ظفار', 'مسندم', 'البريمي', 'الداخلية', 'شمال الباطنة', 'جنوب الباطنة', 'جنوب الشرقية', 'شمال الشرقية', 'الظاهرة', 'الوسطى'];
+const WILAYATS = {
+  'مسقط': ['مسقط', 'مطرح', 'بوشر', 'السيب', 'العامرات', 'قريات'],
+  'شمال الباطنة': ['صحار', 'شناص', 'لوى', 'صحم', 'الخابورة', 'السويق'],
+  'جنوب الباطنة': ['الرستاق', 'العوابي', 'نخل', 'وادي المعاول', 'بركاء', 'المصنعة'],
+  'الداخلية': ['نزوى', 'بهلاء', 'منح', 'الحمراء', 'أدم', 'إزكي', 'سمائل', 'بدبد', 'الجبل الأخضر'],
+  'ظفار': ['صلالة', 'طاقة', 'مرباط', 'رخيوت', 'ثمريت', 'ضلكوت', 'سدح', 'شليم وجزر الحلانيات', 'المزيونة', 'مقشن'],
+};
+const CITIZEN_FIELDS = [
+  { key: 'fullName',    group: 'id',      label: 'الاسم الكامل',      en: 'Full name',      required: true,  locked: true, autocomplete: 'name' },
+  { key: 'civilId',     group: 'id',      label: 'الرقم المدني',      en: 'Civil ID',       required: true,  locked: true, inputmode: 'numeric', ltr: true, pattern: /^\d{8,9}$/, err: 'الرقم المدني يتكون من 8 إلى 9 أرقام' },
+  { key: 'dob',         group: 'id',      label: 'تاريخ الميلاد',     en: 'Date of birth',  required: true,  locked: true, type: 'date', ltr: true },
+  { key: 'nationality', group: 'id',      label: 'الجنسية',           en: 'Nationality',    required: false, locked: true },
+  { key: 'phone',       group: 'contact', label: 'رقم الهاتف',        en: 'Phone',          required: true,  type: 'tel', inputmode: 'tel', ltr: true, prefix: '+968', autocomplete: 'tel-national', pattern: /^[79]\d{7}$/, err: 'أدخل رقماً عُمانياً من 8 أرقام يبدأ بـ 7 أو 9' },
+  { key: 'email',       group: 'contact', label: 'البريد الإلكتروني', en: 'Email',          required: true,  type: 'email', inputmode: 'email', ltr: true, autocomplete: 'email', pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, err: 'صيغة البريد الإلكتروني غير صحيحة', hint: 'نرسل عليه إشعارات حالة الطلب' },
+  { key: 'governorate', group: 'address', label: 'المحافظة',          en: 'Governorate',    required: true,  type: 'select', options: OMAN_GOVERNORATES },
+  { key: 'wilayat',     group: 'address', label: 'الولاية',           en: 'Wilayat',        required: true,  list: 'wilayat' },
+  { key: 'address',     group: 'address', label: 'العنوان التفصيلي',  en: 'Street address', required: true,  type: 'textarea', minLength: 6, hint: 'الحي، الشارع، رقم المنزل أو المبنى', autocomplete: 'street-address' },
+];
+function isFilled(v) { return v != null && String(v).trim() !== ''; }
+function validateCitizenField(f, value) {
+  const v = String(value ?? '').trim();
+  if (f.required && !v) return 'هذا الحقل مطلوب';
+  if (v && f.pattern && !f.pattern.test(v)) return f.err || 'قيمة غير صحيحة';
+  if (v && f.minLength && v.length < f.minLength) return 'الرجاء كتابة العنوان بتفصيل أكثر';
+  return '';
+}
+function formatCitizenValue(f, v) {
+  if (!isFilled(v)) return '—';
+  if (f.type === 'date') {
+    const d = new Date(v);
+    if (!isNaN(d)) return d.toLocaleDateString(currentLang === 'en' ? 'en-GB' : 'ar-OM', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  if (f.prefix) return f.prefix + ' ' + v;
+  return v;
+}
+
+/* ---------------- حالات المستندات (مشتركة بين المستندات والمراجعة) ----------------
+   required: لم يُرفع · uploading: جارٍ الرفع · uploaded: تم الرفع (قبل إرسال الطلب)
+   pending: بانتظار تحقق الموظف (بعد الإرسال) · approved: معتمد · rejected: مرفوض */
+const DOC_STATUS = {
+  required:  { ar: 'مطلوب',      en: 'Required' },
+  uploading: { ar: 'جارٍ الرفع', en: 'Uploading' },
+  uploaded:  { ar: 'تم الرفع',   en: 'Uploaded' },
+  pending:   { ar: 'قيد التحقق', en: 'Pending' },
+  approved:  { ar: 'معتمد',      en: 'Approved' },
+  rejected:  { ar: 'مرفوض',      en: 'Rejected' },
+};
+function docStatusChip(status) {
+  const s = DOC_STATUS[status] || DOC_STATUS.required;
+  return `<span class="st-chip st-${status}">${currentLang === 'en' ? s.en : s.ar}</span>`;
+}
+function isDocDone(entry) { return !!entry && entry.status !== 'rejected'; }
+function fileTypeLabel(type, name) {
+  if (/pdf/i.test(type) || /\.pdf$/i.test(name || '')) return 'PDF';
+  const m = /image\/(\w+)/.exec(type || '');
+  if (m) return m[1].toUpperCase().replace('JPEG', 'JPG');
+  const ext = /\.(\w+)$/.exec(name || '');
+  return ext ? ext[1].toUpperCase() : (currentLang === 'en' ? 'File' : 'ملف');
+}
+
+/* ---------------- تنبيهات Toast خفيفة ---------------- */
+function showToast(message, type = 'info', ms = 2800) {
+  let stack = document.getElementById('toast-stack');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.id = 'toast-stack';
+    stack.setAttribute('role', 'status');
+    stack.setAttribute('aria-live', 'polite');
+    document.body.appendChild(stack);
+  }
+  const icons = { success: '✓', error: '!', info: 'i' };
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = `<span class="toast-ic" aria-hidden="true">${icons[type] || 'i'}</span><span>${escapeHtml(message)}</span>`;
+  stack.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('in'));
+  setTimeout(() => {
+    t.classList.remove('in');
+    t.addEventListener('transitionend', () => t.remove(), { once: true });
+    setTimeout(() => t.remove(), 600);
+  }, ms);
+}
+
+/* ---------------- الإشعارات + حساب المستخدم في الهيدر ---------------- */
+function buildHeaderExtras() {
+  document.querySelectorAll('.header-actions').forEach(actions => {
+    if (actions.querySelector('.header-notif-wrap')) return;
+
+    const notifWrap = document.createElement('div');
+    notifWrap.className = 'header-dropdown-wrap header-notif-wrap';
+    notifWrap.innerHTML = `
+      <button class="header-icon-btn" id="header-notif-btn" type="button" title="الإشعارات" aria-label="الإشعارات" aria-haspopup="true" aria-expanded="false">🔔<span class="header-notif-dot" id="header-notif-dot"></span></button>
+      <div class="header-dropdown" id="header-notif-dropdown">
+        <div class="hd-title">الإشعارات</div>
+        <div class="hd-item"><b>طلبك SR-2026-0045 يحتاج مستنداً إضافياً</b><span class="sub">قبل 12 دقيقة</span></div>
+        <div class="hd-item"><b>تم تحويل طلبك إلى قسم العقارات</b><span class="sub">أمس</span></div>
+        <div class="hd-item"><b>مرحباً بك في بوابة خدمات المدينة</b><span class="sub">قبل 3 أيام</span></div>
+      </div>`;
+
+    const accountWrap = document.createElement('div');
+    accountWrap.className = 'header-dropdown-wrap header-account-wrap';
+    accountWrap.innerHTML = `<button class="header-account-btn guest" id="header-account-btn" type="button"></button>
+      <div class="header-dropdown" id="header-account-dropdown"></div>`;
+
+    actions.appendChild(notifWrap);
+    actions.appendChild(accountWrap);
+
+    document.getElementById('header-notif-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllHeaderDropdowns('header-notif-dropdown');
+      const dd = document.getElementById('header-notif-dropdown');
+      dd.classList.toggle('open');
+      e.currentTarget.setAttribute('aria-expanded', dd.classList.contains('open'));
+      document.getElementById('header-notif-dot').style.display = 'none';
+    });
+  });
+  refreshAccountButton();
+  document.addEventListener('click', () => closeAllHeaderDropdowns());
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllHeaderDropdowns(); });
+}
+
+function closeAllHeaderDropdowns(exceptId) {
+  document.querySelectorAll('.header-dropdown.open').forEach(dd => {
+    if (dd.id !== exceptId) dd.classList.remove('open');
+  });
+}
+
+function refreshAccountButton() {
+  document.querySelectorAll('#header-account-btn').forEach(btn => {
+    const dropdown = btn.parentElement.querySelector('#header-account-dropdown');
+    if (isLoggedIn()) {
+      btn.classList.remove('guest');
+      btn.innerHTML = `<span class="av">${MOCK_USER.initials}</span><span>${MOCK_USER.name.split(' ')[0]} ▾</span>`;
+      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${MOCK_USER.name}</b><span class="sub">حساب مُسجَّل</span></div>
+        <a class="hd-item" href="citizen-data.html" data-dir="down">بياناتي الشخصية</a>
+        <div class="hd-sep"></div><div class="hd-item hd-logout" id="hd-logout-btn" role="button" tabindex="0">تسجيل الخروج</div>`;
+    } else {
+      btn.classList.add('guest');
+      btn.innerHTML = `👤 <span>تسجيل الدخول</span>`;
+      if (dropdown) dropdown.innerHTML = '';
+    }
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      if (isLoggedIn()) {
+        closeAllHeaderDropdowns('header-account-dropdown');
+        dropdown.classList.toggle('open');
+        const logoutBtn = document.getElementById('hd-logout-btn');
+        if (logoutBtn) logoutBtn.onclick = () => {
+          setLoggedIn(false); refreshAccountButton(); dropdown.classList.remove('open');
+          showToast('تم تسجيل الخروج', 'info');
+          document.dispatchEvent(new CustomEvent('sh:authchange', { detail: { loggedIn: false } }));
+        };
+      } else {
+        requireLogin(() => {});
+      }
+    };
+  });
+}
+
+/* ---------------- بوابة تسجيل الدخول قبل بدء أي طلب ---------------- */
+let pendingLoginAction = null;
+let pendingLoginCancel = null;
+let loginReturnFocus = null;
+function buildLoginModal() {
+  if (document.getElementById('login-modal')) return;
+  const el = document.createElement('div');
+  el.className = 'login-modal-backdrop';
+  el.id = 'login-modal';
+  el.innerHTML = `
+    <div class="login-modal-box" role="dialog" aria-modal="true" aria-labelledby="lm-title" aria-describedby="lm-desc">
+      <div class="lm-ic" aria-hidden="true">🔒</div>
+      <h3 id="lm-title">سجّل الدخول للمتابعة</h3>
+      <p id="lm-desc">لبدء تقديم الطلب، يجب تسجيل الدخول إلى حسابك أولاً. سنجلب بياناتك المسجّلة تلقائياً.</p>
+      <div class="lm-status" id="lm-status" aria-live="polite"></div>
+      <div class="lm-actions">
+        <button class="btn-gold" id="lm-login-btn" type="button" style="justify-content:center;"><span class="btn-spinner" aria-hidden="true"></span><span class="btn-label">تسجيل الدخول الآن</span></button>
+        <button class="btn-ghost" type="button" id="lm-cancel-btn">إلغاء</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  el.addEventListener('click', (e) => { if (e.target === el) cancelLoginModal(); });
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cancelLoginModal();
+    if (e.key === 'Tab') { /* حصر التركيز داخل النافذة */
+      const f = [...el.querySelectorAll('button:not([disabled])')];
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  document.getElementById('lm-cancel-btn').addEventListener('click', cancelLoginModal);
+  document.getElementById('lm-login-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('lm-login-btn');
+    const status = document.getElementById('lm-status');
+    if (btn.classList.contains('is-loading')) return;
+    btn.classList.add('is-loading'); btn.disabled = true;
+    btn.querySelector('.btn-label').textContent = 'جارٍ التحقق من هويتك…';
+    status.className = 'lm-status'; status.textContent = '';
+    try {
+      const user = await AuthAPI.login();
+      setLoggedIn(true);
+      refreshAccountButton();
+      status.className = 'lm-status ok';
+      status.textContent = '✓ مرحباً ' + user.name.split(' ')[0] + '، تم تسجيل الدخول';
+      btn.querySelector('.btn-label').textContent = 'تم';
+      document.dispatchEvent(new CustomEvent('sh:authchange', { detail: { loggedIn: true } }));
+      setTimeout(() => {
+        const action = pendingLoginAction;
+        closeLoginModal();
+        if (action) action();
+      }, 520);
+    } catch (_) {
+      status.className = 'lm-status err';
+      status.textContent = 'تعذّر تسجيل الدخول. تحقق من الاتصال وحاول مجدداً.';
+      btn.classList.remove('is-loading'); btn.disabled = false;
+      btn.querySelector('.btn-label').textContent = 'إعادة المحاولة';
+    }
+  });
+}
+function closeLoginModal() {
+  const m = document.getElementById('login-modal');
+  m?.classList.remove('show');
+  pendingLoginAction = null;
+  pendingLoginCancel = null;
+  if (loginReturnFocus && document.contains(loginReturnFocus)) loginReturnFocus.focus({ preventScroll: true });
+}
+function cancelLoginModal() {
+  const btn = document.getElementById('lm-login-btn');
+  if (btn?.classList.contains('is-loading')) return;
+  const onCancel = pendingLoginCancel;
+  closeLoginModal();
+  if (onCancel) onCancel();
+}
+function requireLogin(action, opts = {}) {
+  if (isLoggedIn()) { action(); return; }
+  buildLoginModal();
+  pendingLoginAction = action;
+  pendingLoginCancel = opts.onCancel || null;
+  loginReturnFocus = document.activeElement;
+  const btn = document.getElementById('lm-login-btn');
+  btn.classList.remove('is-loading'); btn.disabled = false;
+  btn.querySelector('.btn-label').textContent = 'تسجيل الدخول الآن';
+  const status = document.getElementById('lm-status');
+  status.className = 'lm-status'; status.textContent = '';
+  const m = document.getElementById('login-modal');
+  m.classList.add('show');
+  setTimeout(() => btn.focus({ preventScroll: true }), 60);
+}
+
+/* يبدأ طلباً جديداً لخدمة معيّنة ويأخذ المستخدم للخطوة الأولى (بيانات المواطن) */
+function startServiceRequest(id) {
+  const svc = SERVICE_CATALOG[id];
+  if (!svc) return;
+  requireLogin(() => {
+    const s = loadState();
+    s.serviceId = id; s.parcel = ''; s.type = svc.requestType; s.desc = '';
+    s.docs = {}; s.ack = false; s.signed = false; s.requestNumber = ''; s.submittedAt = ''; s.citizen = null;
+    saveState(s);
+    navigateWithTransition('citizen-data.html', 'down');
+  });
+}
+
+/* زر "ابدأ الطلب" في بطاقات دليل الخدمات: يتحقق من تسجيل الدخول قبل الانتقال المباشر لتقديم الطلب */
+function wireStartButtons() {
+  document.querySelectorAll('.svc-start').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('[data-service]');
+      startServiceRequest(card?.dataset.service);
+    });
+  });
+}
+
+/* ---------------- عرض الجوال / الكمبيوتر ---------------- */
+function applyDeviceView(on) {
+  document.body.classList.toggle('mobile-mode', on);
+  const btn = document.getElementById('header-device-btn');
+  if (btn) btn.textContent = on ? '💻' : '📱';
+  try { localStorage.setItem('sh_device', on ? 'mobile' : 'desktop'); } catch (_) {}
+  window.dispatchEvent(new Event('resize'));
+}
+function toggleDeviceView() { applyDeviceView(!document.body.classList.contains('mobile-mode')); }
+
+/* ---------------- الهيدر التفاعلي مع التمرير ----------------
+   بدون scroll listener: IntersectionObserver يراقب عنصراً صغيراً في أعلى الصفحة،
+   وعند تجاوزه يُضاف body.is-scrolled فيتحول الهيدر لشكل مضغوط زجاجي عبر CSS transitions. */
+function initHeaderScroll() {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+  const sentinel = document.createElement('div');
+  sentinel.className = 'scroll-sentinel';
+  sentinel.setAttribute('aria-hidden', 'true');
+  document.body.prepend(sentinel);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      document.body.classList.toggle('is-scrolled', !entry.isIntersecting);
+    }).observe(sentinel);
+  }
+  const setH = () => document.documentElement.style.setProperty('--hdr-h', header.offsetHeight + 'px');
+  setH();
+  if ('ResizeObserver' in window) new ResizeObserver(setH).observe(header);
+}
+
+/* ---------------- الستارة — الانتقال بين الصفحات ---------------- */
+const OPPOSITE_DIR = { right: 'left', left: 'right', up: 'down', down: 'up' };
+const CURTAIN_EXIT_MS = 340;   /* كان 480ms — أقصر لتبدو التجربة أسرع */
+let isNavigating = false;
+
+/* ---- بنايات حيّة للستارة الانتقالية: نوافذ تومض بهدوء + منارة نابضة ---- */
+const CURTAIN_SKY_BUILDINGS = [
+  { x: 4,   w: 44, h: 58, c: '#3D4E1E' },
+  { x: 56,  w: 38, h: 84, c: '#49111D', win: true },
+  { x: 100, w: 30, h: 50, c: '#143534' },
+  { x: 138, w: 42, h: 96, c: '#49111D', win: true, beacon: true },
+  { x: 188, w: 34, h: 62, c: '#3D4E1E' },
+  { x: 228, w: 28, h: 46, c: '#143534' },
+  { x: 262, w: 46, h: 90, c: '#49111D', win: true },
+  { x: 314, w: 32, h: 56, c: '#3D4E1E' },
+  { x: 352, w: 40, h: 74, c: '#143534', win: true },
+  { x: 398, w: 30, h: 48, c: '#3D4E1E' },
+  { x: 434, w: 44, h: 88, c: '#49111D', win: true },
+  { x: 484, w: 34, h: 58, c: '#143534' },
+  { x: 524, w: 48, h: 78, c: '#3D4E1E', win: true, beacon: true },
+  { x: 578, w: 30, h: 50, c: '#49111D' },
+  { x: 614, w: 40, h: 68, c: '#143534', win: true },
+  { x: 660, w: 34, h: 54, c: '#3D4E1E' },
+  { x: 700, w: 46, h: 82, c: '#49111D', win: true },
+  { x: 752, w: 32, h: 56, c: '#143534' },
+];
+function curtainBuildingSVG(b, seed) {
+  const H = 120, y = H - b.h;
+  let out = `<rect x="${b.x}" y="${y}" width="${b.w}" height="${b.h}" rx="2" fill="${b.c}"/>`;
+  if (b.win) {
+    const cols = Math.max(2, Math.floor(b.w / 14));
+    const rows = Math.max(2, Math.floor(b.h / 20));
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const wx = b.x + 6 + c * ((b.w - 10) / cols);
+        const wy = y + 9 + r * ((b.h - 14) / rows);
+        const lit = (seed + r * 3 + c * 7) % 4 === 0;
+        out += `<rect class="${lit ? 'win-lite' : ''}" x="${wx.toFixed(1)}" y="${wy.toFixed(1)}" width="5" height="7" rx="1" fill="${lit ? '#F1BB4D' : '#F9EDB8'}" opacity="${lit ? '.9' : '.2'}" style="${lit ? `animation-delay:${((seed + r + c) % 9) * 0.5}s` : ''}"/>`;
+      }
+    }
+  }
+  if (b.beacon) {
+    out += `<rect x="${b.x + b.w / 2 - 2}" y="${y - 12}" width="3" height="12" fill="#B39157"/>`;
+    out += `<circle class="beacon" cx="${b.x + b.w / 2 - 0.5}" cy="${y - 14}" r="3.4" fill="#F8633E"/>`;
+  }
+  return out;
+}
+function curtainSkylineSVG() {
+  const body = CURTAIN_SKY_BUILDINGS.map((b, i) => curtainBuildingSVG(b, i)).join('');
+  return `<svg class="curtain-skyline" viewBox="0 -16 800 136" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+}
+
+function buildCurtain() {
+  if (document.getElementById('page-curtain')) return;
+  const el = document.createElement('div');
+  el.id = 'page-curtain';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `
+    <div class="curtain-sweep"></div>
+    <span class="curtain-chapter" id="curtain-chapter"></span>
+    <p class="curtain-line" id="curtain-line"></p>
+    ${curtainSkylineSVG()}`;
+  document.body.appendChild(el);
+}
+
+function playCurtain(dir, chapterText, lineText, cb) {
+  if (isNavigating) return;
+  isNavigating = true;
+  buildCurtain();
+  const curtain = document.getElementById('page-curtain');
+  const chEl = document.getElementById('curtain-chapter');
+  const lnEl = document.getElementById('curtain-line');
+  if (chEl) chEl.textContent = chapterText || '';
+  if (lnEl) lnEl.textContent = lineText || '';
+  curtain.dataset.dir = dir || '';
+  try { sessionStorage.setItem('sh_last_dir', dir); sessionStorage.setItem('sh_arrive', '1'); } catch (_) {}
+  document.body.classList.add('is-leaving');
+  if (prefersReducedMotion()) { cb(); return; }
+  /* إطار واحد قبل الإظهار لضمان تشغيل الـ transition */
+  requestAnimationFrame(() => curtain.classList.add('show'));
+  setTimeout(cb, CURTAIN_EXIT_MS);
+}
+
+/* تنفيذ خروج + انتقال حقيقي لصفحة أخرى.
+   إذا كانت الصفحة معروفة في PAGE_FLOW نأخذ نص الفصل منها (ترقيم موحّد لكل الصفحات). */
+function navigateWithTransition(href, dir, chapterText, lineText) {
+  const info = PAGE_FLOW[String(href).split(/[?#]/)[0]];
+  if (info) { chapterText = chapterLabel(info); lineText = chapterLine(info); }
+  try { sessionStorage.setItem('sh_entry_dir', dir); } catch (_) {}
+  playCurtain(dir, chapterText, lineText, () => { window.location.href = href; });
+}
+
+/* تشغيل مؤثر الدخول عند تحميل صفحة جديدة */
+function playEntrance() {
+  let dir = null;
+  try { dir = sessionStorage.getItem('sh_entry_dir'); sessionStorage.removeItem('sh_entry_dir'); } catch (_) {}
+  const frame = document.querySelector('.site-frame');
+  document.body.classList.add('ready');
+  document.body.classList.remove('is-leaving');
+  if (!frame) return;
+  frame.classList.remove('enter-right', 'enter-left', 'enter-up', 'enter-down', 'enter-plain');
+  void frame.offsetWidth; /* إعادة تشغيل الأنيميشن عند الرجوع من bfcache */
+  if (!dir || prefersReducedMotion()) { frame.classList.add('enter-plain'); return; }
+  const cls = { right: 'enter-right', left: 'enter-left', up: 'enter-up', down: 'enter-down' }[dir] || 'enter-plain';
+  frame.classList.add(cls);
+}
+
+/* إنهاء "الوصول": الخلفية بلون الستارة تذوب تدريجياً في الصفحة الجديدة (بدون وميض أبيض) */
+function finishArrival() {
+  try { sessionStorage.removeItem('sh_arrive'); } catch (_) {}
+  const root = document.documentElement;
+  if (!root.classList.contains('arriving')) return;
+  setTimeout(() => root.classList.remove('arriving'), 650);
+}
+
+/* ربط روابط التنقل الإبداعي (data-dir + data-chapter + data-line) */
+function initPageTransitions() {
+  document.addEventListener('click', e => {
+    const link = e.target.closest('a[data-dir]');
+    if (!link) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; /* فتح في تبويب جديد يبقى طبيعياً */
+    e.preventDefault();
+    navigateWithTransition(link.getAttribute('href'), link.dataset.dir, link.dataset.chapter || '', link.dataset.line || '');
+  });
+  const back = document.getElementById('back-arrow-btn');
+  if (back) {
+    back.addEventListener('click', () => {
+      let lastDir = 'up';
+      try { lastDir = sessionStorage.getItem('sh_last_dir') || 'up'; } catch (_) {}
+      const dir = OPPOSITE_DIR[lastDir] || 'left';
+      /* إذا فُتحت الصفحة مباشرة (لا يوجد تاريخ) نرجع للصفحة السابقة في المسار */
+      const hasHistory = window.history.length > 1;
+      if (!hasHistory && back.dataset.fallback) {
+        navigateWithTransition(back.dataset.fallback, dir);
+        return;
+      }
+      try { sessionStorage.setItem('sh_entry_dir', dir); } catch (_) {}
+      playCurtain(dir, back.dataset.chapter || '', back.dataset.line || '', () => {
+        window.history.back();
+      });
+    });
+  }
+}
+
+/* ---------------- تشغيل عام عند تحميل كل صفحة ---------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const savedLang = localStorage.getItem('sh_lang');
+    if (savedLang) applyLang(savedLang); else applyLang(currentLang);
+  } catch (_) { applyLang(currentLang); }
+  try {
+    const savedDevice = localStorage.getItem('sh_device');
+    if (savedDevice === 'mobile') applyDeviceView(true);
+  } catch (_) {}
+  document.getElementById('header-lang-btn')?.addEventListener('click', toggleLanguage);
+  document.getElementById('header-device-btn')?.addEventListener('click', toggleDeviceView);
+  buildHeaderExtras();
+  wireStartButtons();
+  initPageTransitions();
+  initHeaderScroll();
+  playEntrance();
+  finishArrival();
+});
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    /* رجوع من ذاكرة المتصفح (bfcache): نخفي الستارة التي بقيت ظاهرة من لحظة الخروج */
+    isNavigating = false;
+    document.getElementById('page-curtain')?.classList.remove('show');
+    document.documentElement.classList.remove('arriving');
+    try { sessionStorage.removeItem('sh_arrive'); } catch (_) {}
+    playEntrance();
+  }
+});

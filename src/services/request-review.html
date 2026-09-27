@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مراجعة الطلب — مدينة السلطان هيثم</title>
+<script>try{if(sessionStorage.getItem('sh_arrive'))document.documentElement.classList.add('arriving');}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-lang="ar" data-page="request-review">
+
+<div class="page-canvas">
+  <div class="site-frame">
+    <div class="site-header">
+      <div class="logo-group">
+        <button class="back-arrow show" id="back-arrow-btn" type="button" aria-label="رجوع" title="رجوع"
+          data-chapter="الفصل الثالث · المستندات" data-line="أرفق وثائقك — خطوة واحدة من الاعتماد"><span>→</span></button>
+        <div class="logo-mark">SH</div>
+        <div class="logo-word"><b data-i18n="brand-ar">مدينة السلطان هيثم</b><span data-i18n="brand-en">SULTAN HAITHAM CITY</span></div>
+      </div>
+      <div class="header-actions">
+        <a class="header-svc-btn" href="services-catalog.html" data-dir="left" data-chapter="الفصل الأول · دليل الخدمات" data-line="اختر الخدمة، والباقي مرتّب لك">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-6 2 2-6 6-2Z"/></svg>
+          <span class="lbl" data-i18n="services-guide">دليل الخدمات</span>
+        </a>
+        <button class="header-icon-btn" id="header-lang-btn" type="button" title="تغيير اللغة">EN</button>
+        <button class="header-icon-btn device" id="header-device-btn" type="button" title="عرض النظام">📱</button>
+      </div>
+    </div>
+
+    <div class="chapter-strip" style="--ch-accent:#AC6492;">
+      <div class="ch-mark">٤</div>
+      <div class="ch-text"><b>الفصل الرابع · المراجعة والتوقيع</b><p>راجع، أقرّ، ووقّع إلكترونياً</p></div>
+      <div class="ch-spine">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on here"></i><i></i><i></i>
+      </div>
+    </div>
+
+    <div class="sys-wrap">
+      <div class="sys-stepper">
+        <div class="sys-step done clickable" id="step-goto-1" role="link" tabindex="0"><div class="num">✓</div><div class="lbl" data-i18n="step-data">البيانات</div></div>
+        <div class="sys-step-line done"></div>
+        <div class="sys-step done clickable" id="step-goto-2" role="link" tabindex="0"><div class="num">✓</div><div class="lbl" data-i18n="step-docs">المستندات</div></div>
+        <div class="sys-step-line done"></div>
+        <div class="sys-step now"><div class="num">3</div><div class="lbl" data-i18n="step-review">المراجعة</div></div>
+        <div class="sys-step-line"></div>
+        <div class="sys-step"><div class="num">4</div><div class="lbl" data-i18n="step-confirm">التأكيد</div></div>
+      </div>
+      <div class="svc-grid">
+        <div class="sys-review"><div class="head"><b data-i18n="review-title">بيانات مقدم الطلب</b><span class="edit sys-link" id="edit-0" role="button" tabindex="0" data-i18n="edit">تعديل</span></div>
+          <div id="rev-applicant"></div>
+        </div>
+        <div class="sys-review"><div class="head"><b data-i18n="request-data-h">بيانات الطلب</b><span class="edit sys-link" id="edit-1b" role="button" tabindex="0" data-i18n="edit">تعديل</span></div>
+          <div class="row"><span data-i18n="request-type">نوع الطلب</span><span id="rev-type">—</span></div>
+          <div class="row"><span data-i18n="request-desc">الوصف</span><span id="rev-desc">—</span></div>
+        </div>
+        <div class="sys-review"><div class="head"><b data-i18n="documents">المستندات</b><span class="edit sys-link" id="edit-2" role="button" tabindex="0" data-i18n="edit">تعديل</span></div>
+          <div id="rev-docs"></div>
+        </div>
+      </div>
+      <div class="sys-check-row" id="ack-row" role="checkbox" aria-checked="false" tabindex="0"><span class="box" id="ack-box"></span> <span data-i18n="ack-text">أقر بأن جميع البيانات صحيحة وأوافق على الشروط والأحكام</span></div>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <button type="button" id="btn-prev" class="btn-ghost" data-i18n="prev">السابق</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn-sign btn-ghost" id="btn-sign" disabled data-i18n="e-sign">توقيع إلكتروني</button>
+          <button class="btn-gold" type="button" id="btn-submit" disabled data-i18n="submit-request">إرسال الطلب</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sign-overlay" id="sign-overlay" aria-hidden="true">
+  <div class="sign-panel" role="dialog" aria-modal="true" aria-label="التوقيع الإلكتروني">
+    <b style="font-family:var(--font-display);color:var(--velvet);font-size:18px;display:block;margin-bottom:8px;">التوقيع الإلكتروني</b>
+    <p style="font-size:12px;color:var(--ink-soft);margin:0 0 12px;">ارسم توقيعك في المساحة أدناه</p>
+    <canvas id="sign-canvas" width="360" height="140" aria-label="مساحة التوقيع"></canvas>
+    <p class="sign-hint" id="sign-hint" aria-live="polite"></p>
+    <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end;">
+      <button type="button" id="sign-clear" style="background:#fff;border:1px solid var(--line);padding:9px 18px;border-radius:20px;font-family:inherit;cursor:pointer;">مسح</button>
+      <button type="button" id="sign-cancel" style="background:#fff;border:1px solid var(--gold-dark);padding:9px 18px;border-radius:20px;font-family:inherit;cursor:pointer;">إلغاء</button>
+      <button type="button" class="btn-gold" id="sign-save" style="padding:9px 18px;font-size:12px;">اعتماد التوقيع</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+let state = loadState();
+if(!state.type){
+  navigateWithTransition('services-catalog.html', 'right', 'الفصل الأول · دليل الخدمات', 'اختر الخدمة، والباقي مرتّب لك');
+}
+const svc = SERVICE_CATALOG[state.serviceId] || SERVICE_CATALOG['realestate-reg'];
+function docKeys(){ return svc.docs; }
+
+const ackRow = document.getElementById('ack-row');
+const ackBox = document.getElementById('ack-box');
+const btnSign = document.getElementById('btn-sign');
+const btnSubmit = document.getElementById('btn-submit');
+
+function updateSubmitState(){ const s = loadState(); btnSubmit.disabled = !(s.ack && s.signed); }
+
+function syncReviewPanel(){
+  const s = loadState();
+  document.getElementById('rev-type').textContent = s.type || '—';
+  document.getElementById('rev-desc').textContent = s.desc || '—';
+  document.getElementById('rev-docs').innerHTML = docKeys().map((label,i)=>{
+    const d = s.docs['doc'+i];
+    const ok = isDocDone(d);
+    const name = ok ? `<small style="display:block;color:var(--ink-soft);font-weight:400;direction:ltr;unicode-bidi:plaintext;">${escapeHtml(d.name||'')} · <span dir="ltr">${formatBytes(d.size)}</span></small>` : '';
+    return `<div class="row"><span>${escapeHtml(label)}</span><span>${ok ? docStatusChip(d.status||'uploaded') : docStatusChip('required')}${name}</span></div>`;
+  }).join('');
+  const c = s.citizen;
+  const applicantKeys = ['fullName','civilId','phone','email','governorate','wilayat','address'];
+  document.getElementById('rev-applicant').innerHTML = c
+    ? applicantKeys.map(k=>{ const f = CITIZEN_FIELDS.find(x=>x.key===k); return `<div class="row"><span>${escapeHtml(currentLang==='en'?f.en:f.label)}</span><span ${f.ltr?'dir="ltr"':''}>${escapeHtml(formatCitizenValue(f, c[k]))}</span></div>`; }).join('')
+    : `<div class="row"><span>—</span><span class="sys-link" style="cursor:pointer" id="rev-applicant-missing">أكمل بيانات المواطن</span></div>`;
+  updateSubmitState();
+}
+syncReviewPanel();
+
+function toggleAck(){
+  const s = loadState();
+  s.ack = !s.ack;
+  saveState(s);
+  ackRow.classList.toggle('checked', s.ack);
+  ackRow.setAttribute('aria-checked', s.ack ? 'true' : 'false');
+  ackBox.textContent = s.ack ? '✓' : '';
+  btnSign.disabled = !s.ack;
+  if(!s.ack){ s.signed = false; saveState(s); btnSign.textContent = 'توقيع إلكتروني'; }
+  updateSubmitState();
+}
+ackRow?.addEventListener('click', toggleAck);
+ackRow?.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggleAck(); }});
+(function initAckUI(){
+  const s = loadState();
+  ackRow.classList.toggle('checked', !!s.ack);
+  ackBox.textContent = s.ack ? '✓' : '';
+  btnSign.disabled = !s.ack;
+  if(s.signed) btnSign.textContent = '✓ تم التوقيع';
+})();
+
+const signOverlay = document.getElementById('sign-overlay');
+const signCanvas = document.getElementById('sign-canvas');
+const signCtx = signCanvas?.getContext('2d');
+let signDrawing = false, signHasInk = false, signLast = null;
+function resizeSignCanvas(){
+  if(!signCanvas || !signCtx) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = signCanvas.parentElement ? signCanvas.parentElement.clientWidth - 44 : 360;
+  signCanvas.width = Math.floor(w * dpr);
+  signCanvas.height = Math.floor(140 * dpr);
+  signCtx.setTransform(1, 0, 0, 1, 0, 0);
+  signCtx.scale(dpr, dpr);
+  signCtx.lineWidth = 2; signCtx.lineCap = 'round'; signCtx.strokeStyle = '#49111D';
+}
+function signPos(e){ const r = signCanvas.getBoundingClientRect(); const t = e.touches ? e.touches[0] : e; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
+function signStart(e){ signDrawing = true; signLast = signPos(e); e.preventDefault(); }
+function signMove(e){
+  if(!signDrawing) return;
+  const p = signPos(e);
+  signCtx.beginPath(); signCtx.moveTo(signLast.x, signLast.y); signCtx.lineTo(p.x, p.y); signCtx.stroke();
+  signLast = p; signHasInk = true; e.preventDefault();
+}
+function signEnd(){ signDrawing = false; signLast = null; }
+btnSign?.addEventListener('click', ()=>{
+  if(btnSign.disabled) return;
+  signOverlay.classList.add('open'); signOverlay.setAttribute('aria-hidden','false');
+  signHasInk = false; document.getElementById('sign-hint').textContent = ''; setTimeout(resizeSignCanvas, 50);
+  signCtx.clearRect(0,0,signCanvas.width,signCanvas.height);
+});
+['mousedown','touchstart'].forEach(ev=> signCanvas?.addEventListener(ev, signStart, {passive:false}));
+['mousemove','touchmove'].forEach(ev=> signCanvas?.addEventListener(ev, signMove, {passive:false}));
+['mouseup','mouseleave','touchend'].forEach(ev=> signCanvas?.addEventListener(ev, signEnd));
+document.getElementById('sign-clear')?.addEventListener('click', ()=>{ signCtx.clearRect(0,0,signCanvas.width,signCanvas.height); signHasInk = false; });
+document.getElementById('sign-cancel')?.addEventListener('click', ()=>{ signOverlay.classList.remove('open'); signOverlay.setAttribute('aria-hidden','true'); });
+document.getElementById('sign-save')?.addEventListener('click', ()=>{
+  if(!signHasInk){
+    const hint = document.getElementById('sign-hint');
+    hint.textContent = 'يرجى رسم التوقيع أولاً';
+    signCanvas.animate?.([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}], {duration:300});
+    return;
+  }
+  document.getElementById('sign-hint').textContent = '';
+  const s = loadState(); s.signed = true; saveState(s);
+  btnSign.textContent = '✓ تم التوقيع';
+  signOverlay.classList.remove('open'); signOverlay.setAttribute('aria-hidden','true');
+  updateSubmitState();
+});
+
+document.getElementById('btn-prev')?.addEventListener('click', ()=> navigateWithTransition('request-documents.html', 'down', 'الفصل الثالث · المستندات', 'أرفق وثائقك — خطوة واحدة من الاعتماد'));
+document.getElementById('step-goto-2')?.addEventListener('click', ()=> navigateWithTransition('request-documents.html', 'down', 'الفصل الثالث · المستندات', 'أرفق وثائقك — خطوة واحدة من الاعتماد'));
+document.getElementById('edit-1b')?.addEventListener('click', ()=> navigateWithTransition('request-documents.html', 'right', 'الفصل الثالث · المستندات', 'أرفق وثائقك — خطوة واحدة من الاعتماد'));
+document.getElementById('edit-2')?.addEventListener('click', ()=> navigateWithTransition('request-documents.html', 'down', 'الفصل الثالث · المستندات', 'أرفق وثائقك — خطوة واحدة من الاعتماد'));
+const goCitizen = ()=> navigateWithTransition('citizen-data.html', 'down');
+document.getElementById('edit-0')?.addEventListener('click', goCitizen);
+document.getElementById('step-goto-1')?.addEventListener('click', goCitizen);
+document.getElementById('rev-applicant')?.addEventListener('click', e=>{ if(e.target.id==='rev-applicant-missing') goCitizen(); });
+/* تفعيل Enter/Space على عناصر "تعديل" والخطوات */
+document.querySelectorAll('.sys-review .edit, .sys-step.clickable').forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } }));
+document.addEventListener('sh:langchange', syncReviewPanel);
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(!state.type) return;
+  requireLogin(()=>{}, { onCancel: ()=> navigateWithTransition('services-catalog.html', 'left') });
+});
+
+document.getElementById('btn-submit')?.addEventListener('click', ()=>{
+  if(btnSubmit.disabled) return;
+  const s = loadState();
+  btnSubmit.classList.add('is-loading'); btnSubmit.disabled = true;
+  /* بعد الإرسال تصبح المستندات "قيد التحقق" لدى الموظف */
+  Object.keys(s.docs || {}).forEach(k=>{ if(s.docs[k] && s.docs[k].status !== 'approved') s.docs[k].status = 'pending'; });
+  s.requestNumber = 'SR-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+  s.submittedAt = new Date().toLocaleDateString('ar-OM', {day:'2-digit', month:'2-digit', year:'numeric'});
+  saveState(s);
+  navigateWithTransition('request-confirmation.html', 'right', 'الفصل الخامس · تأكيد الطلب', 'طلبك في الطريق، واحتفظ بإيصالك');
+});
+</script>
+</body>
+</html>
