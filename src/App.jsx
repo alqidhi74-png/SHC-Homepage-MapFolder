@@ -12,6 +12,7 @@ import CityExplore from './CityExplore'
 import { usePageTransition } from './components/PageTransition/PageTransitionProvider'
 
 import city from './assets/city.png'
+import accessBackground from './assets/4.jpeg'
 import sultanCity from './assets/sultan-city.png'
 import cityName from './assets/city-name.png'
 import logo from './assets/logo.png'
@@ -240,9 +241,13 @@ export default function App() {
 
         <div className="portal-glow" />
 
-        <CityExplore />
+        <CityExplore mapUrl={SMART_MAP_URL} />
 
-        <div id="services" className="access-stage story-stage">
+        <div
+          id="services"
+          className="access-stage story-stage"
+          style={{ '--access-background': `url(${accessBackground})` }}
+        >
           <div className="access-head">
             <h2>دخول مباشر<br /><em>إلى ما تحتاجه.</em></h2>
           </div>

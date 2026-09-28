@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المدينة ثلاثية الأبعاد | مدينة السلطان هيثم</title>
+<meta name="theme-color" content="#6b0f2a">
+<meta name="description" content="المدينة ثلاثية الأبعاد (التوأم الرقمي) لمدينة السلطان هيثم — Sultan Haitham City 3D digital twin">
+<!-- العربية: IBM Plex Sans Arabic. تبقى خطوط الإنجليزية كما هي. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/city3d.css">
+</head>
+<body>
+<!-- 1) الأصول والمخطط العام (قواعد التخطيط + مولّد المدينة) -->
+<script src="js/shared/00-assets.js"></script>
+<script src="js/shared/city/00-core.js"></script>
+<script src="js/shared/city/10-config.js"></script>
+<script src="js/shared/city/15-sites.js"></script>
+<script src="js/shared/city/20-plan.js"></script>
+<script src="js/shared/city/90-catalog.js"></script>
+<!-- 2) أدوات مشتركة: اللغة، الأيقونات، الشعار، الرسوم، النوافذ، البيانات -->
+<script src="js/shared/02-core.js"></script>
+<script src="js/shared/03-data.js"></script>
+<!-- 3) محرك الخريطة (مطلوب لبعض الدوال المشتركة) -->
+<script src="js/shared/04-map.js"></script>
+<!-- 4) المدينة ثلاثية الأبعاد: الهندسة، المشهد، WebGL2، المحاكاة -->
+<script src="js/shared/city/30-mesh.js"></script>
+<script src="js/shared/city/40-streets.js"></script>
+<script src="js/shared/city/45-landscape.js"></script>
+<script src="js/shared/city/50-arch.js"></script>
+<script src="js/shared/city/52-facilities.js"></script>
+<script src="js/shared/city/55-props.js"></script>
+<script src="js/shared/city/60-world.js"></script>
+<script src="js/shared/city/70-engine.js"></script>
+<script src="js/shared/city/80-sim.js"></script>
+<script src="js/shared/05-city3d.js"></script>
+<!-- 5) الغلاف + منطق الصفحة -->
+<script src="js/standalone-shell.js"></script>
+<script src="js/pages/city3d-page.js"></script>
+<script>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',()=>bootStandalone('city3d')):bootStandalone('city3d');</script>
+</body>
+</html>

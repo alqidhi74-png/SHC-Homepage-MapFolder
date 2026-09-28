@@ -303,6 +303,24 @@
     }
     applyLayers();renderSearch();scheduleMarkers();
   }
+  function applyLayerLink(layer) {
+    if(layer==='districts'||layer==='facilities') {
+      setCategory(layer);
+      return true;
+    }
+    if(!markerLayerKeys.includes(layer)||['district-labels','investment'].includes(layer))return false;
+    if(!layersBeforeFilter)layersBeforeFilter=Object.fromEntries(markerLayerKeys.map(key=>[key,layerEnabled(key)]));
+    markCategory('facilities');
+    markerLayerKeys.forEach(key=>{$('[data-layer="'+key+'"]').checked=key===layer;});
+    applyLayers();renderSearch();scheduleMarkers();
+    const matches=facilities.filter(f=>f.type===layer);
+    if(matches.length){
+      const area=new maplibregl.LngLatBounds();
+      matches.forEach(f=>area.extend(f.coord));
+      map.fitBounds(area,{padding:fitPadding(),maxZoom:15.6,pitch:mode==='plan'?0:51,bearing:map.getBearing(),duration:motion()});
+    }
+    return true;
+  }
   function onLayerChange() {
     // Manual choices take precedence over a quick filter, including unchecked lots.
     layersBeforeFilter=null;markCategory('all');applyLayers();renderSearch();
@@ -399,6 +417,7 @@
       const params=new URLSearchParams(location.search);
       if(params.has('bld'))selectBuilding(buildingById.get(params.get('bld')));
       else if(districtById[params.get('focus')])showDistrict(params.get('focus'),true);
+      else if(params.has('layer'))applyLayerLink(params.get('layer'));
       scheduleMarkers();
     } catch(e){console.error(e);fail('تعذر إكمال تجهيز الخريطة. أعد المحاولة.');}
   });

@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { GraduationCap, HeartPulse, Home, Landmark, Leaf, MapPin, ShoppingBag, Trees, Users } from 'lucide-react'
 import cityView from './assets/3D.png'
+import generalImage from './assets/general.jpeg'
+import greenImage from './assets/green.jpeg'
+import hospitalImage from './assets/hospital.jpeg'
+import housingImage from './assets/Housing.jpeg'
+import mosqueImage from './assets/mosque.jpeg'
+import schoolImage from './assets/school.jpeg'
+import shopsImage from './assets/shops.jpeg'
 import './cityExplore.css'
 
 function MosqueIcon(props) {
@@ -12,13 +19,13 @@ function MosqueIcon(props) {
 }
 
 const places = [
-  { id: 'homes', icon: Home, label: 'الأحياء السكنية', pinLabel: 'الأحياء السكنية', x: 76, y: 65, crop: '82% 75%', description: 'أحياء تتكامل فيها الحياة والخدمات.' },
-  { id: 'parks', icon: Trees, label: 'المساحات الخضراء', pinLabel: 'المساحات الخضراء', x: 28, y: 34, crop: '43% 40%', description: 'مساحات خضراء ممتدة في قلب المدينة.' },
-  { id: 'services', icon: Landmark, label: 'المرافق والخدمات', pinLabel: 'المرافق والخدمات', x: 39, y: 57, crop: '39% 61%', description: 'مرافق وخدمات متصلة بمختلف أحياء المدينة.' },
-  { id: 'shopping', icon: ShoppingBag, label: 'المراكز التجارية', pinLabel: 'المراكز التجارية', x: 12, y: 47, crop: '13% 46%', description: 'وجهات للتسوق واللقاء بالقرب من الأحياء.' },
-  { id: 'education', icon: GraduationCap, label: 'التعليم', pinLabel: 'التعليم', x: 43, y: 26, crop: '49% 27%', description: 'مرافق تعليمية ضمن نسيج المدينة.' },
-  { id: 'health', icon: HeartPulse, label: 'الصحة', pinLabel: 'الصحة', x: 76, y: 45, crop: '79% 47%', description: 'مرافق صحية قريبة من المجتمع.' },
-  { id: 'mosques', icon: MosqueIcon, label: 'المساجد', pinLabel: 'المساجد', x: 55, y: 40, crop: '57% 40%', description: 'مساجد تتوسط الأحياء وتجمع سكانها.' },
+  { id: 'parks', icon: Trees, label: 'المساحات الخضراء', pinLabel: 'المساحات الخضراء', mapLayer: 'park', x: 28, y: 34, crop: '43% 40%', image: greenImage, description: 'مساحات خضراء ممتدة في قلب المدينة.' },
+  { id: 'homes', icon: Home, label: 'الأحياء السكنية', pinLabel: 'الأحياء السكنية', mapLayer: 'districts', x: 76, y: 65, crop: '82% 75%', image: housingImage, description: 'أحياء تتكامل فيها الحياة والخدمات.' },
+  { id: 'services', icon: Landmark, label: 'المرافق والخدمات', pinLabel: 'المرافق والخدمات', mapLayer: 'facilities', x: 39, y: 57, crop: '39% 61%', image: generalImage, description: 'مرافق وخدمات متصلة بمختلف أحياء المدينة.' },
+  { id: 'shopping', icon: ShoppingBag, label: 'المراكز التجارية', pinLabel: 'المراكز التجارية', mapLayer: 'shopping', x: 12, y: 47, crop: '13% 46%', image: shopsImage, description: 'وجهات للتسوق واللقاء بالقرب من الأحياء.' },
+  { id: 'education', icon: GraduationCap, label: 'التعليم', pinLabel: 'التعليم', mapLayer: 'school', x: 43, y: 26, crop: '49% 27%', image: schoolImage, description: 'مرافق تعليمية ضمن نسيج المدينة.' },
+  { id: 'health', icon: HeartPulse, label: 'الصحة', pinLabel: 'الصحة', mapLayer: 'health', x: 76, y: 45, crop: '79% 47%', image: hospitalImage, description: 'مرافق صحية قريبة من المجتمع.' },
+  { id: 'mosques', icon: MosqueIcon, label: 'المساجد', pinLabel: 'المساجد', mapLayer: 'mosque', x: 55, y: 40, crop: '57% 40%', image: mosqueImage, description: 'مساجد تتوسط الأحياء وتجمع سكانها.' },
 ]
 
 const overview = [
@@ -28,8 +35,8 @@ const overview = [
   { icon: MapPin, value: '14.8', count: 14.8, decimals: 1, unit: 'كم²', label: 'المساحة الإجمالية' },
 ]
 
-export default function CityExplore() {
-  const [selected, setSelected] = useState('homes')
+export default function CityExplore({ mapUrl }) {
+  const [selected, setSelected] = useState('parks')
   const viewport = useRef(null)
   const canvas = useRef(null)
   const selectedPlace = useRef(places[0])
@@ -69,6 +76,10 @@ export default function CityExplore() {
     image.classList.add('is-illuminated')
   }
 
+  function open2DMap(place) {
+    window.location.assign(`${mapUrl}?layer=${encodeURIComponent(place.mapLayer)}`)
+  }
+
   return (
     <section id="city-map" className="masterplan-stage" aria-labelledby="masterplan-title" style={{ '--masterplan-image': `url("${cityView}")` }}>
       <div className="masterplan-viewport" ref={viewport} data-lenis-prevent-touch>
@@ -81,7 +92,12 @@ export default function CityExplore() {
             const Icon = place.icon
             return (
               <div className={`masterplan-marker${selected === place.id ? ' is-selected' : ''}`} key={place.id} style={{ left: `${place.x}%`, top: `${place.y}%` }}>
-                <button className="masterplan-pin" type="button" aria-pressed={selected === place.id} onClick={() => selectPlace(place)}>
+                <button
+                  className="masterplan-pin"
+                  type="button"
+                  aria-label={`عرض ${place.pinLabel} على الخريطة ثنائية الأبعاد`}
+                  onClick={() => open2DMap(place)}
+                >
                   <span className="masterplan-pin-icon"><Icon size={25} aria-hidden="true" /></span>
                   <span className="masterplan-pin-label" dir="rtl">{place.pinLabel}</span>
                 </button>
@@ -117,7 +133,15 @@ export default function CityExplore() {
         <nav className="masterplan-categories" aria-label="استكشف مرافق المدينة" data-lenis-prevent-touch>
           {places.map(place => (
             <button key={place.id} className={`masterplan-card${selected === place.id ? ' is-selected' : ''}`} type="button" aria-pressed={selected === place.id} onClick={() => selectPlace(place)}>
-              <span className="masterplan-card-image" style={{ backgroundPosition: place.crop }} aria-hidden="true" />
+              <span
+                className="masterplan-card-image"
+                style={{
+                  backgroundImage: place.image ? `url("${place.image}")` : undefined,
+                  backgroundPosition: place.image ? 'center' : place.crop,
+                  backgroundSize: place.image ? 'cover' : undefined,
+                }}
+                aria-hidden="true"
+              />
               <span className="masterplan-card-label">{place.label}</span>
             </button>
           ))}
