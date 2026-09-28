@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test'
 import { clearAdminSession, readAdminSession, signInDemoAdmin } from './demoAdminAuth.js'
 
 const key = 'shc.demo-admin.session'
-const credentials = { email: 'admin@gmail.com', password: 'admin@190' }
+const credentials = { email: 'israa.alwahaibi@shc.gov.om', password: 'admin@190' }
 const originalWindow = globalThis.window
 
 function memoryStorage() {

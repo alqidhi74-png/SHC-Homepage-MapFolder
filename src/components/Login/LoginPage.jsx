@@ -9,6 +9,7 @@ import {
 import gsap from 'gsap'
 
 import { useAdminAuth } from '../../auth/AdminAuth'
+import { DEMO_ADMIN_EMAIL } from '../../auth/demoAdminAuth'
 import { usePageTransition } from '../PageTransition/PageTransitionProvider'
 
 import loginBg from '../../assets/login.png'
@@ -302,6 +303,7 @@ export default function LoginPage() {
                 autoComplete="username"
                 autoCapitalize="none"
                 spellCheck={false}
+                defaultValue={DEMO_ADMIN_EMAIL}
                 placeholder="البريد الإلكتروني"
                 aria-invalid={Boolean(message)}
                 aria-describedby={

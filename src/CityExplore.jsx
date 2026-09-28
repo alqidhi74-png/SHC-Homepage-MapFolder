@@ -95,7 +95,6 @@ export default function CityExplore() {
 
       <header className="masterplan-header">
         <div className="masterplan-brand">
-          <h2 id="masterplan-title">مدينة السلطان هيثم</h2>
         </div>
         <dl className="masterplan-stats">
           {overview.map(({ icon: Icon, value, count, decimals = 0, suffix = '', unit, label }) => (

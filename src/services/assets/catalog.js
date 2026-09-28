@@ -33,12 +33,21 @@
     document.querySelectorAll('[data-language]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.language === language));
     });
-    const homeLabel = language === 'ar' ? 'الرئيسية' : 'Home';
+    const login = document.querySelector('[data-copy-label="login"]');
+    if (login) {
+      login.setAttribute('aria-label', copy.login[language]);
+      login.title = copy.login[language];
+    }
     const home = document.querySelector('.catalog-home');
-    home.setAttribute('aria-label', homeLabel);
-    home.title = homeLabel;
-    document.querySelector('.header-brand').setAttribute('aria-label', language === 'ar' ? 'مدينة السلطان هيثم — الرئيسية' : 'Sultan Haitham City — Home');
-    document.querySelector('[data-nav-label]').setAttribute('aria-label', language === 'ar' ? 'التنقل الرئيسي' : 'Main navigation');
+    if (home) {
+      const homeLabel = language === 'ar' ? 'الرئيسية' : 'Home';
+      home.setAttribute('aria-label', homeLabel);
+      home.title = homeLabel;
+    }
+    const brand = document.querySelector('.header-brand, .service-brand-home');
+    if (brand) brand.setAttribute('aria-label', language === 'ar' ? 'مدينة السلطان هيثم — الرئيسية' : 'Sultan Haitham City — Home');
+    const nav = document.querySelector('[data-nav-label]');
+    if (nav) nav.setAttribute('aria-label', language === 'ar' ? 'التنقل الرئيسي' : 'Main navigation');
     document.title = language === 'ar' ? 'دليل الخدمات — مدينة السلطان هيثم' : 'Services Guide — Sultan Haitham City';
     document.querySelectorAll('.catalog-card').forEach(card => {
       const id = card.dataset.service;

@@ -36,6 +36,20 @@ const queryObj=()=>{const q={};new URLSearchParams(location.search).forEach((v,k
 const NAV=[['home','الرئيسية','Home','/'],['map','الخريطة التفاعلية','Interactive Map','/map'],['city3d','المدينة ثلاثية الأبعاد','3D City','/city3d']];
 const brandT=()=>`<span class="brand-t"><b>مدينة السلطان هيثم</b><i>Sultan Haitham City</i></span>`;
 function renderHeader(){const k=CUR.key;
+  if(k==='city3d'){
+    $('#hdr').innerHTML=`<nav class="header-actions" aria-label="${_('التنقل الرئيسي','Main navigation')}">
+      <a href="/login" title="${_('تسجيل الدخول','Log in')}">${ic('user',25,'header-icon')}<span class="visually-hidden">${_('تسجيل الدخول','Log in')}</span></a>
+    </nav>
+    <a class="header-brand" href="/#experience" aria-label="${_('مدينة السلطان هيثم','Sultan Haitham City')}">
+      <img src="../assets/logo.png" alt=""><img src="../assets/city-name.png" alt="${_('مدينة السلطان هيثم','Sultan Haitham City')}">
+    </a>
+    <div class="map-language" role="group" aria-label="${_('اختيار اللغة','Language selection')}">
+      <button type="button" data-act="setlang" data-value="en" lang="en" aria-pressed="${S.lang==='en'}">English</button>
+      <button type="button" data-act="setlang" data-value="ar" lang="ar" aria-pressed="${S.lang==='ar'}">العربية</button>
+    </div>`;
+    $('#mob').innerHTML='';
+    return;
+  }
   $('#hdr').innerHTML=`<div class="hdr-in wrap"><div class="hdr-r"><a class="brand" data-go="/" aria-label="${_('الرئيسية','Home')}">${logo(46)}${brandT()}</a><nav class="nav" aria-label="${_('التنقل الرئيسي','Main')}">${NAV.map(n=>`<a class="${k===n[0]?'on':''}" data-go="${n[3]}" ${k===n[0]?'aria-current="page"':''}>${_(n[1],n[2])}</a>`).join('')}</nav></div>
   <div class="hdr-l"><button class="lang" data-act="lang" aria-label="${_('تغيير اللغة','Switch language')}">${ic('globe',16)}<span class="${S.lang==='ar'?'on':''}">AR</span><span class="${S.lang==='en'?'on':''}">EN</span></button>
   <button class="burger" data-act="menu" aria-label="${_('القائمة','Menu')}" aria-expanded="false">${ic('menu',28)}</button></div></div>`;
@@ -59,6 +73,7 @@ ACT.menu=()=>toggleMenu();
 ACT.noop=(el,e)=>e.preventDefault();
 ACT.skip=(el,e)=>{e.preventDefault();$('#view').focus()};
 ACT.lang=()=>{S.lang=S.lang==='ar'?'en':'ar';store.set('lang',S.lang);applyLang();toggleMenu(false);renderPage(false)};
+ACT.setlang=el=>{const next=el.dataset.value;if(!next||next===S.lang)return;S.lang=next;store.set('lang',S.lang);applyLang();renderPage(false)};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act],[data-go]');if(!t)return;
   if(t.dataset.act){const f=ACT[t.dataset.act];if(f)f(t,e);return}
   if(t.dataset.go){e.preventDefault();location.href=routeUrl(t.dataset.go)}});
@@ -67,6 +82,6 @@ function bootStandalone(key){
   CUR={key};
   document.documentElement.style.setProperty('--pat',PATTERN);applyLang();
   document.body.dataset.page=key;document.body.classList.add('immersive');
-  document.body.insertAdjacentHTML('afterbegin',`<a class="skip" href="#view" data-act="skip">${_('تخطي إلى المحتوى','Skip to content')}</a><header class="hdr" id="hdr"></header><div class="mobmenu" id="mob"></div><main id="view" tabindex="-1"></main><div id="ovl"></div><div id="toasts" aria-live="polite"></div>`);
+  document.body.insertAdjacentHTML('afterbegin',`<a class="skip" href="#view" data-act="skip">${_('تخطي إلى المحتوى','Skip to content')}</a><header class="hdr topbar map-topbar" id="hdr"></header><div class="mobmenu" id="mob"></div><main id="view" tabindex="-1"></main><div id="ovl"></div><div id="toasts" aria-live="polite"></div>`);
   renderPage(true);
 }

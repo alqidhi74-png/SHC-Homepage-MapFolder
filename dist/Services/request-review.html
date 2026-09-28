@@ -33,7 +33,7 @@
 
     <div class="chapter-strip" style="--ch-accent:#AC6492;">
       <div class="ch-mark">٤</div>
-      <div class="ch-text"><b>الفصل الرابع · المراجعة والتوقيع</b><p>راجع، أقرّ، ووقّع إلكترونياً</p></div>
+      <div class="ch-text"><b>الفصل الرابع · المراجعة والتوقيع</b><p>مراجعة الطلب وتأكيد الإرسال</p><small class="review-page-subtitle">راجع بياناتك والمستندات المرفقة قبل إرسال الطلب</small></div>
       <div class="ch-spine">
         <i class="on"></i><i class="on"></i><i class="on"></i><i class="on here"></i><i></i><i></i>
       </div>
@@ -50,21 +50,21 @@
         <div class="sys-step"><div class="num">4</div><div class="lbl" data-i18n="step-confirm">التأكيد</div></div>
       </div>
       <div class="svc-grid">
-        <div class="sys-review"><div class="head"><b data-i18n="review-title">بيانات مقدم الطلب</b><span class="edit sys-link" id="edit-0" role="button" tabindex="0" data-i18n="edit">تعديل</span></div>
+        <div class="sys-review"><div class="head"><span class="review-head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M5 20c.6-4.4 3-6.6 7-6.6s6.4 2.2 7 6.6"/></svg></span><b data-i18n="review-title">بيانات مقدم الطلب</b></div>
           <div id="rev-applicant"></div>
         </div>
-        <div class="sys-review"><div class="head"><b data-i18n="request-data-h">بيانات الطلب</b><span class="edit sys-link" id="edit-1b" role="button" tabindex="0" data-i18n="edit">تعديل</span></div>
+        <div class="sys-review"><div class="head"><span class="review-head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5M10 12h5M10 16h5"/></svg></span><b data-i18n="request-data-h">بيانات الطلب</b></div>
           <div class="row"><span data-i18n="request-type">نوع الطلب</span><span id="rev-type">—</span></div>
           <div class="row"><span data-i18n="request-desc">الوصف</span><span id="rev-desc">—</span></div>
         </div>
-        <div class="sys-review"><div class="head"><b data-i18n="documents">المستندات</b><span class="edit sys-link" id="edit-2" role="button" tabindex="0" data-i18n="edit">تعديل</span></div>
+        <div class="sys-review"><div class="head"><span class="review-head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 12.5 14 7a3 3 0 0 1 4.2 4.2l-7.4 7.4a5 5 0 0 1-7.1-7.1l7-7"/></svg></span><b data-i18n="documents">المستندات</b></div>
           <div id="rev-docs"></div>
         </div>
       </div>
-      <div class="sys-check-row" id="ack-row" role="checkbox" aria-checked="false" tabindex="0"><span class="box" id="ack-box"></span> <span data-i18n="ack-text">أقر بأن جميع البيانات صحيحة وأوافق على الشروط والأحكام</span></div>
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div class="sys-check-row" id="ack-row" role="checkbox" aria-checked="false" tabindex="0"><span class="box" id="ack-box"></span> <span data-i18n="ack-text">أقر أن جميع البيانات المدخلة والمرفقة في الطلب صحيحة ومطابقة للجهات الرسمية.</span></div>
+      <div class="review-actions">
         <button type="button" id="btn-prev" class="btn-ghost" data-i18n="prev">السابق</button>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="review-actions-end">
           <button type="button" class="btn-sign btn-ghost" id="btn-sign" disabled data-i18n="e-sign">توقيع إلكتروني</button>
           <button class="btn-gold" type="button" id="btn-submit" disabled data-i18n="submit-request">إرسال الطلب</button>
         </div>
@@ -101,7 +101,7 @@ const ackBox = document.getElementById('ack-box');
 const btnSign = document.getElementById('btn-sign');
 const btnSubmit = document.getElementById('btn-submit');
 
-function updateSubmitState(){ const s = loadState(); btnSubmit.disabled = !(s.ack && s.signed); }
+function updateSubmitState(){ const s = loadState(); btnSubmit.disabled = !s.ack || !s.signed; }
 
 function syncReviewPanel(){
   const s = loadState();

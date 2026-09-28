@@ -10,6 +10,11 @@ render(){return `<div class="c3"><canvas id="c3cv" aria-label="${_('نموذج �
   <div class="tools"><button data-tool="dist" aria-label="${_('قياس المسافة','Measure distance')}" data-tip="${_('قياس المسافة','Measure distance')}">${ic('ruler',18)}<span>${_('المسافة','Distance')}</span></button><button data-tool="height" aria-label="${_('قياس الارتفاع','Measure height')}" data-tip="${_('قياس الارتفاع','Measure height')}">${ic('height',18)}<span>${_('الارتفاع','Height')}</span></button><button id="c3r" aria-label="${_('إعادة ضبط الكاميرا','Reset camera')}" data-tip="${_('إعادة ضبط الكاميرا','Reset camera')}">${ic('rot',18)}<span>${_('إعادة ضبط','Reset')}</span></button></div>
   <label class="fv"><input type="checkbox" id="c3fv"><span class="sw"></span><span>${_('الرؤية المستقبلية','Future Vision')}</span></label></div><div class="c3-chip" id="c3chip" hidden></div></div>
   <aside class="c3-card" id="c3card" hidden></aside>
+  <nav class="c3-view-switch" aria-label="${_('طريقة استكشاف المدينة','City view mode')}">
+    <a href="map.html">${ic('map',20)}<span>${_('الخريطة 2D','2D map')}</span></a>
+    <span class="c3-view-divider" aria-hidden="true"></span>
+    <a href="city3d.html" class="active" aria-current="page">${ic('cube',20)}<span>${_('المدينة 3D','3D city')}</span></a>
+  </nav>
   <div class="c3-lg">${Object.entries(BT).map(([k,v])=>`<span><i style="background:${v.hex}"></i>${L(v)}</span>`).join('')}<span><i class="gh"></i>${_('مقترح','Proposed')}</span></div>
   <div class="c3-z"><div class="cmp" aria-hidden="true"><i></i><b>N</b></div><button id="zi" aria-label="${_('تكبير','Zoom in')}">${ic('plus',18)}</button><button id="zo" aria-label="${_('تصغير','Zoom out')}">${ic('minus',18)}</button></div>
   <div class="c3-tip" id="c3tip" hidden></div>

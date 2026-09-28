@@ -1,6 +1,6 @@
 // Local UI prototype only. Replace this module with server authentication
 // before connecting real admin data; a browser session is not access control.
-export const DEMO_ADMIN_EMAIL = 'admin@gmail.com'
+export const DEMO_ADMIN_EMAIL = 'israa.alwahaibi@shc.gov.om'
 const DEMO_ADMIN_PASSWORD = 'admin@190'
 const SESSION_KEY = 'shc.demo-admin.session'
 const SESSION_DURATION = 8 * 60 * 60 * 1000
@@ -50,7 +50,10 @@ export function readAdminSession() {
 }
 
 export function signInDemoAdmin({ email, password, remember = false }) {
-  if (String(email).trim().toLowerCase() !== DEMO_ADMIN_EMAIL || password !== DEMO_ADMIN_PASSWORD) {
+  const normalizedEmail = String(email).trim().toLowerCase()
+  const normalizedPassword = String(password).replaceAll('\\@', '@')
+
+  if (normalizedEmail !== DEMO_ADMIN_EMAIL || normalizedPassword !== DEMO_ADMIN_PASSWORD) {
     return null
   }
 

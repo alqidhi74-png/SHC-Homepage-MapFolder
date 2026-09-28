@@ -262,8 +262,7 @@ function renderApplicant(){
   box.innerHTML = `
     <span class="av" aria-hidden="true">${escapeHtml((c.fullName || '؟').trim().charAt(0))}</span>
     <span>${T('مقدم الطلب', 'Applicant')}: <b>${escapeHtml(c.fullName || '—')}</b></span>
-    <span>· ${T('الرقم المدني', 'Civil ID')}: <b dir="ltr">${escapeHtml(c.civilId || '—')}</b></span>
-    <a href="citizen-data.html" data-dir="down">✎ ${T('تعديل البيانات', 'Edit details')}</a>`;
+    <span>· ${T('الرقم المدني', 'Civil ID')}: <b dir="ltr">${escapeHtml(c.civilId || '—')}</b></span>`;
 }
 
 
@@ -273,7 +272,7 @@ function renderApplicant(){
 
 const descEl = document.getElementById('in-desc');
 
-descEl.value = state.desc || '';
+descEl.value = state.desc || svc.desc || '';
 
 function setFieldError(wrap, on){
   if(!wrap) return;
@@ -601,15 +600,20 @@ document.addEventListener('sh:langchange', () => { renderLegend(); renderApplica
 
 function openDocPicker(key, multiple = false){
   pendingDocKey = key;
+  docInput.dataset.docKey = key || '';
   docInput.multiple = multiple;
   docInput.value = '';
   docInput.click();
 }
 
 docInput?.addEventListener('change', e => {
-  const files = e.target.files;
-  if(docInput.multiple) handleManyFiles(files);
-  else handleDocFile(files?.[0], pendingDocKey);
+  const files = [...(e.target.files || [])];
+  const selectedKey = e.target.dataset.docKey || null;
+  const isMultiple = e.target.multiple;
+  pendingDocKey = null;
+  e.target.dataset.docKey = '';
+  if(isMultiple) handleManyFiles(files);
+  else handleDocFile(files[0], selectedKey);
 });
 
 

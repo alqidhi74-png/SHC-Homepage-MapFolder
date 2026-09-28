@@ -32,8 +32,8 @@
     </div>
 
     <div class="chapter-strip" style="--ch-accent:#D9C27E;">
-      <div class="ch-mark">٣</div>
-      <div class="ch-text"><b>الفصل الثالث · بيانات المواطن</b><p>بياناتك جاهزة — راجعها وأكمل الناقص فقط</p></div>
+      <div class="ch-mark">3</div>
+      <div class="ch-text"><b>الفصل الثالث · بيانات المواطن</b><p>بياناتك جاهزة – راجعها وأكمل الناقص فقط</p></div>
       <div class="ch-spine"></div>
     </div>
 
@@ -220,40 +220,41 @@ function bannerHTML(){
 }
 
 function renderReady(){
-  const missing = missingFields();
-  const present = presentFields();
-  let html = bannerHTML();
-
-  if(missing.length){
-    const remaining = missing.filter(f => f.required && !isFilled(draft[f.key])).length;
-    html += `
-      <section class="ui-card ${profile ? 'cz-missing' : ''} fade-in" style="animation-delay:.05s;">
-        <div class="ui-card-head">
-          <h2>${profile ? T('أكمل البيانات الناقصة', 'Complete the missing details') : T('أدخل بياناتك', 'Enter your details')}</h2>
-          <span class="ui-count" id="cz-remaining" ${remaining ? '' : 'hidden'}>${T('متبقٍ', 'left')} ${remaining}</span>
-        </div>
-        <div class="sys-form-grid">${missing.map(f => inputHTML(f)).join('')}</div>
-      </section>`;
-  }
-
-  if(present.length){
-    const groups = Object.keys(GROUPS).map(g => {
-      const fs = present.filter(f => f.group === g);
-      if(!fs.length) return '';
-      return `<div class="cz-group-title">${escapeHtml(T(GROUPS[g].ar, GROUPS[g].en))}</div>${fs.map(rowHTML).join('')}`;
-    }).join('');
-    html += `
-      <section class="ui-card fade-in" style="animation-delay:.1s;">
-        <div class="ui-card-head">
-          <h2>${T('بياناتك المسجّلة', 'Your registered details')}</h2>
-          <span style="font-size:11.5px;color:var(--ink-soft);">${T('معبّأة تلقائياً — لا حاجة لإعادة إدخالها', 'Pre-filled — no need to re-enter')}</span>
-        </div>
-        ${groups}
-      </section>`;
-  }
-
-  html += `<datalist id="dl-wilayat">${wilayatOptions()}</datalist>`;
-  root.innerHTML = html;
+  const field = key => {
+    const f = CITIZEN_FIELDS.find(item => item.key === key);
+    const value = formatCitizenValue(f, draft[key]);
+    return `<div class="citizen-reference-field">
+      <span class="citizen-reference-label">${escapeHtml(labelOf(f))}</span>
+      <strong class="citizen-reference-value ${f.ltr ? 'ltr' : ''}">${escapeHtml(value)}</strong>
+      <svg class="citizen-reference-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="10.5" width="11" height="9" rx="1.5"/><path d="M9 10.5V7.8a3 3 0 0 1 6 0v2.7"/></svg>
+    </div>`;
+  };
+  root.innerHTML = `
+    <section class="citizen-reference-card fade-in">
+      <header class="citizen-reference-head">
+        <span class="citizen-reference-title-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m4 16-.8 4 4-.8L18.5 7.9l-3.2-3.2L4 16Z"/><path d="m13.8 6.2 3.2 3.2"/></svg>
+        </span>
+        <div><h2>${T('بياناتك المسجلة', 'Your registered details')}</h2><p>${T('يمكنك تعديل البيانات التي تحتاج إلى تحديث.', 'You can update any details that need changing.')}</p></div>
+      </header>
+      <div class="citizen-reference-divider"></div>
+      <div class="citizen-reference-section-title">
+        <span aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20c.5-4.1 2.7-6.3 6.5-6.3s6 2.2 6.5 6.3"/></svg></span>
+        <b>${T('البيانات الشخصية', 'Personal details')}</b>
+      </div>
+      <div class="citizen-reference-grid">
+        ${['fullName','civilId','nationality','dob','governorate','wilayat'].map(field).join('')}
+      </div>
+      <div class="citizen-reference-divider"></div>
+      <div class="citizen-reference-section-title">
+        <span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.2 3.5 10 7 8.4 9.2c1.1 2.4 3 4.3 5.4 5.4L16 13l3.5 2.8-1.2 3c-.4 1-1.5 1.6-2.6 1.3C9.5 18.7 5.3 14.5 3.9 8.3c-.3-1.1.3-2.2 1.3-2.6l2-2.2Z"/></svg></span>
+        <b>${T('معلومات التواصل', 'Contact information')}</b>
+      </div>
+      <div class="citizen-reference-grid citizen-reference-contact">
+        ${['phone','email'].map(field).join('')}
+      </div>
+    </section>
+    <datalist id="dl-wilayat">${wilayatOptions()}</datalist>`;
   renderSaveBar();
 }
 

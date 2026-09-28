@@ -73,7 +73,7 @@ const PAGE_FLOW = {
   'service-details.html':     { n: 2, page: 'detail',         accent: '#3D4E1E', ch: 'الفصل الثاني · تفاصيل الخدمة',      chEn: 'CHAPTER 2 · SERVICE DETAILS', line: 'اعرف المستندات والمدة قبل أن تبدأ',          lineEn: 'Know the documents and timeline before you start' },
   'citizen-data.html':        { n: 3, page: 'citizen',        accent: '#D9C27E', ch: 'الفصل الثالث · بيانات المواطن',     chEn: 'CHAPTER 3 · YOUR DETAILS',    line: 'بياناتك جاهزة — راجعها وأكمل الناقص فقط',    lineEn: 'Your details are ready — review and fill the gaps' },
   'request-documents.html':   { n: 4, page: 'request-docs',   accent: '#F1BB4D', ch: 'الفصل الرابع · المستندات',          chEn: 'CHAPTER 4 · DOCUMENTS',       line: 'أرفق وثائقك — خطوة واحدة من الاعتماد',       lineEn: 'Attach your documents — one step from approval' },
-  'request-review.html':      { n: 5, page: 'request-review', accent: '#AC6492', ch: 'الفصل الخامس · المراجعة والتوقيع',  chEn: 'CHAPTER 5 · REVIEW & SIGN',   line: 'راجع، أقرّ، ووقّع إلكترونياً',               lineEn: 'Review, confirm and sign electronically' },
+  'request-review.html':      { n: 5, page: 'request-review', accent: '#AC6492', ch: 'الفصل الخامس · المراجعة والتوقيع',  chEn: 'CHAPTER 5 · REVIEW & SIGN',   line: 'مراجعة الطلب وتأكيد الإرسال',                 lineEn: 'Review and confirm your request' },
   'request-confirmation.html':{ n: 6, page: 'confirm',        accent: '#3D4E1E', ch: 'الفصل السادس · تأكيد الطلب',        chEn: 'CHAPTER 6 · CONFIRMATION',    line: 'طلبك في الطريق، واحتفظ بإيصالك',             lineEn: 'Your request is on its way — keep your receipt' },
   'request-tracking.html':    { n: 7, page: 'track',          accent: '#F8633E', ch: 'الفصل السابع · تتبع الطلب',         chEn: 'CHAPTER 7 · TRACKING',        line: 'تابع مسار طلبك من الاستلام حتى الاعتماد',   lineEn: 'Follow your request from receipt to approval' },
 };
@@ -158,7 +158,7 @@ const DICT = {
   'edit': { ar: 'تعديل', en: 'Edit' },
   'request-data-h': { ar: 'بيانات الطلب', en: 'Request Data' },
   'documents': { ar: 'المستندات', en: 'Documents' },
-  'ack-text': { ar: 'أقر بأن جميع البيانات صحيحة وأوافق على الشروط والأحكام', en: 'I confirm all the details are accurate and I agree to the terms' },
+  'ack-text': { ar: 'أقر أن جميع البيانات المدخلة والمرفقة في الطلب صحيحة ومطابقة للجهات الرسمية.', en: 'I confirm that all entered and attached information is accurate and matches official records.' },
   'e-sign': { ar: 'توقيع إلكتروني', en: 'E-Signature' },
   'submit-request': { ar: 'إرسال الطلب', en: 'Submit Request' },
   'confirm-title': { ar: 'تم إرسال الطلب بنجاح', en: 'Request Submitted Successfully' },
@@ -200,7 +200,12 @@ function applyLang(lang) {
     if (DICT[key]) el.placeholder = DICT[key][lang];
   });
   const btn = document.getElementById('header-lang-btn');
-  if (btn) btn.textContent = lang === 'ar' ? 'EN' : 'AR';
+  if (btn) btn.innerHTML = lang === 'ar'
+    ? '<span>English</span><i aria-hidden="true">/</i><strong>العربية</strong>'
+    : '<strong>English</strong><i aria-hidden="true">/</i><span>العربية</span>';
+  const brandHome = document.querySelector('.service-brand-home');
+  if (brandHome) brandHome.setAttribute('aria-label', lang === 'en' ? 'Sultan Haitham City — Home' : 'مدينة السلطان هيثم — الرئيسية');
+  if (document.getElementById('header-account-btn')) refreshAccountButton();
   try { localStorage.setItem('sh_lang', lang); } catch (_) {}
   renderChapterStrip();
   document.dispatchEvent(new CustomEvent('sh:langchange', { detail: { lang } }));
@@ -246,7 +251,7 @@ function simulateRequest(produce, { fail = false, ms = API_LATENCY } = {}) {
 const CITIZEN_SEED = {
   'u-1001': {
     fullName: 'سالم بن سعيد الحارثي', civilId: '12345678', dob: '1990-04-12', nationality: 'عُماني',
-    phone: '91234567', email: '', governorate: 'مسقط', wilayat: '', address: ''
+    phone: '91234567', email: 'alqidhi74@gmail.com', governorate: 'مسقط', wilayat: 'بوشر', address: 'بوشر، مسقط'
   }
 };
 const CITIZEN_DB_KEY = id => 'sh_db_citizen_' + id;
@@ -412,12 +417,16 @@ function refreshAccountButton() {
     if (isLoggedIn()) {
       btn.classList.remove('guest');
       btn.innerHTML = `<span class="av">${MOCK_USER.initials}</span><span>${MOCK_USER.name.split(' ')[0]} ▾</span>`;
+      btn.setAttribute('aria-label', currentLang === 'en' ? 'Account menu' : 'قائمة الحساب');
+      btn.title = currentLang === 'en' ? 'Account menu' : 'قائمة الحساب';
       if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${MOCK_USER.name}</b><span class="sub">حساب مُسجَّل</span></div>
         <a class="hd-item" href="citizen-data.html" data-dir="down">بياناتي الشخصية</a>
         <div class="hd-sep"></div><div class="hd-item hd-logout" id="hd-logout-btn" role="button" tabindex="0">تسجيل الخروج</div>`;
     } else {
       btn.classList.add('guest');
-      btn.innerHTML = `👤 <span>تسجيل الدخول</span>`;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>`;
+      btn.setAttribute('aria-label', currentLang === 'en' ? 'Sign in' : 'تسجيل الدخول');
+      btn.title = currentLang === 'en' ? 'Sign in' : 'تسجيل الدخول';
       if (dropdown) dropdown.innerHTML = '';
     }
     btn.onclick = (e) => {
@@ -435,6 +444,38 @@ function refreshAccountButton() {
         requireLogin(() => {});
       }
     };
+  });
+}
+
+/* الشعار هو رابط العودة الوحيد للرئيسية؛ لا حاجة إلى أيقونة رئيسية إضافية. */
+function makeServiceBrandClickable() {
+  document.querySelectorAll('.site-header .logo-group').forEach(group => {
+    if (group.querySelector('.service-brand-home')) return;
+    const mark = group.querySelector('.logo-mark');
+    const word = group.querySelector('.logo-word');
+    if (!mark || !word) return;
+    const link = document.createElement('a');
+    link.className = 'service-brand-home';
+    link.href = '/';
+    link.setAttribute('aria-label', currentLang === 'en' ? 'Sultan Haitham City — Home' : 'مدينة السلطان هيثم — الرئيسية');
+    group.insertBefore(link, mark);
+    link.append(mark, word);
+  });
+}
+
+function standardizeServiceHeader() {
+  document.querySelectorAll('.site-header').forEach(header => {
+    const home = header.querySelector('.header-svc-btn');
+    if (home) {
+      home.classList.add('service-home-button');
+      home.href = '/';
+      home.removeAttribute('data-dir');
+      home.removeAttribute('data-chapter');
+      home.removeAttribute('data-line');
+      home.setAttribute('aria-label', currentLang === 'en' ? 'Home' : 'الرئيسية');
+      home.title = currentLang === 'en' ? 'Home' : 'الرئيسية';
+      home.innerHTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m3 10 9-8 9 8M5 9v12h14V9M9 21v-8h6v8M17 3v4"/></svg>';
+    }
   });
 }
 
@@ -654,7 +695,7 @@ function playCurtain(dir, chapterText, lineText, cb) {
   const curtain = document.getElementById('page-curtain');
   const chEl = document.getElementById('curtain-chapter');
   const lnEl = document.getElementById('curtain-line');
-  if (chEl) chEl.textContent = chapterText || '';
+  if (chEl) { chEl.textContent = ''; chEl.hidden = true; }
   if (lnEl) lnEl.textContent = lineText || '';
   curtain.dataset.dir = dir || '';
   try { sessionStorage.setItem('sh_last_dir', dir); sessionStorage.setItem('sh_arrive', '1'); } catch (_) {}
@@ -739,6 +780,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('header-lang-btn')?.addEventListener('click', toggleLanguage);
   document.getElementById('header-device-btn')?.addEventListener('click', toggleDeviceView);
   buildHeaderExtras();
+  makeServiceBrandClickable();
+  standardizeServiceHeader();
   wireStartButtons();
   initPageTransitions();
   initHeaderScroll();
