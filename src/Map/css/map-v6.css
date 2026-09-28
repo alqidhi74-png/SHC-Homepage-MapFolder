@@ -24,3 +24,4 @@ html[dir=ltr] .search-box{direction:ltr}html[dir=ltr] .search-box input{padding:
 @media(min-width:1500px){.layer-row{font-size:13px}.group-title{font-size:14px}.search-box input{font-size:13px}.card-tabs button{font-size:12px}.stat-grid b{font-size:11px}.stat-grid strong{font-size:16px}.title-row p{font-size:12px}}
 @media(min-width:761px) and (max-width:1000px){.info-card{right:70px}.search-dock{width:calc(100% - var(--card-w) - 3 * var(--gutter) - 52px)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+button,input,select,textarea{font-family:inherit}

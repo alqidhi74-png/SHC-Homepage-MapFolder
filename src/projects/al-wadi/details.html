@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل العقار | فيلا A-108 - أفياء الواحة</title>
+
+    <!-- الخطوط والمكتبات -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-arabic: "IBM Plex Sans Arabic", sans-serif;
+            --burgundy: #421019;
+            --burgundy-hover: #5a1723;
+            --burgundy-dark: #2a090e;
+            --card-bg: rgba(66, 16, 25, 0.85);
+            --gold: #e2c08d;
+            --text-light: #fdfafb;
+            --text-muted: #d2bba0;
+            --border: rgba(226, 192, 141, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-arabic) !important;
+        }
+
+        body {
+            background-color: var(--burgundy-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+
+        /* HEADER & NAVIGATION BAR */
+        header {
+            background: rgba(42, 9, 14, 0.95);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+            background: rgba(226, 192, 141, 0.1);
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--burgundy);
+            color: white;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo span {
+            color: var(--gold);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 25px auto 0;
+            padding: 0 30px;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* GALLERY SECTION */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: repeat(2, 210px);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .gallery-item.main-item {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+
+        /* 360 TOUR BUTTON */
+        .btn-tour-360 {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(42, 9, 14, 0.65);
+            color: var(--gold);
+            text-decoration: none;
+            padding: 8px 24px;
+            border-radius: 50px;
+            border: 1.5px solid var(--gold);
+            font-size: 15px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .btn-tour-360:hover {
+            background: var(--burgundy);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTENT LAYOUT */
+        .property-main-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* HEADER INFO */
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .property-title-section h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        .property-title-section p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .status-badge-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge-status {
+            background: rgba(22, 163, 74, 0.25);
+            color: #4ade80;
+            border: 1px solid #16a34a;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .badge-type {
+            background: rgba(226, 192, 141, 0.15);
+            color: var(--gold);
+            border: 1px solid var(--border);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* QUICK STATS */
+        .quick-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 25px 0 35px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card .icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 2px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* SECTION HEADINGS */
+        .section-heading {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-heading::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--gold);
+            display: inline-block;
+            border-radius: 2px;
+        }
+
+        /* SPECIFICATION TABLE */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 22px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+        }
+
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .spec-item .s-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .spec-item .s-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .description-text {
+            line-height: 1.8;
+            color: rgba(253, 250, 251, 0.9);
+            font-size: 15px;
+            margin-bottom: 35px;
+        }
+
+        /* AMENITIES GRID */
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .amenity-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* SIDEBAR CARD */
+        .sidebar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            position: sticky;
+            top: 90px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .price-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .price-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 25px;
+        }
+
+        .price-amount span {
+            font-size: 16px;
+            font-weight: 400;
+            color: white;
+        }
+
+        .payment-plan-table {
+            width: 100%;
+            margin-bottom: 25px;
+            border-top: 1px dashed rgba(226, 192, 141, 0.3);
+            padding-top: 15px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .payment-row .label {
+            color: var(--text-muted);
+        }
+
+        .payment-row .val {
+            font-weight: 700;
+            color: white;
+        }
+
+        .btn-booking-primary {
+            width: 100%;
+            height: 48px;
+            background: var(--burgundy);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-booking-primary:hover {
+            background: var(--burgundy-hover);
+            color: white;
+        }
+
+        .btn-developer-outline {
+            width: 100%;
+            height: 45px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-developer-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .sidebar-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action-small {
+            height: 40px;
+            background: rgba(226, 192, 141, 0.08);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.3s;
+        }
+
+        .btn-action-small:hover {
+            background: var(--burgundy);
+            color: var(--gold);
+        }
+
+        @media (max-width: 1024px) {
+            .property-main-layout { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+            .gallery-item.main-item { grid-column: 1 / -1; }
+            .quick-stats-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER / NAVIGATION -->
+    <header>
+        <div class="navbar">
+            <a href="UPDATE.html" class="back-btn">→ العودة إلى العقارات</a>
+            <div class="logo">عقاري <span>⌂</span></div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb">
+            <a href="UPDATE.html">العقارات</a>
+            <span>‹</span>
+            <span>فيلا A-108</span>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="gallery-grid">
+            <div class="gallery-item main-item">
+                <img src="uu.jpeg" alt="فيلا الواحة">
+                <!-- زر الـ 360 ينقل المستخدم إلى abrar.html -->
+                <a href="abrar.html" class="btn-tour-360">
+                    <span>جولة 360°</span>
+                </a>
+            </div>
+            <div class="gallery-item"><img src="room1.jpeg" alt="الحديقة"></div>
+            <div class="gallery-item"><img src="room2.jpeg" alt="التصميم الداخلي"></div>
+            <div class="gallery-item"><img src="room3.jpeg" alt="المطبخ"></div>
+            <div class="gallery-item"><img src="room4.jpeg" alt="صور إضافية"></div>
+        </div>
+
+        <!-- MAIN CONTENT LAYOUT -->
+        <div class="property-main-layout">
+
+            <!-- DETAILS LEFT CONTENT -->
+            <div>
+                <div class="details-header">
+                    <div class="property-title-section">
+                        <h1>فيلا A-108</h1>
+                        <p>📍 أفياء الواحة · الواحة الخضراء</p>
+                    </div>
+                    <div class="status-badge-group">
+                        <span class="badge-status">متاح</span>
+                        <span class="badge-type">فيلا</span>
+                    </div>
+                </div>
+
+                <!-- QUICK STATS -->
+                <div class="quick-stats-grid">
+                    <div class="stat-card">
+                        <div class="icon">📅</div>
+                        <div class="value">2027</div>
+                        <div class="label">التسليم</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">🚗</div>
+                        <div class="value">2</div>
+                        <div class="label">مواقف</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">📐</div>
+                        <div class="value">240 </div>
+                        <div class="label">m²</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">🚿</div>
+                        <div class="value">2</div>
+                        <div class="label">دورات مياه</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon">🛏</div>
+                        <div class="value">3</div>
+                        <div class="label">غرف نوم</div>
+                    </div>
+                </div>
+
+                <!-- SPECIFICATIONS TABLE -->
+                <div class="section-heading">تفاصيل العقار</div>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <span class="s-label">اسم الوحدة</span>
+                        <span class="s-val">فيلا A-108</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">المشروع</span>
+                        <span class="s-val">أفياء الواحة</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">الحي</span>
+                        <span class="s-val">الواحة الخضراء</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">الحالة</span>
+                        <span class="s-val">متاح</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">السعر</span>
+                        <span class="s-val">85,000 ر.ع</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">غرف النوم</span>
+                        <span class="s-val">3</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">دورات المياه</span>
+                        <span class="s-val">2</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">المساحة</span>
+                        <span class="s-val">240 m²</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">المواقف</span>
+                        <span class="s-val">2</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">الطابق</span>
+                        <span class="s-val">—</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="s-label">سنة التسليم</span>
+                        <span class="s-val">2027</span>
+                    </div>
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="section-heading">الوصف</div>
+                <p class="description-text">
+                    فيلا في أفياء الواحة، أحد أبرز مشاريع الواحة الخضراء. تصميم معماري مستوحى من العمارة العُمانية، يجمع الأقواس والمساحات المفتوحة مع تقنيات المنزل الذكي وكفاءة الطاقة، وبإطلالة على المساحات الخضراء.
+                </p>
+
+                <!-- AMENITIES -->
+                <div class="section-heading">المرافق والخدمات</div>
+                <div class="amenities-grid">
+                    <div class="amenity-card">🏊 m2 مسبح</div>
+                    <div class="amenity-card">🏋️ نادي رياضي</div>
+                    <div class="amenity-card">🌳 حدائق</div>
+                    <div class="amenity-card">🛡 أمن</div>
+                    <div class="amenity-card">🛗 مصعد</div>
+                    <div class="amenity-card">📶 ألياف ضوئية</div>
+                    <div class="amenity-card">💻 صالة عمل مشتركة</div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDEBAR CARD -->
+            <div class="sidebar-card">
+                <div class="price-label">السعر</div>
+                <div class="price-amount">85,000 <span>ر.ع</span></div>
+
+                <div class="payment-plan-table">
+                    <div class="payment-row">
+                        <span class="label">خطة الدفع</span>
+                        <span class="val">15% / 60 شهرًا</span>
+                    </div>
+                    <div class="payment-row">
+                        <span class="label">الدفعة الأولى</span>
+                        <span class="val">56,400 ر.ع</span>
+                    </div>
+                    <div class="payment-row">
+                        <span class="label">الالقسط الشهري</span>
+                        <span class="val">5,327 ر.ع</span>
+                    </div>
+                </div>
+
+                <button class="btn-booking-primary">طلب حجز</button>
+                <button class="btn-developer-outline">📞 تواصل مع المطور</button>
+
+                <div class="sidebar-actions-grid">
+                    <button class="btn-action-small">🔖 حفظ</button>
+                    <button class="btn-action-small">🔗 مشاركة</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

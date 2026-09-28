@@ -9,8 +9,8 @@
 
    الخطوط (Google Fonts، محمّلة في <head>):
      --ff    : Jost / IBM Plex Sans Arabic         (النص الأساسي والواجهة)
-     --ff-d  : Cormorant Garamond / Amiri          (العناوين)
-     --ff-n  : Cormorant Garamond / Amiri          (الأرقام .num)
+     --ff-d  : Cormorant Garamond / IBM Plex Sans Arabic (العناوين)
+     --ff-n  : Cormorant Garamond / IBM Plex Sans Arabic (الأرقام .num)
    الألوان الرئيسية (:root):
      عنابي  --bur #49111D  --bur-d #2E0A12  --bur-l #6B1C2C
      ذهبي   --gold #DBC47D --gold-l #F4E2A3 --gold-d #AF9056
@@ -21,8 +21,9 @@
 :root{--bur:#49111D;--bur-d:#2E0A12;--bur-l:#6B1C2C;--em:#143534;--em-d:#0B2120;--em-l:#1F5150;--ever:#3D4E1E;--ever-d:#26320F;--ever-l:#5B7330;--ever-x:#89A356;--verm:#F8633E;--or:#F8633E;--or-d:#D9481F;--orch:#AC6492;--orch-d:#6E3C5C;--sun:#F1BB4D;
 --gold:#DBC47D;--gold-l:#F4E2A3;--gold-d:#AF9056;--gold-ink:#8A6F3F;--gold-dd:#8A6F3F;--gold-grad-l:linear-gradient(135deg,#F4E2A3 0%,#DBC47D 100%);--gold-grad-d:linear-gradient(135deg,#E5B585 0%,#AF9056 100%);--gold-grad:linear-gradient(135deg,#F4E2A3 0%,#DBC47D 36%,#E5B585 70%,#AF9056 100%);
 --bg:#F8F2E7;--surf:#FFFDF8;--surf2:#F2EADB;--ink:#2A0E14;--mut:#6E5A5C;--hair:rgba(73,17,29,.14);--line:rgba(219,196,125,.45);--hdr:76px;--ease:cubic-bezier(.22,.8,.24,1);--r:18px;--sh:0 14px 34px -16px rgba(46,10,18,.38);
---ff-n:'Berlingske Serif','Cormorant Garamond','Amiri',serif;--ff-d:'Berlingske Serif','Cormorant Garamond','Amiri',serif;--ff-c:'Canela','Berlingske Serif','Cormorant Garamond','Amiri',serif;--ff:'Brown LL','Brown','Jost','IBM Plex Sans Arabic','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+--font-arabic:"IBM Plex Sans Arabic",sans-serif;--ff-n:'Berlingske Serif','Cormorant Garamond',serif;--ff-d:'Berlingske Serif','Cormorant Garamond',serif;--ff-c:'Canela','Berlingske Serif','Cormorant Garamond',serif;--ff:'Brown LL','Brown','Jost','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html[lang="ar"]{--ff:var(--font-arabic);--ff-d:var(--font-arabic);--ff-n:var(--font-arabic);--ff-c:var(--font-arabic)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#160A0E;--surf:#20120F;--surf2:#2A1518;--ink:#F4EADC;--mut:#BBA8A6;--hair:rgba(219,196,125,.16)}}
 :root[data-theme="dark"]{--bg:#160A0E;--surf:#20120F;--surf2:#2A1518;--ink:#F4EADC;--mut:#BBA8A6;--hair:rgba(219,196,125,.16)}
 html{scroll-padding-top:calc(var(--hdr) + env(safe-area-inset-top,0px));-webkit-text-size-adjust:100%;height:100%}

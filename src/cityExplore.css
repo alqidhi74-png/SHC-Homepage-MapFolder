@@ -47,7 +47,7 @@
 .masterplan-brand { direction: rtl; text-align: center; margin-top: 0; }
 .masterplan-brand h2 {
   margin: 0;
-  font-family: 'Berlingske Serif', 'Noto Serif Arabic', 'Traditional Arabic', Georgia, serif;
+  font-family: var(--font-arabic);
   font-size: clamp(40px, 5.1vw, 82px);
   font-weight: 700;
   line-height: 1.15;

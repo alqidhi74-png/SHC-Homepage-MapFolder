@@ -24,6 +24,9 @@ const SMART_MAP_URL = import.meta.env.DEV ? '/src/Map/map.html' : '/Map/map.html
 const SERVICES_URL = import.meta.env.DEV
   ? '/src/services/services-catalog.html'
   : '/Services/services-catalog.html'
+const PROJECTS_URL = import.meta.env.DEV
+  ? '/src/projects/al-wadi/UPDATE.html'
+  : '/projects/al-wadi/UPDATE.html'
 
 const services = [
   {
@@ -38,6 +41,7 @@ const services = [
     title: 'المشاريع والعقارات',
     text: 'اكتشف المشاريع والوحدات واربطها مباشرة بموقعها داخل المدينة.',
     action: 'استكشف المشاريع',
+    href: PROJECTS_URL,
   },
   {
     icon: Landmark,

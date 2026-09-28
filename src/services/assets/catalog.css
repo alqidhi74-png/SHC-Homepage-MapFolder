@@ -4,7 +4,7 @@ body.services-catalog {
   --catalog-wine: #590b20;
   --catalog-gold: #ac7027;
   --catalog-line: #e9ceb0;
-  --font-body: 'IBM Plex Sans Arabic', 'Jost', sans-serif;
+  --font-body: "IBM Plex Sans Arabic", sans-serif;
   --font-display: var(--font-body);
   margin: 0;
   opacity: 1;
