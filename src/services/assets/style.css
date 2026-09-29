@@ -62,10 +62,9 @@ body.ready .chapter-strip .ch-text p{animation:chLine .7s cubic-bezier(.2,.9,.2,
 body.mobile-mode .chapter-strip .ch-spine{display:none;}
 @media(prefers-reduced-motion:reduce){.chapter-strip *{animation:none !important;}}
 .site-header{background:linear-gradient(110deg,#260911 0%,var(--velvet) 52%,var(--emerald) 100%);display:flex;align-items:center;justify-content:space-between;padding:13px 22px;gap:10px;border-bottom:1px solid rgba(217,194,126,.32);}
-.logo-mark{width:38px;height:38px;background:url('../../assets/logo.png') center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:0;color:transparent;flex-shrink:0;}
-.logo-word{display:flex;flex-direction:column;line-height:1.15;}
-.logo-word b{font-family:var(--font-display);color:var(--gold-light);font-size:14px;font-weight:600;}
-.logo-word span{font-family:var(--font-body);color:var(--gold-mid);font-size:9.5px;letter-spacing:.4px;}
+.logo-mark{width:26px!important;height:26px!important;background:url('../../assets/logo.png') center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:0;color:transparent;flex-shrink:0;transform:none!important;}
+.logo-word{width:118px!important;height:30px!important;background:url('../../assets/city-name.png') center/contain no-repeat;flex-shrink:0;}
+.site-header .logo-word b,.site-header .logo-word span{display:none!important;}
 .logo-group{display:flex;align-items:center;gap:10px;min-width:0;}
 .service-brand-home{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none;border-radius:10px;padding:2px 4px;pointer-events:none;}
 .service-brand-home:hover .logo-word b{color:#fff6d6;}
