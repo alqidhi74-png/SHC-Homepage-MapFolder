@@ -132,8 +132,7 @@ em{font-style:normal;color:var(--gold)}
 .footer-language strong{font-weight:400;opacity:.55;transition:color .2s ease,opacity .2s ease}
 .footer-language strong.is-active{color:var(--gold);font-weight:600;opacity:1}
 .footer-language span{display:block;color:rgba(255,255,255,.3)}
-.footer-ministry-link{display:block;justify-self:end;width:clamp(190px,18vw,280px);max-width:100%;cursor:pointer;transition:opacity .2s ease,filter .2s ease}
-.footer-ministry-link:hover,.footer-ministry-link:focus-visible{opacity:.82;filter:drop-shadow(0 0 9px rgba(228,194,107,.3));outline:none}
+.footer-ministry-link{display:block;justify-self:end;width:clamp(190px,18vw,280px);max-width:100%;cursor:default}
 .footer-ministry-image{display:block;width:100%;height:auto;filter:invert(1) grayscale(1) sepia(.7) saturate(2.2) hue-rotate(350deg) brightness(.86);mix-blend-mode:screen}
 
 @keyframes nodePulse{0%,100%{transform:scale(.72);opacity:.62}50%{transform:scale(1);opacity:1}}

@@ -12,6 +12,7 @@ import { AdminAuthProvider } from './auth/AdminAuth.jsx'
 import { PageTransitionProvider } from './components/PageTransition/PageTransitionProvider.jsx'
 
 import './styles.css'
+import './chatbot.js'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

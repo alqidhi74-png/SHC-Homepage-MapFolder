@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import {
   ArrowLeft,
-  Home,
   Eye,
   EyeOff,
   Mail,
@@ -35,6 +34,21 @@ export default function LoginPage() {
   const [citizenMessage, setCitizenMessage] = useState(null)
   const [citizenStep, setCitizenStep] = useState('identity')
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
+  const [language, setLanguage] = useState(() => {
+    try { return localStorage.getItem('sh_lang') === 'en' ? 'en' : 'ar' } catch (_) { return 'ar' }
+  })
+
+  const isArabic = language === 'ar'
+  const T = (ar, en) => isArabic ? ar : en
+
+  const switchLanguage = (lang) => {
+    setLanguage(lang)
+    setMessage('')
+    setCitizenMessage(null)
+    try { localStorage.setItem('sh_lang', lang) } catch (_) {}
+    document.documentElement.lang = lang
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
+  }
 
   const { signIn, signOut } = useAdminAuth()
 
@@ -42,6 +56,12 @@ export default function LoginPage() {
     navigateWithTransition,
     isTransitioning,
   } = usePageTransition()
+
+  useLayoutEffect(() => {
+    document.documentElement.lang = language
+    document.documentElement.dir = isArabic ? 'rtl' : 'ltr'
+    document.title = T('تسجيل الدخول — مدينة السلطان هيثم', 'Sign in — Sultan Haitham City')
+  }, [isArabic, language])
 
   // =========================================================
   // Page entrance animation
@@ -149,7 +169,7 @@ export default function LoginPage() {
     if (!authenticated) {
       signOut()
       setSiteAuthenticated(false)
-      setMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة.')
+      setMessage(T('البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'The email address or password is incorrect.'))
       return
     }
 
@@ -187,8 +207,8 @@ export default function LoginPage() {
       setCitizenMessage({
         type: 'error',
         text: citizenMethod === 'phone'
-          ? 'أدخل رقم هاتف صحيحًا ومسجلًا في الهوية الوطنية.'
-          : 'أدخل الرقم المدني الصحيح.',
+          ? T('أدخل رقم هاتف صحيحًا ومسجلًا في الهوية الوطنية.', 'Enter a valid phone number registered with the National ID system.')
+          : T('أدخل الرقم المدني الصحيح.', 'Enter a valid Civil ID.'),
       })
       return
     }
@@ -252,7 +272,7 @@ export default function LoginPage() {
     if (!/^\d{6}$/.test(otp)) {
       setCitizenMessage({
         type: 'error',
-        text: 'أدخل رمز التحقق المكوّن من 6 أرقام.',
+        text: T('أدخل رمز التحقق المكوّن من 6 أرقام.', 'Enter the 6-digit verification code.'),
       })
       return
     }
@@ -263,7 +283,7 @@ export default function LoginPage() {
     })
     setCitizenMessage({
       type: 'success',
-      text: 'تم التحقق وتسجيل الدخول بنجاح.',
+      text: T('تم التحقق وتسجيل الدخول بنجاح.', 'Verification complete. You are now signed in.'),
     })
 
     const returnTarget = getSafeReturnTarget()
@@ -276,13 +296,14 @@ export default function LoginPage() {
     <main
       ref={pageRef}
       className={`login-page${showCitizenId ? ' has-citizen-id' : ''}`}
-      dir="rtl"
+      dir={isArabic ? 'rtl' : 'ltr'}
+      lang={language}
     >
       {/* Background */}
       <img
         className="login-page-bg"
         src={loginBg}
-        alt="مدينة السلطان هيثم وقت الغروب"
+        alt={T('مدينة السلطان هيثم وقت الغروب', 'Sultan Haitham City at sunset')}
       />
 
       <div
@@ -298,43 +319,44 @@ export default function LoginPage() {
         {/* Languages */}
         <nav
           className="login-languages"
-          aria-label="اختيار اللغة"
+          aria-label={T('اختيار اللغة', 'Choose language')}
         >
-          <a
-            className="is-active"
-            href="/login"
+          <button
+            type="button"
+            className={isArabic ? 'is-active' : ''}
+            onClick={() => switchLanguage('ar')}
           >
             Ar
-          </a>
+          </button>
 
           <span aria-hidden="true">/</span>
 
-          <a
-            href="/login"
+          <button
+            type="button"
             lang="en"
+            className={!isArabic ? 'is-active' : ''}
+            onClick={() => switchLanguage('en')}
           >
             En
-          </a>
+          </button>
         </nav>
 
-        {/* Return to homepage */}
+        {/* Return to the Direct Access section. */}
         <a
           className="login-return"
-          href="/"
-          aria-label="الرئيسية"
-          title="الرئيسية"
+          href="/#direct-access"
+          aria-label={T('رجوع', 'Back')}
+          title={T('رجوع', 'Back')}
           aria-disabled={isTransitioning}
           onClick={(event) => {
             event.preventDefault()
 
             if (isTransitioning) return
 
-            navigateWithTransition('/', {
-              direction: 'reverse',
-            })
+            window.location.assign('/#direct-access')
           }}
         >
-          <Home aria-hidden="true" />
+          <ArrowLeft aria-hidden="true" />
         </a>
 
       </header>
@@ -372,15 +394,15 @@ export default function LoginPage() {
 
           <div className="login-panel-heading">
             <h1 id="login-title">
-              {showCitizenId ? 'الهوية الوطنية' : 'تسجيل الدخول'}
+              {showCitizenId ? T('الهوية الوطنية', 'National ID') : T('تسجيل الدخول', 'Sign In')}
             </h1>
 
             <p>
               {showCitizenId
                 ? citizenStep === 'otp'
-                  ? 'أدخل رمز التحقق المرسل لإكمال تسجيل الدخول'
-                  : 'دخول أو تسجيل المواطن عبر نظام الهوية الوطنية'
-                : 'سجل الدخول إلى منصة مدينة السلطان هيثم'}
+                  ? T('أدخل رمز التحقق المرسل لإكمال تسجيل الدخول', 'Enter the verification code to complete sign-in')
+                  : T('دخول أو تسجيل المواطن عبر نظام الهوية الوطنية', 'Sign in or register via the National ID system')
+                : T('سجل الدخول إلى منصة مدينة السلطان هيثم', 'Sign in to Sultan Haitham City platform')}
             </p>
           </div>
 
@@ -423,7 +445,7 @@ export default function LoginPage() {
             <div className="login-field">
 
               <label htmlFor="login-identity">
-                البريد الإلكتروني
+                {T('البريد الإلكتروني', 'Email address')}
               </label>
 
               <Mail
@@ -440,7 +462,7 @@ export default function LoginPage() {
                 autoCapitalize="none"
                 spellCheck={false}
                 defaultValue={DEMO_ADMIN_EMAIL}
-                placeholder="البريد الإلكتروني"
+                placeholder={T('البريد الإلكتروني', 'Email address')}
                 aria-invalid={Boolean(message)}
                 aria-describedby={
                   message
@@ -458,7 +480,7 @@ export default function LoginPage() {
             <div className="login-field">
 
               <label htmlFor="login-password">
-                كلمة المرور
+                {T('كلمة المرور', 'Password')}
               </label>
 
               <input
@@ -470,7 +492,7 @@ export default function LoginPage() {
                     : 'password'
                 }
                 autoComplete="current-password"
-                placeholder="كلمة المرور"
+                placeholder={T('كلمة المرور', 'Password')}
                 aria-invalid={Boolean(message)}
                 aria-describedby={
                   message
@@ -490,8 +512,8 @@ export default function LoginPage() {
                 }}
                 aria-label={
                   showPassword
-                    ? 'إخفاء كلمة المرور'
-                    : 'إظهار كلمة المرور'
+                    ? T('إخفاء كلمة المرور', 'Hide password')
+                    : T('إظهار كلمة المرور', 'Show password')
                 }
               >
                 {showPassword ? (
@@ -516,11 +538,11 @@ export default function LoginPage() {
 
                 <span aria-hidden="true" />
 
-                تذكرني
+                {T('تذكرني', 'Remember me')}
               </label>
 
               <a href="/forgot-password">
-                نسيت كلمة المرور؟
+                {T('نسيت كلمة المرور؟', 'Forgot password?')}
               </a>
 
             </div>
@@ -537,8 +559,8 @@ export default function LoginPage() {
 
               <strong>
                 {isTransitioning
-                  ? 'جاري الدخول...'
-                  : 'تسجيل الدخول'}
+                  ? T('جاري الدخول...', 'Signing in...')
+                  : T('تسجيل الدخول', 'Sign In')}
               </strong>
 
               <ArrowLeft aria-hidden="true" />
@@ -547,10 +569,10 @@ export default function LoginPage() {
             {/* Divider */}
             <div
               className="login-divider"
-              aria-label="أو"
+              aria-label={T('أو', 'or')}
             >
               <span />
-              <em>أو</em>
+              <em>{T('أو', 'or')}</em>
               <span />
             </div>
 
@@ -580,12 +602,12 @@ export default function LoginPage() {
               </span>
 
               <strong>
-                الدخول أو التسجيل عبر الهوية الوطنية
+                {T('الدخول أو التسجيل عبر الهوية الوطنية', 'Sign in or register via National ID')}
               </strong>
             </button>
 
             {showCitizenId && (
-              <section id="citizen-national-id" className="login-citizen-panel" aria-label="الدخول أو التسجيل بالهوية الوطنية">
+              <section id="citizen-national-id" className="login-citizen-panel" aria-label={T('الدخول أو التسجيل بالهوية الوطنية', 'Sign in or register via National ID')}>
                 <button
                   className="login-citizen-back"
                   type="button"
@@ -598,17 +620,17 @@ export default function LoginPage() {
                   }}
                 >
                   <ArrowLeft aria-hidden="true" />
-                  العودة إلى تسجيل الدخول
+                  {T('العودة إلى تسجيل الدخول', 'Back to sign in')}
                 </button>
 
                 {citizenStep === 'identity' ? (
                   <>
                     <div className="login-citizen-heading">
-                      <strong>الهوية الوطنية للمواطن</strong>
-                      <span>اختر وسيلة التحقق المسجلة في نظام الهوية الوطنية</span>
+                      <strong>{T('الهوية الوطنية للمواطن', 'Citizen National ID')}</strong>
+                      <span>{T('اختر وسيلة التحقق المسجلة في نظام الهوية الوطنية', 'Choose the verification method registered in the National ID system')}</span>
                     </div>
 
-                    <div className="login-citizen-methods" role="radiogroup" aria-label="وسيلة التحقق">
+                    <div className="login-citizen-methods" role="radiogroup" aria-label={T('وسيلة التحقق', 'Verification method')}>
                       <button
                         className={citizenMethod === 'phone' ? 'is-active' : ''}
                         type="button"
@@ -621,7 +643,7 @@ export default function LoginPage() {
                         }}
                       >
                         <Phone aria-hidden="true" />
-                        رقم الهاتف
+                        {T('رقم الهاتف', 'Phone number')}
                       </button>
                       <button
                         className={citizenMethod === 'civil' ? 'is-active' : ''}
@@ -635,12 +657,12 @@ export default function LoginPage() {
                         }}
                       >
                         <CreditCard aria-hidden="true" />
-                        الرقم المدني
+                        {T('الرقم المدني', 'Civil ID')}
                       </button>
                     </div>
 
                     <label className="login-citizen-field" htmlFor="citizen-identifier">
-                      <span>{citizenMethod === 'phone' ? 'رقم الهاتف المسجل' : 'الرقم المدني'}</span>
+                      <span>{citizenMethod === 'phone' ? T('رقم الهاتف المسجل', 'Registered phone number') : T('الرقم المدني', 'Civil ID')}</span>
                       <div>
                         {citizenMethod === 'phone' ? <Phone aria-hidden="true" /> : <CreditCard aria-hidden="true" />}
                         <input
@@ -648,7 +670,7 @@ export default function LoginPage() {
                           type={citizenMethod === 'phone' ? 'tel' : 'text'}
                           inputMode={citizenMethod === 'phone' ? 'tel' : 'numeric'}
                           value={citizenIdentifier}
-                          placeholder={citizenMethod === 'phone' ? 'مثال: 9123 4567' : 'أدخل الرقم المدني'}
+                          placeholder={citizenMethod === 'phone' ? T('مثال: 9123 4567', 'e.g. 9123 4567') : T('أدخل الرقم المدني', 'Enter Civil ID')}
                           onChange={(event) => {
                             setCitizenIdentifier(event.target.value)
                             setCitizenMessage(null)
@@ -660,9 +682,9 @@ export default function LoginPage() {
                 ) : (
                   <div className="login-otp-step">
                     <div className="login-citizen-heading">
-                      <strong>رمز التحقق لمرة واحدة</strong>
+                      <strong>{T('رمز التحقق لمرة واحدة', 'One-time verification code')}</strong>
                       <span>
-                        أرسلنا رمزًا من 6 أرقام إلى {citizenMethod === 'phone' ? 'رقم الهاتف المسجل' : 'الهاتف المرتبط بالرقم المدني'}
+                        {T('أرسلنا رمزًا من 6 أرقام إلى', 'We sent a 6-digit code to')} {citizenMethod === 'phone' ? T('رقم الهاتف المسجل', 'your registered phone') : T('الهاتف المرتبط بالرقم المدني', 'the phone linked to your Civil ID')}
                       </span>
                     </div>
 
@@ -676,7 +698,7 @@ export default function LoginPage() {
                           autoComplete={index === 0 ? 'one-time-code' : 'off'}
                           maxLength={1}
                           value={digit}
-                          aria-label={`الرقم ${index + 1} من رمز التحقق`}
+                          aria-label={T(`الرقم ${index + 1} من رمز التحقق`, `Digit ${index + 1} of verification code`)}
                           onChange={(event) => updateOtpDigit(index, event.target.value)}
                           onKeyDown={(event) => handleOtpKeyDown(index, event)}
                         />
@@ -692,7 +714,7 @@ export default function LoginPage() {
                         setCitizenMessage(null)
                       }}
                     >
-                      تغيير {citizenMethod === 'phone' ? 'رقم الهاتف' : 'الرقم المدني'}
+                      {T('تغيير', 'Change')} {citizenMethod === 'phone' ? T('رقم الهاتف', 'phone number') : T('الرقم المدني', 'Civil ID')}
                     </button>
                   </div>
                 )}
@@ -708,7 +730,7 @@ export default function LoginPage() {
                   className="login-citizen-submit"
                   type="submit"
                 >
-                  {citizenStep === 'identity' ? 'إرسال رمز التحقق' : 'تأكيد الرمز والدخول'}
+                  {citizenStep === 'identity' ? T('إرسال رمز التحقق', 'Send verification code') : T('تأكيد الرمز والدخول', 'Verify and sign in')}
                   <ArrowLeft aria-hidden="true" />
                 </button>
               </section>

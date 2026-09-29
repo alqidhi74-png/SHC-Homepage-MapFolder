@@ -5,6 +5,14 @@
   const script = document.currentScript;
   const assets = script?.dataset.assets || '/assets/';
 
+  if (script?.src && !document.querySelector('script[data-shc-chatbot-loader]')) {
+    const chatbot = document.createElement('script');
+    chatbot.src = new URL('chatbot.js', script.src).href;
+    chatbot.defer = true;
+    chatbot.dataset.shcChatbotLoader = '';
+    document.head.appendChild(chatbot);
+  }
+
   const authenticated = (() => {
     try { return localStorage.getItem(AUTH_KEY) === '1'; } catch (_) { return false; }
   })();
@@ -28,12 +36,14 @@
     return '<svg class="shc-user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0115 0"/></svg>';
   };
 
+  const backHref = '/#direct-access';
+
   const header = document.createElement('header');
   header.className = 'shc-portal-header';
   header.setAttribute('aria-label', 'أدوات الحساب واللغة');
   header.innerHTML = `
     <div class="shc-portal-account-actions">
-      <a class="shc-portal-home" href="/#direct-access" aria-label="العودة إلى الدخول المباشر" title="العودة إلى الدخول المباشر">${icon('back')}</a>
+      <a class="shc-portal-home" href="${backHref}" aria-label="رجوع" title="رجوع">${icon('back')}</a>
       <div class="shc-portal-account">
         <button class="shc-portal-account-button" type="button" aria-label="${authenticated ? 'فتح قائمة الحساب' : 'تسجيل الدخول'}" aria-haspopup="menu" aria-expanded="false">
           ${icon('user')}${authenticated ? icon('chevron') : ''}
@@ -54,6 +64,7 @@
     <div class="shc-portal-language" role="group" aria-label="اختيار اللغة">
       <button type="button" data-shc-lang="ar" aria-pressed="true">Ar</button><span>/</span><button type="button" data-shc-lang="en" lang="en" aria-pressed="false">En</button>
     </div>`;
+
 
   const existing = document.querySelector('.site-header');
   if (existing) {
@@ -76,8 +87,16 @@
 
   const avatar = header.querySelector('.shc-portal-avatar');
   const name = header.querySelector('.shc-portal-person strong');
-  avatar.textContent = profile.name.trim().charAt(0) || 'م';
-  name.textContent = profile.name;
+  const localizedProfileName = (lang) => {
+    if (lang !== 'en') return profile.name;
+    const names = {
+      'سالم الحارثي': 'Salim Al Harthi',
+      'سالم بن سعيد الحارثي': 'Salim bin Saeed Al Harthi',
+      'إسراء الوهيبية': 'Esraa Al Wahibiya',
+      'المستخدم': 'User',
+    };
+    return names[profile.name] || profile.name;
+  };
 
   const accountButton = header.querySelector('.shc-portal-account-button');
   const accountMenu = header.querySelector('.shc-portal-account-menu');
@@ -118,7 +137,7 @@
       projectBackLabel.parentElement.setAttribute('aria-label', label);
     }
     const directBack = header.querySelector('.shc-portal-home');
-    const directBackLabel = lang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر';
+    const directBackLabel = lang === 'en' ? 'Back' : 'رجوع';
     directBack.setAttribute('aria-label', directBackLabel);
     directBack.title = directBackLabel;
     header.setAttribute('aria-label', lang === 'en' ? 'Account and language tools' : 'أدوات الحساب واللغة');
@@ -129,6 +148,9 @@
       ? (lang === 'en' ? 'Administrator account' : 'حساب إداري')
       : (lang === 'en' ? 'Citizen account' : 'حساب مواطن');
     header.querySelector('.shc-portal-logout span').textContent = lang === 'en' ? 'Sign out' : 'تسجيل الخروج';
+    const displayName = localizedProfileName(lang);
+    name.textContent = displayName;
+    avatar.textContent = displayName.trim().charAt(0) || (lang === 'en' ? 'U' : 'م');
   };
 
   header.querySelectorAll('[data-shc-lang]').forEach((button) => {

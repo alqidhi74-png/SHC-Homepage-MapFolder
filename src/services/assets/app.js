@@ -6,6 +6,16 @@
    · تسجيل الدخول · الهيدر التفاعلي مع التمرير · الانتقالات بين الصفحات
    ============================================================ */
 
+(() => {
+  const source = document.currentScript?.src;
+  if (!source || document.querySelector('script[data-shc-chatbot-loader]')) return;
+  const chatbot = document.createElement('script');
+  chatbot.src = new URL('../../chatbot.js', source).href;
+  chatbot.defer = true;
+  chatbot.dataset.shcChatbotLoader = '';
+  document.head.appendChild(chatbot);
+})();
+
 /* Require a signed-in site session before any service page can be used. */
 (() => {
   let authenticated = false;
@@ -286,9 +296,9 @@ function applyLang(lang) {
     ? '<strong>Ar</strong><i aria-hidden="true">/</i><span>En</span>'
     : '<span>Ar</span><i aria-hidden="true">/</i><strong>En</strong>';
   const brandHome = document.querySelector('.service-brand-home');
-  if (brandHome) brandHome.setAttribute('aria-label', lang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر');
+  if (brandHome) brandHome.setAttribute('aria-label', lang === 'en' ? 'Sultan Haitham City' : 'مدينة السلطان هيثم');
   document.querySelectorAll('.header-home-link').forEach(link => {
-    const label = lang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر';
+    const label = lang === 'en' ? 'Back' : 'رجوع';
     link.setAttribute('aria-label', label);
     link.title = label;
   });
@@ -325,6 +335,68 @@ function currentUser() {
   } catch (_) {
     return MOCK_USER;
   }
+}
+
+const CITIZEN_VALUE_EN = {
+  'سالم الحارثي': 'Salim Al Harthi',
+  'سالم بن سعيد الحارثي': 'Salim bin Saeed Al Harthi',
+  'عُماني': 'Omani',
+  'عماني': 'Omani',
+  'عُمانية': 'Omani',
+  'عمانية': 'Omani',
+  'مسقط': 'Muscat',
+  'ظفار': 'Dhofar',
+  'مسندم': 'Musandam',
+  'البريمي': 'Al Buraimi',
+  'الداخلية': 'Ad Dakhiliyah',
+  'شمال الباطنة': 'North Al Batinah',
+  'جنوب الباطنة': 'South Al Batinah',
+  'جنوب الشرقية': 'South Ash Sharqiyah',
+  'شمال الشرقية': 'North Ash Sharqiyah',
+  'الظاهرة': 'Ad Dhahirah',
+  'الوسطى': 'Al Wusta',
+  'مطرح': 'Muttrah',
+  'بوشر': 'Bawshar',
+  'السيب': 'Seeb',
+  'العامرات': 'Al Amerat',
+  'قريات': 'Qurayyat',
+  'صحار': 'Sohar',
+  'شناص': 'Shinas',
+  'لوى': 'Liwa',
+  'صحم': 'Saham',
+  'الخابورة': 'Al Khaburah',
+  'السويق': 'As Suwaiq',
+  'الرستاق': 'Rustaq',
+  'العوابي': 'Al Awabi',
+  'نخل': 'Nakhal',
+  'وادي المعاول': 'Wadi Al Maawil',
+  'بركاء': 'Barka',
+  'المصنعة': 'Al Musannah',
+  'نزوى': 'Nizwa',
+  'بهلاء': 'Bahla',
+  'منح': 'Manah',
+  'الحمراء': 'Al Hamra',
+  'أدم': 'Adam',
+  'إزكي': 'Izki',
+  'سمائل': 'Samail',
+  'بدبد': 'Bidbid',
+  'الجبل الأخضر': 'Al Jabal Al Akhdar',
+  'صلالة': 'Salalah',
+  'طاقة': 'Taqah',
+  'مرباط': 'Mirbat',
+  'رخيوت': 'Rakhyut',
+  'ثمريت': 'Thumrait',
+  'ضلكوت': 'Dalkut',
+  'سدح': 'Sadah',
+  'شليم وجزر الحلانيات': 'Shalim and the Hallaniyat Islands',
+  'المزيونة': 'Al Mazyunah',
+  'مقشن': 'Muqshin',
+  'بوشر، مسقط': 'Bawshar, Muscat',
+};
+
+function localizeCitizenText(value) {
+  const text = String(value ?? '');
+  return currentLang === 'en' ? (CITIZEN_VALUE_EN[text] || text) : text;
 }
 
 /* طلبات وهمية لعرضها في قائمة "طلباتي" وفي إشعارات المستخدم */
@@ -401,21 +473,21 @@ const WILAYATS = {
 };
 const CITIZEN_FIELDS = [
   { key: 'fullName',    group: 'id',      label: 'الاسم الكامل',      en: 'Full name',      required: true,  locked: true, autocomplete: 'name' },
-  { key: 'civilId',     group: 'id',      label: 'الرقم المدني',      en: 'Civil ID',       required: true,  locked: true, inputmode: 'numeric', ltr: true, pattern: /^\d{8,9}$/, err: 'الرقم المدني يتكون من 8 إلى 9 أرقام' },
+  { key: 'civilId',     group: 'id',      label: 'الرقم المدني',      en: 'Civil ID',       required: true,  locked: true, inputmode: 'numeric', ltr: true, pattern: /^\d{8,9}$/, err: 'الرقم المدني يتكون من 8 إلى 9 أرقام', errEn: 'Civil ID must contain 8 to 9 digits' },
   { key: 'dob',         group: 'id',      label: 'تاريخ الميلاد',     en: 'Date of birth',  required: true,  locked: true, type: 'date', ltr: true },
   { key: 'nationality', group: 'id',      label: 'الجنسية',           en: 'Nationality',    required: false, locked: true },
-  { key: 'phone',       group: 'contact', label: 'رقم الهاتف',        en: 'Phone',          required: true,  type: 'tel', inputmode: 'tel', ltr: true, prefix: '+968', autocomplete: 'tel-national', pattern: /^[79]\d{7}$/, err: 'أدخل رقماً عُمانياً من 8 أرقام يبدأ بـ 7 أو 9' },
-  { key: 'email',       group: 'contact', label: 'البريد الإلكتروني', en: 'Email',          required: true,  type: 'email', inputmode: 'email', ltr: true, autocomplete: 'email', pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, err: 'صيغة البريد الإلكتروني غير صحيحة', hint: 'نرسل عليه إشعارات حالة الطلب' },
+  { key: 'phone',       group: 'contact', label: 'رقم الهاتف',        en: 'Phone',          required: true,  type: 'tel', inputmode: 'tel', ltr: true, prefix: '+968', autocomplete: 'tel-national', pattern: /^[79]\d{7}$/, err: 'أدخل رقماً عُمانياً من 8 أرقام يبدأ بـ 7 أو 9', errEn: 'Enter an 8-digit Omani number beginning with 7 or 9' },
+  { key: 'email',       group: 'contact', label: 'البريد الإلكتروني', en: 'Email',          required: true,  type: 'email', inputmode: 'email', ltr: true, autocomplete: 'email', pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, err: 'صيغة البريد الإلكتروني غير صحيحة', errEn: 'Enter a valid email address', hint: 'نرسل عليه إشعارات حالة الطلب', hintEn: 'We use it to send request-status notifications' },
   { key: 'governorate', group: 'address', label: 'المحافظة',          en: 'Governorate',    required: true,  type: 'select', options: OMAN_GOVERNORATES },
   { key: 'wilayat',     group: 'address', label: 'الولاية',           en: 'Wilayat',        required: true,  list: 'wilayat' },
-  { key: 'address',     group: 'address', label: 'العنوان التفصيلي',  en: 'Street address', required: true,  type: 'textarea', minLength: 6, hint: 'الحي، الشارع، رقم المنزل أو المبنى', autocomplete: 'street-address' },
+  { key: 'address',     group: 'address', label: 'العنوان التفصيلي',  en: 'Street address', required: true,  type: 'textarea', minLength: 6, hint: 'الحي، الشارع، رقم المنزل أو المبنى', hintEn: 'Neighbourhood, street, house or building number', autocomplete: 'street-address' },
 ];
 function isFilled(v) { return v != null && String(v).trim() !== ''; }
 function validateCitizenField(f, value) {
   const v = String(value ?? '').trim();
-  if (f.required && !v) return 'هذا الحقل مطلوب';
-  if (v && f.pattern && !f.pattern.test(v)) return f.err || 'قيمة غير صحيحة';
-  if (v && f.minLength && v.length < f.minLength) return 'الرجاء كتابة العنوان بتفصيل أكثر';
+  if (f.required && !v) return currentLang === 'en' ? 'This field is required' : 'هذا الحقل مطلوب';
+  if (v && f.pattern && !f.pattern.test(v)) return currentLang === 'en' ? (f.errEn || 'Invalid value') : (f.err || 'قيمة غير صحيحة');
+  if (v && f.minLength && v.length < f.minLength) return currentLang === 'en' ? 'Please enter a more detailed address' : 'الرجاء كتابة العنوان بتفصيل أكثر';
   return '';
 }
 function formatCitizenValue(f, v) {
@@ -425,7 +497,7 @@ function formatCitizenValue(f, v) {
     if (!isNaN(d)) return d.toLocaleDateString(currentLang === 'en' ? 'en-GB' : 'ar-OM', { day: 'numeric', month: 'long', year: 'numeric' });
   }
   if (f.prefix) return f.prefix + ' ' + v;
-  return v;
+  return localizeCitizenText(v);
 }
 
 /* ---------------- حالات المستندات (مشتركة بين المستندات والمراجعة) ----------------
@@ -493,7 +565,8 @@ function buildHeaderExtras() {
 
     const accountWrap = document.createElement('div');
     accountWrap.className = 'header-dropdown-wrap header-account-wrap';
-    accountWrap.innerHTML = `<a class="header-home-link" href="/#direct-access" aria-label="العودة إلى الدخول المباشر" title="العودة إلى الدخول المباشر"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
+    const backHref = '/#direct-access';
+    accountWrap.innerHTML = `<a class="header-home-link" href="${escapeHtml(backHref)}" aria-label="رجوع" title="رجوع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
       <button class="header-account-btn guest" id="header-account-btn" type="button"></button>
       <div class="header-dropdown" id="header-account-dropdown"></div>`;
 
@@ -530,7 +603,7 @@ function refreshAccountButton() {
       btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>`;
       btn.setAttribute('aria-label', currentLang === 'en' ? 'Account menu' : 'قائمة الحساب');
       btn.title = currentLang === 'en' ? 'Account menu' : 'قائمة الحساب';
-      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${escapeHtml(user.name)}</b><span class="sub">${currentLang === 'en' ? 'Signed-in account' : 'حساب مُسجَّل'}</span></div>
+      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${escapeHtml(localizeCitizenText(user.name))}</b><span class="sub">${currentLang === 'en' ? 'Signed-in account' : 'حساب مُسجَّل'}</span></div>
         <a class="hd-item" href="citizen-data.html" data-dir="down">${currentLang === 'en' ? 'My details' : 'بياناتي الشخصية'}</a>
         <div class="hd-sep"></div><div class="hd-item hd-logout" id="hd-logout-btn" role="button" tabindex="0">${currentLang === 'en' ? 'Sign out' : 'تسجيل الخروج'}</div>`;
     } else {
@@ -560,19 +633,18 @@ function refreshAccountButton() {
   });
 }
 
-/* الشعار هو رابط العودة الوحيد للرئيسية؛ لا حاجة إلى أيقونة رئيسية إضافية. */
+/* الشعار عنصر هوية بصري فقط، والتنقل يتم من زر الرجوع المنفصل. */
 function makeServiceBrandClickable() {
   document.querySelectorAll('.site-header .logo-group').forEach(group => {
     if (group.querySelector('.service-brand-home')) return;
     const mark = group.querySelector('.logo-mark');
     const word = group.querySelector('.logo-word');
     if (!mark || !word) return;
-    const link = document.createElement('a');
-    link.className = 'service-brand-home';
-    link.href = '/#direct-access';
-    link.setAttribute('aria-label', currentLang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر');
-    group.insertBefore(link, mark);
-    link.append(mark, word);
+    const brand = document.createElement('div');
+    brand.className = 'service-brand-home';
+    brand.setAttribute('aria-label', currentLang === 'en' ? 'Sultan Haitham City' : 'مدينة السلطان هيثم');
+    group.insertBefore(brand, mark);
+    brand.append(mark, word);
   });
 }
 

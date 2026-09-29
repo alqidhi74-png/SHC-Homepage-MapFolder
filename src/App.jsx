@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import {
   Building2,
   ChevronDown,
-  House,
   LogOut,
   Map,
   Landmark,
@@ -37,6 +36,21 @@ const SERVICES_URL = import.meta.env.DEV
 const PROJECTS_URL = import.meta.env.DEV
   ? '/src/projects/al-wadi/UPDATE.html'
   : '/projects/al-wadi/UPDATE.html'
+
+function rememberHomeEntry() {
+  try {
+    sessionStorage.setItem('shc_referrer_section', '/#direct-access')
+  } catch (_) {}
+}
+
+function localizedProfileName(name, language) {
+  if (language !== 'en') return name
+  return {
+    'سالم الحارثي': 'Salim Al Harthi',
+    'سالم بن سعيد الحارثي': 'Salim bin Saeed Al Harthi',
+    'إسراء الوهيبية': 'Esraa Al Wahibiya',
+  }[name] || name
+}
 
 const services = [
   {
@@ -104,6 +118,7 @@ export default function App() {
   const { navigateWithTransition, isTransitioning } = usePageTransition()
   const copy = homeCopy[language]
   const isArabic = language === 'ar'
+  const profileName = siteProfile ? localizedProfileName(siteProfile.name, language) : ''
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -114,6 +129,7 @@ export default function App() {
   }, [copy.pageTitle, isArabic, language])
 
   const protectFooterLink = (event, href) => {
+    rememberHomeEntry()
     if (isSiteAuthenticated()) return
     event.preventDefault()
     window.location.assign(`/login?returnTo=${encodeURIComponent(href)}`)
@@ -258,12 +274,17 @@ export default function App() {
         .fromTo('.footer-reveal', { opacity: 0, y: 15 }, { opacity: 1, y: 0, stagger: 0.055, duration: 0.38 }, 5.02)
 
       if (window.location.hash === '#direct-access') {
-        requestAnimationFrame(() => {
+        const showDirectAccess = () => {
+          ScrollTrigger.refresh()
           const trigger = story.scrollTrigger
-          const destination = trigger.start + (trigger.end - trigger.start) * 0.65
+          const accessProgress = Math.min(0.99, 3.8 / story.duration())
+          const destination = trigger.start + (trigger.end - trigger.start) * accessProgress
           lenis.scrollTo(destination, { immediate: true })
+          window.scrollTo(0, destination)
           ScrollTrigger.update()
-        })
+        }
+        requestAnimationFrame(() => requestAnimationFrame(showDirectAccess))
+        window.setTimeout(showDirectAccess, 180)
       }
 
       const statNumbers = gsap.utils.toArray('.masterplan-stat-number')
@@ -454,15 +475,6 @@ if (supportsAccessHover && accessRail) {
 
       <header className="topbar" aria-label={copy.headerTools}>
         <div className="site-account-actions">
-          <a
-            className="site-home-link"
-            href="/"
-            aria-label={copy.home}
-            title={copy.home}
-            onClick={() => setAccountOpen(false)}
-          >
-            <House aria-hidden="true" />
-          </a>
           {siteProfile ? (
             <div className="site-account" ref={accountRef}>
             <button
@@ -481,10 +493,10 @@ if (supportsAccessHover && accessRail) {
               <div className="site-account-menu" role="menu">
                 <div className="site-account-identity">
                   <span className="site-account-avatar" aria-hidden="true">
-                    {siteProfile.name.trim().charAt(0)}
+                    {profileName.trim().charAt(0)}
                   </span>
                   <span>
-                    <strong>{siteProfile.name}</strong>
+                    <strong>{profileName}</strong>
                     <small>{siteProfile.role === 'admin' ? copy.adminAccount : copy.citizenAccount}</small>
                   </span>
                 </div>
@@ -513,6 +525,7 @@ if (supportsAccessHover && accessRail) {
               aria-disabled={isTransitioning}
               onClick={(event) => {
                 event.preventDefault()
+                rememberHomeEntry()
                 navigateWithTransition('/login', { direction: 'forward' })
               }}
             >
@@ -520,10 +533,10 @@ if (supportsAccessHover && accessRail) {
             </a>
           )}
         </div>
-        <a className="header-brand" href="#experience" aria-label={copy.city}>
+        <div className="header-brand" aria-label={copy.city}>
           <img src={logo} alt="" />
           <img src={cityName} alt={copy.city} />
-        </a>
+        </div>
         <button className="lang" type="button" aria-label={copy.language} onClick={() => setLanguage(isArabic ? 'en' : 'ar')}>
           <strong className={isArabic ? 'is-active' : ''}>Ar</strong><span>/</span><strong className={!isArabic ? 'is-active' : ''}>En</strong>
         </button>
@@ -564,6 +577,9 @@ if (supportsAccessHover && accessRail) {
                 onClick={() => {
                   if (!href) return
 
+                  /* حفظ موضع الدخول الحالي لزر الرجوع في الصفحة التالية. */
+                  rememberHomeEntry()
+
                   if (requiresAuth && !isSiteAuthenticated()) {
                     window.location.assign(`/login?returnTo=${encodeURIComponent(href)}`)
                     return
@@ -600,7 +616,7 @@ if (supportsAccessHover && accessRail) {
                 <i aria-hidden="true" />
                 <a href={`https://mohup.gov.om/${language}/contact-us`} target="_blank" rel="noreferrer">{copy.contactUs}</a>
                 <a href={`https://mohup.gov.om/${language}/contact-us`} target="_blank" rel="noreferrer">{copy.faq}</a>
-                <a href={SMART_MAP_URL}>{copy.location}</a>
+                <a href={SMART_MAP_URL} onClick={rememberHomeEntry}>{copy.location}</a>
                 <div className="footer-socials" aria-label={copy.social}>
                   <a href="https://www.instagram.com/housingoman/" target="_blank" rel="noreferrer" aria-label="Instagram">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="footer-social-dot" cx="17.4" cy="6.7" r="1" /></svg>
@@ -617,18 +633,18 @@ if (supportsAccessHover && accessRail) {
                 <i aria-hidden="true" />
                 <a href={SERVICES_URL} onClick={(event) => protectFooterLink(event, SERVICES_URL)}>{copy.eServices}</a>
                 <a href={PROJECTS_URL} onClick={(event) => protectFooterLink(event, PROJECTS_URL)}>{copy.properties}</a>
-                <a href={`${SMART_MAP_URL}?layer=facilities`}>{copy.facilities}</a>
-                <a href="/login">{copy.login}</a>
+                <a href={`${SMART_MAP_URL}?layer=facilities`} onClick={rememberHomeEntry}>{copy.facilities}</a>
+                <a href="/login" onClick={rememberHomeEntry}>{copy.login}</a>
               </section>
 
               <section className="footer-column footer-reveal">
                 <h3>{copy.explore}</h3>
                 <i aria-hidden="true" />
                 <a href="#experience">{copy.about}</a>
-                <a href={SMART_MAP_URL}>{copy.interactiveMap}</a>
+                <a href={SMART_MAP_URL} onClick={rememberHomeEntry}>{copy.interactiveMap}</a>
                 <a href={PROJECTS_URL} onClick={(event) => protectFooterLink(event, PROJECTS_URL)}>{copy.projects}</a>
-                <a href={`${SMART_MAP_URL}?layer=districts`}>{copy.districts}</a>
-                <a href={`${SMART_MAP_URL}?layer=green`}>{copy.green}</a>
+                <a href={`${SMART_MAP_URL}?layer=districts`} onClick={rememberHomeEntry}>{copy.districts}</a>
+                <a href={`${SMART_MAP_URL}?layer=green`} onClick={rememberHomeEntry}>{copy.green}</a>
               </section>
 
               <section className="footer-identity footer-reveal">
@@ -650,13 +666,13 @@ if (supportsAccessHover && accessRail) {
                 </nav>
               </div>
               <p>{copy.copyright}</p>
-              <a className="footer-ministry-link" href="https://mohup.gov.om/" target="_blank" rel="noreferrer" aria-label={copy.ministry}>
+              <div className="footer-ministry-link" aria-label={copy.ministry}>
                 <img
                   className="footer-ministry-image"
                   src={housingLogo}
                   alt="وزارة الإسكان والتخطيط العمراني — Ministry of Housing and Urban Planning"
                 />
-              </a>
+              </div>
             </div>
           </div>
         </div>

@@ -83,6 +83,9 @@ export default function CityExplore({ mapUrl, language = 'ar' }) {
   }
 
   function open2DMap(place) {
+    try {
+      sessionStorage.setItem('shc_referrer_section', '/#direct-access')
+    } catch (_) {}
     window.location.assign(`${mapUrl}?layer=${encodeURIComponent(place.mapLayer)}`)
   }
 

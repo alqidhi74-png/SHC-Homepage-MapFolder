@@ -87,6 +87,7 @@ const GROUPS = {
 };
 const T = (ar, en) => currentLang === 'en' ? en : ar;
 const labelOf = f => currentLang === 'en' ? f.en : f.label;
+const hintOf = f => currentLang === 'en' ? (f.hintEn || '') : (f.hint || '');
 const isLocked = f => !!f.locked && isFilled(profile?.[f.key]);
 
 /* الحقول الناقصة تُحسب من بيانات الخادم الأصلية — حتى لا "تقفز" من مكانها أثناء الكتابة */
@@ -108,7 +109,7 @@ if(!hasRequest){
 /* ---------------- عناصر الإدخال ---------------- */
 function wilayatOptions(){
   const list = WILAYATS[draft.governorate] || Object.values(WILAYATS).flat();
-  return list.map(w => `<option value="${escapeHtml(w)}"></option>`).join('');
+  return list.map(w => `<option value="${escapeHtml(w)}" label="${escapeHtml(localizeCitizenText(w))}"></option>`).join('');
 }
 
 function inputHTML(f, opts = {}){
@@ -118,9 +119,9 @@ function inputHTML(f, opts = {}){
   const common = `id="${id}" name="${f.key}" data-key="${f.key}" ${f.required ? 'required aria-required="true"' : ''} aria-invalid="${err ? 'true' : 'false'}" aria-describedby="${id}-msg"`;
   let control;
   if(f.type === 'select'){
-    control = `<select ${common}><option value="">${T('— اختر —', '— Select —')}</option>${f.options.map(o => `<option value="${escapeHtml(o)}" ${o === v ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('')}</select>`;
+    control = `<select ${common}><option value="">${T('— اختر —', '— Select —')}</option>${f.options.map(o => `<option value="${escapeHtml(o)}" ${o === v ? 'selected' : ''}>${escapeHtml(localizeCitizenText(o))}</option>`).join('')}</select>`;
   } else if(f.type === 'textarea'){
-    control = `<textarea ${common} rows="3" ${f.autocomplete ? `autocomplete="${f.autocomplete}"` : ''} placeholder="${escapeHtml(f.hint || '')}">${escapeHtml(v)}</textarea>`;
+    control = `<textarea ${common} rows="3" ${f.autocomplete ? `autocomplete="${f.autocomplete}"` : ''} placeholder="${escapeHtml(hintOf(f))}">${escapeHtml(v)}</textarea>`;
   } else {
     const extra =
       (f.inputmode ? ` inputmode="${f.inputmode}"` : '') +
@@ -139,7 +140,7 @@ function inputHTML(f, opts = {}){
       <label for="${id}">${escapeHtml(labelOf(f))}${f.required ? '<span class="req" aria-hidden="true">*</span>' : ` <small style="color:var(--ink-soft);font-weight:400;">(${T('اختياري', 'optional')})</small>`}</label>
       ${control}
       <div class="err-msg" id="${id}-msg" ${err ? '' : 'style="display:none;"'}>⚠ ${escapeHtml(err || '')}</div>
-      ${f.hint && f.type !== 'textarea' ? `<div class="hint">${escapeHtml(f.hint)}</div>` : ''}
+      ${hintOf(f) && f.type !== 'textarea' ? `<div class="hint">${escapeHtml(hintOf(f))}</div>` : ''}
     </div>`;
 }
 
@@ -196,7 +197,9 @@ function renderError(){
 
 function bannerHTML(){
   const user = currentUser();
-  const first = (user?.name || '').split(' ')[0];
+  const localizedName = localizeCitizenText(user?.name || '');
+  const first = localizedName.split(' ')[0];
+  const localizedInitial = localizedName.trim().charAt(0) || '؟';
   const missing = missingFields().filter(f => f.required).length;
   let msg;
   if(!profile) msg = T('لم نعثر على بيانات محفوظة لحسابك. أدخلها مرة واحدة وسنحفظها لطلباتك القادمة.', "We found no saved details for your account. Enter them once and we'll reuse them next time.");
@@ -205,7 +208,7 @@ function bannerHTML(){
   const pct = completion();
   return `
     <div class="cz-banner fade-in">
-      <div class="cz-avatar" aria-hidden="true">${escapeHtml(user?.initials || '؟')}</div>
+      <div class="cz-avatar" aria-hidden="true">${escapeHtml(localizedInitial)}</div>
       <div style="min-width:0;flex:1;">
         <h1>${hasRequest ? T('مرحباً ', 'Welcome, ') + escapeHtml(first) : T('بياناتي الشخصية', 'My details')}</h1>
         <p>${msg}</p>

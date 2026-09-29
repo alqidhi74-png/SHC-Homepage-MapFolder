@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#300c16">
   <meta name="description" content="استكشف أحياء مدينة السلطان هيثم ومشاريعها ومرافقها على الخريطة التفاعلية.">
+  <script>
+    (() => {
+      try {
+        const lang = localStorage.getItem('sh_lang') === 'en' ? 'en' : 'ar';
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.dataset.shcPrelang = lang;
+      } catch (_) {}
+    })();
+  </script>
+  <style>html[data-shc-prelang="en"] body{visibility:hidden}</style>
   <title>مدينة السلطان هيثم | الخريطة التفاعلية</title>
   <link rel="icon" href="assets/logo-mark.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,18 +25,19 @@
   <link rel="stylesheet" href="css/map-v6.css">
   <link rel="stylesheet" href="../header.css">
   <link rel="stylesheet" href="css/map-design.css">
+  <script src="../chatbot.js" defer data-shc-chatbot-loader></script>
 </head>
 <body>
 <div class="app-shell">
   <header class="topbar map-topbar" aria-label="أدوات الحساب واللغة">
     <nav class="header-actions" aria-label="التنقل الرئيسي">
       <a class="account-link" href="/login" title="تسجيل الدخول"><span data-icon="user"></span><span class="visually-hidden" data-en="Log in">تسجيل الدخول</span></a>
-      <a class="home-link" href="/#direct-access" title="العودة إلى الدخول المباشر"><span class="visually-hidden" data-en="Back to direct access">العودة إلى الدخول المباشر</span><span data-icon="arrow"></span></a>
+      <a class="home-link" href="/#direct-access" title="رجوع"><span class="visually-hidden" data-en="Back">رجوع</span><span data-icon="arrow"></span></a>
     </nav>
-    <a class="header-brand" href="/#direct-access" aria-label="مدينة السلطان هيثم">
+    <div class="header-brand" aria-label="مدينة السلطان هيثم">
       <img src="../assets/logo.png" alt="">
       <img src="../assets/city-name.png" alt="مدينة السلطان هيثم">
-    </a>
+    </div>
     <div class="map-language" role="group" aria-label="اختيار اللغة">
       <button type="button" data-language="ar" lang="ar" aria-pressed="true">Ar</button>
       <span aria-hidden="true">/</span>
@@ -130,6 +142,22 @@
     </div>
   </main>
 </div>
+<script>
+  (() => {
+    const lang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+    if (lang === 'en') {
+      document.querySelectorAll('[data-en]').forEach((element) => { element.textContent = element.dataset.en; });
+      document.querySelectorAll('[data-language]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.language === lang)));
+      document.title = 'Sultan Haitham City | Interactive map';
+    }
+    const back = document.querySelector('.home-link');
+    if (back) {
+      back.href = '/#direct-access';
+      back.title = lang === 'en' ? 'Back' : 'رجوع';
+    }
+    document.documentElement.removeAttribute('data-shc-prelang');
+  })();
+</script>
 <script src="https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.js"></script>
 <script src="js/shared/city/00-core.js"></script>
 <script src="js/shared/city/10-config.js"></script>

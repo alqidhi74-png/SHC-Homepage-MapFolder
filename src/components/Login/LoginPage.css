@@ -57,8 +57,12 @@
   color: rgba(255, 255, 255, 0.62);
 }
 
-.login-languages a {
+.login-languages a,
+.login-languages button {
   position: relative;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: rgba(255, 255, 255, 0.94);
   font-size: 18px;
   line-height: 1;
@@ -68,7 +72,8 @@
   transition: color 0.2s ease;
 }
 
-.login-languages a::after {
+.login-languages a::after,
+.login-languages button::after {
   position: absolute;
   right: 0;
   bottom: -16px;
@@ -79,18 +84,23 @@
   transition: width 0.22s ease;
 }
 
-.login-languages a.is-active::after {
+.login-languages a.is-active::after,
+.login-languages button.is-active::after {
   width: 58px;
 }
 
 .login-languages a:hover,
-.login-languages a:focus-visible {
+.login-languages a:focus-visible,
+.login-languages button:hover,
+.login-languages button:focus-visible {
   color: #ffe3a0;
   outline: none;
 }
 
 .login-languages a:hover::after,
-.login-languages a:focus-visible::after {
+.login-languages a:focus-visible::after,
+.login-languages button:hover::after,
+.login-languages button:focus-visible::after {
   width: 100%;
 }
 
@@ -842,7 +852,8 @@
     gap: 14px;
   }
 
-  .login-languages a {
+  .login-languages a,
+  .login-languages button {
     font-size: 14px;
   }
 
@@ -851,7 +862,8 @@
     height: 24px;
   }
 
-  .login-languages a.is-active::after {
+  .login-languages a.is-active::after,
+  .login-languages button.is-active::after {
     width: 46px;
   }
 

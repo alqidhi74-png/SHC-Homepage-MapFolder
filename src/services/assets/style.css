@@ -67,7 +67,7 @@ body.mobile-mode .chapter-strip .ch-spine{display:none;}
 .logo-word b{font-family:var(--font-display);color:var(--gold-light);font-size:14px;font-weight:600;}
 .logo-word span{font-family:var(--font-body);color:var(--gold-mid);font-size:9.5px;letter-spacing:.4px;}
 .logo-group{display:flex;align-items:center;gap:10px;min-width:0;}
-.service-brand-home{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none;border-radius:10px;padding:2px 4px;}
+.service-brand-home{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none;border-radius:10px;padding:2px 4px;pointer-events:none;}
 .service-brand-home:hover .logo-word b{color:#fff6d6;}
 .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .header-svc-btn{
