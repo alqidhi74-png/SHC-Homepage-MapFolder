@@ -12,6 +12,8 @@ await cp(resolve('src/services'), resolve('dist/Services'), { recursive: true, f
 await cp(resolve('src/projects'), resolve('dist/projects'), { recursive: true, force: true })
 // Keep the standalone map on the same header stylesheet and brand assets as React.
 await cp(resolve('src/header.css'), resolve('dist/header.css'))
+await cp(resolve('src/portal-header.css'), resolve('dist/portal-header.css'))
+await cp(resolve('src/portal-header.js'), resolve('dist/portal-header.js'))
 await mkdir(resolve('dist/assets'), { recursive: true })
 for (const asset of ['logo.png', 'city-name.png']) {
   await cp(resolve('src/assets', asset), resolve('dist/assets', asset))

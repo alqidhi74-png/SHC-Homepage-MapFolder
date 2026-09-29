@@ -5,11 +5,15 @@ import {
   Eye,
   EyeOff,
   Mail,
+  Phone,
+  CreditCard,
+  CheckCircle2,
 } from 'lucide-react'
 import gsap from 'gsap'
 
 import { useAdminAuth } from '../../auth/AdminAuth'
 import { DEMO_ADMIN_EMAIL } from '../../auth/demoAdminAuth'
+import { getSafeReturnTarget, setSiteAuthenticated } from '../../auth/siteAuth'
 import { usePageTransition } from '../PageTransition/PageTransitionProvider'
 
 import loginBg from '../../assets/login.png'
@@ -21,9 +25,16 @@ import './LoginPage.css'
 
 export default function LoginPage() {
   const pageRef = useRef(null)
+  const otpRefs = useRef([])
 
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState('')
+  const [showCitizenId, setShowCitizenId] = useState(false)
+  const [citizenMethod, setCitizenMethod] = useState('phone')
+  const [citizenIdentifier, setCitizenIdentifier] = useState('')
+  const [citizenMessage, setCitizenMessage] = useState(null)
+  const [citizenStep, setCitizenStep] = useState('identity')
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
 
   const { signIn, signOut } = useAdminAuth()
 
@@ -137,15 +148,27 @@ export default function LoginPage() {
     // بيانات الدخول غير صحيحة
     if (!authenticated) {
       signOut()
+      setSiteAuthenticated(false)
       setMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة.')
       return
     }
 
     // نجاح تسجيل الدخول
     setMessage('')
+    setSiteAuthenticated(true, {
+      name: 'إسراء الوهيبية',
+      role: 'admin',
+    })
 
     if (form.elements.password) {
       form.elements.password.value = ''
+    }
+
+    const returnTarget = getSafeReturnTarget()
+
+    if (returnTarget) {
+      window.location.assign(returnTarget)
+      return
     }
 
     // الانتقال إلى لوحة التحكم
@@ -154,10 +177,105 @@ export default function LoginPage() {
     })
   }
 
+  const handleCitizenIdentity = () => {
+    const value = citizenIdentifier.replace(/\s/g, '')
+    const valid = citizenMethod === 'phone'
+      ? /^\+?[0-9]{8,15}$/.test(value)
+      : /^[0-9]{8,12}$/.test(value)
+
+    if (!valid) {
+      setCitizenMessage({
+        type: 'error',
+        text: citizenMethod === 'phone'
+          ? 'أدخل رقم هاتف صحيحًا ومسجلًا في الهوية الوطنية.'
+          : 'أدخل الرقم المدني الصحيح.',
+      })
+      return
+    }
+
+    setOtpDigits(['', '', '', '', '', ''])
+    setCitizenMessage(null)
+    setCitizenStep('otp')
+
+    window.setTimeout(() => {
+      otpRefs.current[0]?.focus()
+    }, 50)
+  }
+
+  const updateOtpDigit = (index, inputValue) => {
+    const digit = inputValue.replace(/\D/g, '').slice(-1)
+
+    setOtpDigits((current) => {
+      const next = [...current]
+      next[index] = digit
+      return next
+    })
+    setCitizenMessage(null)
+
+    if (digit && index < 5) {
+      otpRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleOtpKeyDown = (index, event) => {
+    if (event.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus()
+    }
+
+    if (event.key === 'ArrowLeft' && index < 5) {
+      otpRefs.current[index + 1]?.focus()
+    }
+
+    if (event.key === 'ArrowRight' && index > 0) {
+      otpRefs.current[index - 1]?.focus()
+    }
+  }
+
+  const handleOtpPaste = (event) => {
+    const pastedDigits = event.clipboardData
+      .getData('text')
+      .replace(/\D/g, '')
+      .slice(0, 6)
+
+    if (!pastedDigits) return
+
+    event.preventDefault()
+    const next = Array.from({ length: 6 }, (_, index) => pastedDigits[index] || '')
+    setOtpDigits(next)
+    setCitizenMessage(null)
+    otpRefs.current[Math.min(pastedDigits.length, 6) - 1]?.focus()
+  }
+
+  const handleOtpVerification = () => {
+    const otp = otpDigits.join('')
+
+    if (!/^\d{6}$/.test(otp)) {
+      setCitizenMessage({
+        type: 'error',
+        text: 'أدخل رمز التحقق المكوّن من 6 أرقام.',
+      })
+      return
+    }
+
+    setSiteAuthenticated(true, {
+      name: 'سالم الحارثي',
+      role: 'citizen',
+    })
+    setCitizenMessage({
+      type: 'success',
+      text: 'تم التحقق وتسجيل الدخول بنجاح.',
+    })
+
+    const returnTarget = getSafeReturnTarget()
+    window.setTimeout(() => {
+      window.location.assign(returnTarget || '/')
+    }, 650)
+  }
+
   return (
     <main
       ref={pageRef}
-      className="login-page"
+      className={`login-page${showCitizenId ? ' has-citizen-id' : ''}`}
       dir="rtl"
     >
       {/* Background */}
@@ -254,17 +372,35 @@ export default function LoginPage() {
 
           <div className="login-panel-heading">
             <h1 id="login-title">
-              تسجيل الدخول
+              {showCitizenId ? 'الهوية الوطنية' : 'تسجيل الدخول'}
             </h1>
 
             <p>
-              سجل الدخول إلى منصة مدينة السلطان هيثم
+              {showCitizenId
+                ? citizenStep === 'otp'
+                  ? 'أدخل رمز التحقق المرسل لإكمال تسجيل الدخول'
+                  : 'دخول أو تسجيل المواطن عبر نظام الهوية الوطنية'
+                : 'سجل الدخول إلى منصة مدينة السلطان هيثم'}
             </p>
           </div>
 
           <form
             className="login-form"
-            onSubmit={handleSubmit}
+            noValidate
+            onSubmit={(event) => {
+              if (!showCitizenId) {
+                handleSubmit(event)
+                return
+              }
+
+              event.preventDefault()
+
+              if (citizenStep === 'identity') {
+                handleCitizenIdentity()
+              } else {
+                handleOtpVerification()
+              }
+            }}
             onChange={() => {
               setMessage('')
             }}
@@ -421,11 +557,17 @@ export default function LoginPage() {
             {/* =================================================
                 DIGITAL ID
             ================================================== */}
-            <a
+            <button
               className="login-digital-id"
-              href="https://mohup.gov.om/ar/e-services"
-              target="_blank"
-              rel="noreferrer"
+              type="button"
+              aria-expanded={showCitizenId}
+              aria-controls="citizen-national-id"
+              onClick={() => {
+                setShowCitizenId((visible) => !visible)
+                setCitizenMessage(null)
+                setCitizenStep('identity')
+                setOtpDigits(['', '', '', '', '', ''])
+              }}
             >
               <span
                 className="login-digital-emblem"
@@ -438,24 +580,139 @@ export default function LoginPage() {
               </span>
 
               <strong>
-                الدخول عبر الهوية الرقمية
+                الدخول أو التسجيل عبر الهوية الوطنية
               </strong>
-            </a>
+            </button>
 
-            {/* =================================================
-                REGISTER
-            ================================================== */}
-            <p className="login-register">
+            {showCitizenId && (
+              <section id="citizen-national-id" className="login-citizen-panel" aria-label="الدخول أو التسجيل بالهوية الوطنية">
+                <button
+                  className="login-citizen-back"
+                  type="button"
+                  onClick={() => {
+                    setShowCitizenId(false)
+                    setCitizenMessage(null)
+                    setCitizenIdentifier('')
+                    setCitizenStep('identity')
+                    setOtpDigits(['', '', '', '', '', ''])
+                  }}
+                >
+                  <ArrowLeft aria-hidden="true" />
+                  العودة إلى تسجيل الدخول
+                </button>
 
-              ليس لديك حساب؟{' '}
+                {citizenStep === 'identity' ? (
+                  <>
+                    <div className="login-citizen-heading">
+                      <strong>الهوية الوطنية للمواطن</strong>
+                      <span>اختر وسيلة التحقق المسجلة في نظام الهوية الوطنية</span>
+                    </div>
 
-              <a href="/register">
-                إنشاء حساب
-              </a>
+                    <div className="login-citizen-methods" role="radiogroup" aria-label="وسيلة التحقق">
+                      <button
+                        className={citizenMethod === 'phone' ? 'is-active' : ''}
+                        type="button"
+                        role="radio"
+                        aria-checked={citizenMethod === 'phone'}
+                        onClick={() => {
+                          setCitizenMethod('phone')
+                          setCitizenIdentifier('')
+                          setCitizenMessage(null)
+                        }}
+                      >
+                        <Phone aria-hidden="true" />
+                        رقم الهاتف
+                      </button>
+                      <button
+                        className={citizenMethod === 'civil' ? 'is-active' : ''}
+                        type="button"
+                        role="radio"
+                        aria-checked={citizenMethod === 'civil'}
+                        onClick={() => {
+                          setCitizenMethod('civil')
+                          setCitizenIdentifier('')
+                          setCitizenMessage(null)
+                        }}
+                      >
+                        <CreditCard aria-hidden="true" />
+                        الرقم المدني
+                      </button>
+                    </div>
 
-              <ArrowLeft aria-hidden="true" />
+                    <label className="login-citizen-field" htmlFor="citizen-identifier">
+                      <span>{citizenMethod === 'phone' ? 'رقم الهاتف المسجل' : 'الرقم المدني'}</span>
+                      <div>
+                        {citizenMethod === 'phone' ? <Phone aria-hidden="true" /> : <CreditCard aria-hidden="true" />}
+                        <input
+                          id="citizen-identifier"
+                          type={citizenMethod === 'phone' ? 'tel' : 'text'}
+                          inputMode={citizenMethod === 'phone' ? 'tel' : 'numeric'}
+                          value={citizenIdentifier}
+                          placeholder={citizenMethod === 'phone' ? 'مثال: 9123 4567' : 'أدخل الرقم المدني'}
+                          onChange={(event) => {
+                            setCitizenIdentifier(event.target.value)
+                            setCitizenMessage(null)
+                          }}
+                        />
+                      </div>
+                    </label>
+                  </>
+                ) : (
+                  <div className="login-otp-step">
+                    <div className="login-citizen-heading">
+                      <strong>رمز التحقق لمرة واحدة</strong>
+                      <span>
+                        أرسلنا رمزًا من 6 أرقام إلى {citizenMethod === 'phone' ? 'رقم الهاتف المسجل' : 'الهاتف المرتبط بالرقم المدني'}
+                      </span>
+                    </div>
 
-            </p>
+                    <div className="login-otp-inputs" dir="ltr" onPaste={handleOtpPaste}>
+                      {otpDigits.map((digit, index) => (
+                        <input
+                          key={index}
+                          ref={(element) => { otpRefs.current[index] = element }}
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete={index === 0 ? 'one-time-code' : 'off'}
+                          maxLength={1}
+                          value={digit}
+                          aria-label={`الرقم ${index + 1} من رمز التحقق`}
+                          onChange={(event) => updateOtpDigit(index, event.target.value)}
+                          onKeyDown={(event) => handleOtpKeyDown(index, event)}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      className="login-otp-change"
+                      type="button"
+                      onClick={() => {
+                        setCitizenStep('identity')
+                        setOtpDigits(['', '', '', '', '', ''])
+                        setCitizenMessage(null)
+                      }}
+                    >
+                      تغيير {citizenMethod === 'phone' ? 'رقم الهاتف' : 'الرقم المدني'}
+                    </button>
+                  </div>
+                )}
+
+                {citizenMessage && (
+                  <p className={`login-citizen-message is-${citizenMessage.type}`} role={citizenMessage.type === 'error' ? 'alert' : 'status'}>
+                    {citizenMessage.type === 'success' && <CheckCircle2 aria-hidden="true" />}
+                    {citizenMessage.text}
+                  </p>
+                )}
+
+                <button
+                  className="login-citizen-submit"
+                  type="submit"
+                >
+                  {citizenStep === 'identity' ? 'إرسال رمز التحقق' : 'تأكيد الرمز والدخول'}
+                  <ArrowLeft aria-hidden="true" />
+                </button>
+              </section>
+            )}
 
           </form>
         </section>

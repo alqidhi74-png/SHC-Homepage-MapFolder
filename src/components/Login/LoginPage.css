@@ -438,6 +438,7 @@
   background: rgba(255, 255, 255, 0.15);
   color: var(--login-navy);
   direction: ltr;
+  font: inherit;
 }
 
 .login-digital-id strong {
@@ -491,6 +492,261 @@
 
 .login-register a {
   font-weight: 600;
+}
+
+.login-page.has-citizen-id {
+  overflow-y: auto;
+}
+
+.login-page.has-citizen-id .login-page-main {
+  padding-top: 72px;
+  padding-bottom: 34px;
+}
+
+.login-page.has-citizen-id .login-form > :not(.login-citizen-panel) {
+  display: none;
+}
+
+.login-citizen-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;
+  padding: 14px;
+  border: 1px solid rgba(189, 129, 32, .34);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .36);
+  animation: citizenPanelIn .28s ease-out both;
+}
+
+.login-citizen-back {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+  color: var(--login-gold-hover);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-citizen-back svg {
+  width: 16px;
+  transform: rotate(180deg);
+}
+
+.login-citizen-back:hover {
+  color: var(--login-navy);
+}
+
+.login-citizen-back:focus-visible {
+  outline: 2px solid var(--login-gold);
+  outline-offset: 3px;
+}
+
+.login-citizen-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+}
+
+.login-citizen-heading strong {
+  color: var(--login-navy);
+  font-size: 14px;
+}
+
+.login-citizen-heading span {
+  color: var(--login-navy-soft);
+  font-size: 11px;
+}
+
+.login-citizen-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 4px;
+  border-radius: 11px;
+  background: rgba(10, 46, 74, .07);
+}
+
+.login-citizen-methods button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 37px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--login-navy-soft);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.login-citizen-methods button svg {
+  width: 17px;
+}
+
+.login-citizen-methods button.is-active {
+  background: #fff;
+  color: var(--login-navy);
+  box-shadow: 0 3px 10px rgba(23, 42, 56, .1);
+}
+
+.login-citizen-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--login-navy);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.login-citizen-field > div {
+  position: relative;
+}
+
+.login-citizen-field svg {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: 14px;
+  width: 20px;
+  transform: translateY(-50%);
+  color: var(--login-gold);
+}
+
+.login-citizen-field input {
+  width: 100%;
+  height: 45px;
+  padding: 0 43px 0 13px;
+  border: 1px solid rgba(77, 72, 69, .28);
+  border-radius: 10px;
+  outline: none;
+  background: rgba(255, 255, 255, .62);
+  color: var(--login-navy);
+  font: inherit;
+  font-size: 13px;
+}
+
+.login-citizen-field input:focus {
+  border-color: rgba(189, 129, 32, .88);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(189, 129, 32, .1);
+}
+
+.login-otp-step {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 4px 0 2px;
+}
+
+.login-otp-inputs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.login-otp-inputs input {
+  width: 100%;
+  min-width: 0;
+  height: 49px;
+  border: 1px solid rgba(77, 72, 69, .28);
+  border-radius: 10px;
+  outline: none;
+  background: rgba(255, 255, 255, .74);
+  color: var(--login-navy);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  caret-color: var(--login-gold-hover);
+}
+
+.login-otp-inputs input:focus {
+  border-color: rgba(189, 129, 32, .95);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(189, 129, 32, .12);
+}
+
+.login-otp-change {
+  align-self: center;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--login-gold-hover);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.login-otp-change:hover {
+  color: var(--login-navy);
+}
+
+.login-citizen-message {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.login-citizen-message svg {
+  width: 17px;
+  flex: 0 0 auto;
+}
+
+.login-citizen-message.is-error {
+  background: rgba(161, 43, 43, .09);
+  color: #8b2525;
+}
+
+.login-citizen-message.is-success {
+  background: rgba(37, 111, 76, .1);
+  color: #1e6745;
+}
+
+.login-citizen-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 43px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #efcc73, #c68b2d);
+  color: #101820;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-citizen-submit:hover {
+  filter: brightness(1.05);
+}
+
+.login-citizen-submit svg {
+  width: 18px;
+}
+
+@keyframes citizenPanelIn {
+  from { opacity: 0; transform: translateY(-7px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .login-form-message {

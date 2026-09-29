@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <script>
+        (() => {
+            let authenticated = false;
+            try { authenticated = localStorage.getItem('sh_site_logged_in_v2') === '1'; } catch (_) {}
+            if (!authenticated) {
+                const returnTo = location.pathname + location.search + location.hash;
+                location.replace('/login?returnTo=' + encodeURIComponent(returnTo));
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جولة افتراضية | فيلا الواحة</title>
@@ -118,11 +128,8 @@
                 <span>العودة المعرض</span>
             </a>
 
-            <div class="w-10 h-10 rounded-full bg-burgundy text-gold flex items-center justify-center font-bold text-xl shadow-lg border border-gold/40">
-                <i class="fa-solid fa-house"></i>
-            </div>
             <div>
-                <h1 class="text-lg md:text-xl font-bold tracking-wide text-white">مشروع فيلا الواحة</h1>
+                <h1 class="text-lg md:text-xl font-bold tracking-wide text-gold">مشروع فيلا الواحة</h1>
                 <p class="text-xs text-burgundy font-medium">جولة افتراضية تفاعلية </p>
             </div>
         </div>

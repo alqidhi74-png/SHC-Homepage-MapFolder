@@ -1,15 +1,25 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ArrowUpLeft,
   Building2,
+  ChevronDown,
+  House,
+  LogOut,
   Map,
   Landmark,
+  UserRound,
 } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import CityExplore from './CityExplore'
 import { usePageTransition } from './components/PageTransition/PageTransitionProvider'
+import { useAdminAuth } from './auth/AdminAuth'
+import {
+  getSiteProfile,
+  isSiteAuthenticated,
+  setSiteAuthenticated,
+} from './auth/siteAuth'
 
 import city from './assets/city.png'
 import accessBackground from './assets/4.jpeg'
@@ -43,6 +53,7 @@ const services = [
     text: 'اكتشف المشاريع والوحدات واربطها مباشرة بموقعها داخل المدينة.',
     action: 'استكشف المشاريع',
     href: PROJECTS_URL,
+    requiresAuth: true,
   },
   {
     icon: Landmark,
@@ -50,12 +61,53 @@ const services = [
     text: 'وصول مباشر للخدمات والطلبات والمعاملات الرقمية.',
     action: 'ابدأ الخدمة',
     href: SERVICES_URL,
+    requiresAuth: true,
   },
 ]
 
 export default function App() {
   const root = useRef(null)
+  const accountRef = useRef(null)
+  const [accountOpen, setAccountOpen] = useState(false)
+  const [siteProfile, setSiteProfile] = useState(() => getSiteProfile())
+  const { signOut } = useAdminAuth()
   const { navigateWithTransition, isTransitioning } = usePageTransition()
+
+  useEffect(() => {
+    const syncAccount = () => {
+      setSiteProfile(getSiteProfile())
+      setAccountOpen(false)
+    }
+
+    window.addEventListener('storage', syncAccount)
+    window.addEventListener('focus', syncAccount)
+
+    return () => {
+      window.removeEventListener('storage', syncAccount)
+      window.removeEventListener('focus', syncAccount)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!accountOpen) return undefined
+
+    const closeOnOutsideClick = (event) => {
+      if (!accountRef.current?.contains(event.target)) {
+        setAccountOpen(false)
+      }
+    }
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setAccountOpen(false)
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsideClick)
+    document.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [accountOpen])
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -185,11 +237,149 @@ export default function App() {
       })
     }, root)
 
-    return () => {
-      cancelAnimationFrame(rafId)
-      ctx.revert()
-      lenis.destroy()
+    // ============================================================
+// Access links — mouse width interaction
+// Same technique as hover-1.mp4 reference:
+// requestAnimationFrame + interpolation speed 0.15
+// ============================================================
+
+const accessRail = root.current?.querySelector('.access-rail')
+
+let accessHoverFrame = null
+
+let accessTarget = [1, 1, 1]
+let accessCurrent = [1, 1, 1]
+
+const accessSpeed = 0.15
+
+const animateAccessWidths = () => {
+  if (!accessRail) return
+
+  let stillMoving = false
+
+  accessCurrent = accessCurrent.map((value, index) => {
+    const delta = accessTarget[index] - value
+
+    if (Math.abs(delta) > 0.001) {
+      stillMoving = true
     }
+
+    return value + delta * accessSpeed
+  })
+
+  accessRail.style.gridTemplateColumns = accessCurrent
+    .map((value) => `${value.toFixed(4)}fr`)
+    .join(' ')
+
+  if (stillMoving) {
+    accessHoverFrame = requestAnimationFrame(animateAccessWidths)
+  } else {
+    accessHoverFrame = null
+  }
+}
+
+const startAccessAnimation = () => {
+  if (!accessHoverFrame) {
+    accessHoverFrame = requestAnimationFrame(animateAccessWidths)
+  }
+}
+
+const handleAccessMouseMove = (event) => {
+  if (!accessRail) return
+
+  const rect = accessRail.getBoundingClientRect()
+
+  let mouseX =
+    (event.clientX - rect.left) /
+    rect.width
+
+  mouseX = Math.max(0, Math.min(1, mouseX))
+
+  // الموقع عربي RTL
+  if (getComputedStyle(accessRail).direction === 'rtl') {
+    mouseX = 1 - mouseX
+  }
+
+  // مراكز العناصر الثلاثة
+  const centers = [
+    1 / 6,
+    1 / 2,
+    5 / 6,
+  ]
+
+  const widths = centers.map((center) => {
+    const distance = Math.abs(mouseX - center)
+
+    const influence = Math.max(
+      0,
+      1 - distance / (1 / 3)
+    )
+
+    return 1 + influence * 2
+  })
+
+  // إبقاء العرض الإجمالي ثابت
+  const total = widths.reduce(
+    (sum, value) => sum + value,
+    0
+  )
+
+  accessTarget = widths.map(
+    (value) => (value / total) * 3
+  )
+
+  startAccessAnimation()
+}
+
+const handleAccessMouseLeave = () => {
+  accessTarget = [1, 1, 1]
+
+  startAccessAnimation()
+}
+
+const supportsAccessHover =
+  window.matchMedia(
+    '(hover: hover) and (pointer: fine) and (min-width: 641px)'
+  ).matches
+
+if (supportsAccessHover && accessRail) {
+  accessRail.addEventListener(
+    'pointermove',
+    handleAccessMouseMove
+  )
+
+  accessRail.addEventListener(
+    'pointerleave',
+    handleAccessMouseLeave
+  )
+}
+
+   return () => {
+  cancelAnimationFrame(rafId)
+
+  if (accessHoverFrame) {
+    cancelAnimationFrame(accessHoverFrame)
+  }
+
+  if (accessRail) {
+    accessRail.removeEventListener(
+      'pointermove',
+      handleAccessMouseMove
+    )
+
+    accessRail.removeEventListener(
+      'pointerleave',
+      handleAccessMouseLeave
+    )
+
+    accessRail.style.removeProperty(
+      'grid-template-columns'
+    )
+  }
+
+  ctx.revert()
+  lenis.destroy()
+}
   }, [])
 
   return (
@@ -207,18 +397,72 @@ export default function App() {
       <div className="intro-scroll-space" aria-hidden="true" />
 
       <header className="topbar" aria-label="أدوات الحساب واللغة">
-        <a
-          id="login"
-          className="login-link"
-          href="/login"
-          aria-disabled={isTransitioning}
-          onClick={(event) => {
-            event.preventDefault()
-            navigateWithTransition('/login', { direction: 'forward' })
-          }}
-        >
-          تسجيل الدخول
-        </a>
+        {siteProfile ? (
+          <div className="site-account" ref={accountRef}>
+            <button
+              className="site-account-trigger"
+              type="button"
+              aria-label="فتح قائمة الحساب"
+              aria-haspopup="menu"
+              aria-expanded={accountOpen}
+              onClick={() => setAccountOpen((open) => !open)}
+            >
+              <UserRound aria-hidden="true" />
+              <ChevronDown className="site-account-chevron" aria-hidden="true" />
+            </button>
+
+            {accountOpen && (
+              <div className="site-account-menu" role="menu">
+                <div className="site-account-identity">
+                  <span className="site-account-avatar" aria-hidden="true">
+                    {siteProfile.name.trim().charAt(0)}
+                  </span>
+                  <span>
+                    <strong>{siteProfile.name}</strong>
+                    <small>{siteProfile.role === 'admin' ? 'حساب إداري' : 'حساب مواطن'}</small>
+                  </span>
+                </div>
+                <a
+                  className="site-account-home"
+                  href="/"
+                  role="menuitem"
+                  aria-label="الصفحة الرئيسية"
+                  title="الصفحة الرئيسية"
+                  onClick={() => setAccountOpen(false)}
+                >
+                  <House aria-hidden="true" />
+                </a>
+                <button
+                  className="site-account-logout"
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    signOut()
+                    setSiteAuthenticated(false)
+                    setSiteProfile(null)
+                    setAccountOpen(false)
+                  }}
+                >
+                  <LogOut aria-hidden="true" />
+                  تسجيل الخروج
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <a
+            id="login"
+            className="login-link"
+            href="/login"
+            aria-disabled={isTransitioning}
+            onClick={(event) => {
+              event.preventDefault()
+              navigateWithTransition('/login', { direction: 'forward' })
+            }}
+          >
+            تسجيل الدخول
+          </a>
+        )}
         <a className="header-brand" href="#experience" aria-label="مدينة السلطان هيثم">
           <img src={logo} alt="" />
           <img src={cityName} alt="مدينة السلطان هيثم" />
@@ -253,13 +497,20 @@ export default function App() {
           </div>
 
           <nav className="access-rail" aria-label="بوابات المدينة الرقمية">
-            {services.map(({ icon: Icon, title, text, action, href }) => (
+            {services.map(({ icon: Icon, title, text, action, href, requiresAuth }) => (
               <button
                 className="access-link"
                 key={title}
                 type="button"
                 onClick={() => {
-                  if (href) window.location.assign(href)
+                  if (!href) return
+
+                  if (requiresAuth && !isSiteAuthenticated()) {
+                    window.location.assign(`/login?returnTo=${encodeURIComponent(href)}`)
+                    return
+                  }
+
+                  window.location.assign(href)
                 }}
               >
                 <span className="access-orbit"><Icon size={22} /></span>

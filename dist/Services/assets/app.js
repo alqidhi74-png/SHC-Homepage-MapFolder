@@ -6,6 +6,22 @@
    · تسجيل الدخول · الهيدر التفاعلي مع التمرير · الانتقالات بين الصفحات
    ============================================================ */
 
+/* Require a signed-in site session before any service page can be used. */
+(() => {
+  let authenticated = false;
+
+  try {
+    authenticated = window.localStorage.getItem('sh_site_logged_in_v2') === '1';
+  } catch (_) {
+    authenticated = false;
+  }
+
+  if (!authenticated) {
+    const returnTo = window.location.pathname + window.location.search + window.location.hash;
+    window.location.replace('/login?returnTo=' + encodeURIComponent(returnTo));
+  }
+})();
+
 /* ---------------- بيانات الخدمات (مشتركة) ---------------- */
 const SERVICE_CATALOG = {
   'realestate-reg': {
@@ -213,11 +229,31 @@ function applyLang(lang) {
 function toggleLanguage() { applyLang(currentLang === 'ar' ? 'en' : 'ar'); }
 
 /* ---------------- حالة تسجيل الدخول (مشتركة بين الصفحات) ---------------- */
-const LOGIN_KEY = 'sh_logged_in';
+const LOGIN_KEY = 'sh_site_logged_in_v2';
+const PROFILE_KEY = 'sh_site_profile_v2';
 const MOCK_USER = { id: 'u-1001', name: 'سالم الحارثي', initials: 'س' };
 function isLoggedIn() { try { return localStorage.getItem(LOGIN_KEY) === '1'; } catch (_) { return false; } }
-function setLoggedIn(v) { try { localStorage.setItem(LOGIN_KEY, v ? '1' : '0'); } catch (_) {} }
-function currentUser() { return isLoggedIn() ? MOCK_USER : null; }
+function setLoggedIn(v) {
+  try {
+    if (v) {
+      localStorage.setItem(LOGIN_KEY, '1');
+      if (!localStorage.getItem(PROFILE_KEY)) localStorage.setItem(PROFILE_KEY, JSON.stringify(MOCK_USER));
+    } else {
+      localStorage.removeItem(LOGIN_KEY);
+      localStorage.removeItem(PROFILE_KEY);
+    }
+  } catch (_) {}
+}
+function currentUser() {
+  if (!isLoggedIn()) return null;
+  try {
+    const stored = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+    const name = String(stored?.name || MOCK_USER.name);
+    return { ...MOCK_USER, ...stored, name, initials: String(stored?.initials || name.charAt(0)) };
+  } catch (_) {
+    return MOCK_USER;
+  }
+}
 
 /* طلبات وهمية لعرضها في قائمة "طلباتي" وفي إشعارات المستخدم */
 const MY_REQUESTS = [
@@ -415,14 +451,18 @@ function refreshAccountButton() {
   document.querySelectorAll('#header-account-btn').forEach(btn => {
     const dropdown = btn.parentElement.querySelector('#header-account-dropdown');
     if (isLoggedIn()) {
+      const user = currentUser();
       btn.classList.remove('guest');
-      btn.innerHTML = `<span class="av">${MOCK_USER.initials}</span><span>${MOCK_USER.name.split(' ')[0]} ▾</span>`;
+      btn.classList.add('icon-only');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>`;
       btn.setAttribute('aria-label', currentLang === 'en' ? 'Account menu' : 'قائمة الحساب');
       btn.title = currentLang === 'en' ? 'Account menu' : 'قائمة الحساب';
-      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${MOCK_USER.name}</b><span class="sub">حساب مُسجَّل</span></div>
+      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${escapeHtml(user.name)}</b><span class="sub">حساب مُسجَّل</span></div>
+        <a class="hd-item hd-home" href="/" aria-label="الصفحة الرئيسية" title="الصفحة الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-8 9 8M5 9v12h14V9M9 21v-8h6v8"></path></svg></a>
         <a class="hd-item" href="citizen-data.html" data-dir="down">بياناتي الشخصية</a>
         <div class="hd-sep"></div><div class="hd-item hd-logout" id="hd-logout-btn" role="button" tabindex="0">تسجيل الخروج</div>`;
     } else {
+      btn.classList.remove('icon-only');
       btn.classList.add('guest');
       btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>`;
       btn.setAttribute('aria-label', currentLang === 'en' ? 'Sign in' : 'تسجيل الدخول');
@@ -439,6 +479,7 @@ function refreshAccountButton() {
           setLoggedIn(false); refreshAccountButton(); dropdown.classList.remove('open');
           showToast('تم تسجيل الخروج', 'info');
           document.dispatchEvent(new CustomEvent('sh:authchange', { detail: { loggedIn: false } }));
+          window.setTimeout(() => window.location.replace('/login'), 250);
         };
       } else {
         requireLogin(() => {});
@@ -467,14 +508,7 @@ function standardizeServiceHeader() {
   document.querySelectorAll('.site-header').forEach(header => {
     const home = header.querySelector('.header-svc-btn');
     if (home) {
-      home.classList.add('service-home-button');
-      home.href = '/';
-      home.removeAttribute('data-dir');
-      home.removeAttribute('data-chapter');
-      home.removeAttribute('data-line');
-      home.setAttribute('aria-label', currentLang === 'en' ? 'Home' : 'الرئيسية');
-      home.title = currentLang === 'en' ? 'Home' : 'الرئيسية';
-      home.innerHTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m3 10 9-8 9 8M5 9v12h14V9M9 21v-8h6v8M17 3v4"/></svg>';
+      home.remove();
     }
   });
 }
@@ -623,96 +657,9 @@ function initHeaderScroll() {
   if ('ResizeObserver' in window) new ResizeObserver(setH).observe(header);
 }
 
-/* ---------------- الستارة — الانتقال بين الصفحات ---------------- */
-const OPPOSITE_DIR = { right: 'left', left: 'right', up: 'down', down: 'up' };
-const CURTAIN_EXIT_MS = 340;   /* كان 480ms — أقصر لتبدو التجربة أسرع */
-let isNavigating = false;
-
-/* ---- بنايات حيّة للستارة الانتقالية: نوافذ تومض بهدوء + منارة نابضة ---- */
-const CURTAIN_SKY_BUILDINGS = [
-  { x: 4,   w: 44, h: 58, c: '#3D4E1E' },
-  { x: 56,  w: 38, h: 84, c: '#49111D', win: true },
-  { x: 100, w: 30, h: 50, c: '#143534' },
-  { x: 138, w: 42, h: 96, c: '#49111D', win: true, beacon: true },
-  { x: 188, w: 34, h: 62, c: '#3D4E1E' },
-  { x: 228, w: 28, h: 46, c: '#143534' },
-  { x: 262, w: 46, h: 90, c: '#49111D', win: true },
-  { x: 314, w: 32, h: 56, c: '#3D4E1E' },
-  { x: 352, w: 40, h: 74, c: '#143534', win: true },
-  { x: 398, w: 30, h: 48, c: '#3D4E1E' },
-  { x: 434, w: 44, h: 88, c: '#49111D', win: true },
-  { x: 484, w: 34, h: 58, c: '#143534' },
-  { x: 524, w: 48, h: 78, c: '#3D4E1E', win: true, beacon: true },
-  { x: 578, w: 30, h: 50, c: '#49111D' },
-  { x: 614, w: 40, h: 68, c: '#143534', win: true },
-  { x: 660, w: 34, h: 54, c: '#3D4E1E' },
-  { x: 700, w: 46, h: 82, c: '#49111D', win: true },
-  { x: 752, w: 32, h: 56, c: '#143534' },
-];
-function curtainBuildingSVG(b, seed) {
-  const H = 120, y = H - b.h;
-  let out = `<rect x="${b.x}" y="${y}" width="${b.w}" height="${b.h}" rx="2" fill="${b.c}"/>`;
-  if (b.win) {
-    const cols = Math.max(2, Math.floor(b.w / 14));
-    const rows = Math.max(2, Math.floor(b.h / 20));
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const wx = b.x + 6 + c * ((b.w - 10) / cols);
-        const wy = y + 9 + r * ((b.h - 14) / rows);
-        const lit = (seed + r * 3 + c * 7) % 4 === 0;
-        out += `<rect class="${lit ? 'win-lite' : ''}" x="${wx.toFixed(1)}" y="${wy.toFixed(1)}" width="5" height="7" rx="1" fill="${lit ? '#F1BB4D' : '#F9EDB8'}" opacity="${lit ? '.9' : '.2'}" style="${lit ? `animation-delay:${((seed + r + c) % 9) * 0.5}s` : ''}"/>`;
-      }
-    }
-  }
-  if (b.beacon) {
-    out += `<rect x="${b.x + b.w / 2 - 2}" y="${y - 12}" width="3" height="12" fill="#B39157"/>`;
-    out += `<circle class="beacon" cx="${b.x + b.w / 2 - 0.5}" cy="${y - 14}" r="3.4" fill="#F8633E"/>`;
-  }
-  return out;
-}
-function curtainSkylineSVG() {
-  const body = CURTAIN_SKY_BUILDINGS.map((b, i) => curtainBuildingSVG(b, i)).join('');
-  return `<svg class="curtain-skyline" viewBox="0 -16 800 136" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
-}
-
-function buildCurtain() {
-  if (document.getElementById('page-curtain')) return;
-  const el = document.createElement('div');
-  el.id = 'page-curtain';
-  el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = `
-    <div class="curtain-sweep"></div>
-    <span class="curtain-chapter" id="curtain-chapter"></span>
-    <p class="curtain-line" id="curtain-line"></p>
-    ${curtainSkylineSVG()}`;
-  document.body.appendChild(el);
-}
-
-function playCurtain(dir, chapterText, lineText, cb) {
-  if (isNavigating) return;
-  isNavigating = true;
-  buildCurtain();
-  const curtain = document.getElementById('page-curtain');
-  const chEl = document.getElementById('curtain-chapter');
-  const lnEl = document.getElementById('curtain-line');
-  if (chEl) { chEl.textContent = ''; chEl.hidden = true; }
-  if (lnEl) lnEl.textContent = lineText || '';
-  curtain.dataset.dir = dir || '';
-  try { sessionStorage.setItem('sh_last_dir', dir); sessionStorage.setItem('sh_arrive', '1'); } catch (_) {}
-  document.body.classList.add('is-leaving');
-  if (prefersReducedMotion()) { cb(); return; }
-  /* إطار واحد قبل الإظهار لضمان تشغيل الـ transition */
-  requestAnimationFrame(() => curtain.classList.add('show'));
-  setTimeout(cb, CURTAIN_EXIT_MS);
-}
-
-/* تنفيذ خروج + انتقال حقيقي لصفحة أخرى.
-   إذا كانت الصفحة معروفة في PAGE_FLOW نأخذ نص الفصل منها (ترقيم موحّد لكل الصفحات). */
+/* انتقال مباشر بين صفحات الخدمات بدون شاشة أو مؤثر وسيط. */
 function navigateWithTransition(href, dir, chapterText, lineText) {
-  const info = PAGE_FLOW[String(href).split(/[?#]/)[0]];
-  if (info) { chapterText = chapterLabel(info); lineText = chapterLine(info); }
-  try { sessionStorage.setItem('sh_entry_dir', dir); } catch (_) {}
-  playCurtain(dir, chapterText, lineText, () => { window.location.href = href; });
+  window.location.href = href;
 }
 
 /* تشغيل مؤثر الدخول عند تحميل صفحة جديدة */
@@ -721,7 +668,6 @@ function playEntrance() {
   try { dir = sessionStorage.getItem('sh_entry_dir'); sessionStorage.removeItem('sh_entry_dir'); } catch (_) {}
   const frame = document.querySelector('.site-frame');
   document.body.classList.add('ready');
-  document.body.classList.remove('is-leaving');
   if (!frame) return;
   frame.classList.remove('enter-right', 'enter-left', 'enter-up', 'enter-down', 'enter-plain');
   void frame.offsetWidth; /* إعادة تشغيل الأنيميشن عند الرجوع من bfcache */
@@ -730,15 +676,7 @@ function playEntrance() {
   frame.classList.add(cls);
 }
 
-/* إنهاء "الوصول": الخلفية بلون الستارة تذوب تدريجياً في الصفحة الجديدة (بدون وميض أبيض) */
-function finishArrival() {
-  try { sessionStorage.removeItem('sh_arrive'); } catch (_) {}
-  const root = document.documentElement;
-  if (!root.classList.contains('arriving')) return;
-  setTimeout(() => root.classList.remove('arriving'), 650);
-}
-
-/* ربط روابط التنقل الإبداعي (data-dir + data-chapter + data-line) */
+/* ربط روابط التنقل مع انتقال مباشر. */
 function initPageTransitions() {
   document.addEventListener('click', e => {
     const link = e.target.closest('a[data-dir]');
@@ -750,19 +688,13 @@ function initPageTransitions() {
   const back = document.getElementById('back-arrow-btn');
   if (back) {
     back.addEventListener('click', () => {
-      let lastDir = 'up';
-      try { lastDir = sessionStorage.getItem('sh_last_dir') || 'up'; } catch (_) {}
-      const dir = OPPOSITE_DIR[lastDir] || 'left';
       /* إذا فُتحت الصفحة مباشرة (لا يوجد تاريخ) نرجع للصفحة السابقة في المسار */
       const hasHistory = window.history.length > 1;
       if (!hasHistory && back.dataset.fallback) {
-        navigateWithTransition(back.dataset.fallback, dir);
+        window.location.href = back.dataset.fallback;
         return;
       }
-      try { sessionStorage.setItem('sh_entry_dir', dir); } catch (_) {}
-      playCurtain(dir, back.dataset.chapter || '', back.dataset.line || '', () => {
-        window.history.back();
-      });
+      window.history.back();
     });
   }
 }
@@ -786,15 +718,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initPageTransitions();
   initHeaderScroll();
   playEntrance();
-  finishArrival();
 });
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) {
-    /* رجوع من ذاكرة المتصفح (bfcache): نخفي الستارة التي بقيت ظاهرة من لحظة الخروج */
-    isNavigating = false;
-    document.getElementById('page-curtain')?.classList.remove('show');
-    document.documentElement.classList.remove('arriving');
-    try { sessionStorage.removeItem('sh_arrive'); } catch (_) {}
     playEntrance();
   }
 });

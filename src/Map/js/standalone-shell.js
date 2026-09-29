@@ -36,13 +36,21 @@ const queryObj=()=>{const q={};new URLSearchParams(location.search).forEach((v,k
 const NAV=[['home','الرئيسية','Home','/'],['map','الخريطة التفاعلية','Interactive Map','/map'],['city3d','المدينة ثلاثية الأبعاد','3D City','/city3d']];
 const brandT=()=>`<span class="brand-t"><b>مدينة السلطان هيثم</b><i>Sultan Haitham City</i></span>`;
 function renderHeader(){const k=CUR.key;
+  if(k==='city3d'&&document.querySelector('.shc-portal-header'))return;
   $('#hdr').innerHTML=`<div class="hdr-in wrap"><div class="hdr-r"><a class="brand" data-go="/" aria-label="${_('الرئيسية','Home')}">${logo(46)}${brandT()}</a><nav class="nav" aria-label="${_('التنقل الرئيسي','Main')}">${NAV.map(n=>`<a class="${k===n[0]?'on':''}" data-go="${n[3]}" ${k===n[0]?'aria-current="page"':''}>${_(n[1],n[2])}</a>`).join('')}</nav></div>
   <div class="hdr-l"><button class="lang" data-act="lang" aria-label="${_('تغيير اللغة','Switch language')}">${ic('globe',16)}<span class="${S.lang==='ar'?'on':''}">AR</span><span class="${S.lang==='en'?'on':''}">EN</span></button>
   <button class="burger" data-act="menu" aria-label="${_('القائمة','Menu')}" aria-expanded="false">${ic('menu',28)}</button></div></div>`;
   $('#mob').innerHTML=`<div class="mob-top"><a class="brand" data-go="/">${logo(42)}${brandT()}</a><button class="burger" data-act="menu" aria-label="${_('إغلاق','Close')}">${ic('close',28)}</button></div><nav class="mob-nav">${NAV.map((n,i)=>`<a data-go="${n[3]}" style="--i:${i}" class="${k===n[0]?'on':''}">${_(n[1],n[2])}${ic('arrow',20,'dirx')}</a>`).join('')}</nav><div class="mob-bot"><button class="btn btn-ghost" data-act="lang">${ic('globe',16)}${S.lang==='ar'?'English':'العربية'}</button></div>`;
 }
 function toggleMenu(on){const m=$('#mob');on=on===undefined?!m.classList.contains('on'):on;m.classList.toggle('on',on);document.body.classList.toggle('noscroll',on);$$('.burger').forEach(b=>b.setAttribute('aria-expanded',on))}
-function applyLang(){document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='ar'?'rtl':'ltr'}
+function applyLang(lang){
+  const fromUnifiedHeader=lang==='ar'||lang==='en';
+  if(fromUnifiedHeader){S.lang=lang;store.set('lang',S.lang)}
+  document.documentElement.lang=S.lang;
+  document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';
+  document.querySelectorAll('.shc-portal-language [data-shc-lang]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.shcLang===S.lang)));
+  if(fromUnifiedHeader&&CUR.key&&PAGES[CUR.key])renderPage(false);
+}
 
 /* ---- render the one page ---- */
 function renderPage(first){
@@ -67,6 +75,12 @@ function bootStandalone(key){
   CUR={key};
   document.documentElement.style.setProperty('--pat',PATTERN);applyLang();
   document.body.dataset.page=key;document.body.classList.add('immersive');
-  document.body.insertAdjacentHTML('afterbegin',`<a class="skip" href="#view" data-act="skip">${_('تخطي إلى المحتوى','Skip to content')}</a><header class="hdr" id="hdr"></header><div class="mobmenu" id="mob"></div><main id="view" tabindex="-1"></main><div id="ovl"></div><div id="toasts" aria-live="polite"></div>`);
+  const unifiedHeader=key==='city3d'?document.querySelector('.shc-portal-header'):null;
+  if(unifiedHeader){
+    document.body.insertAdjacentHTML('afterbegin',`<a class="skip" href="#view" data-act="skip">${_('تخطي إلى المحتوى','Skip to content')}</a>`);
+    unifiedHeader.insertAdjacentHTML('afterend','<main id="view" tabindex="-1"></main><div id="ovl"></div><div id="toasts" aria-live="polite"></div>');
+  }else{
+    document.body.insertAdjacentHTML('afterbegin',`<a class="skip" href="#view" data-act="skip">${_('تخطي إلى المحتوى','Skip to content')}</a><header class="hdr" id="hdr"></header><div class="mobmenu" id="mob"></div><main id="view" tabindex="-1"></main><div id="ovl"></div><div id="toasts" aria-live="polite"></div>`);
+  }
   renderPage(true);
 }

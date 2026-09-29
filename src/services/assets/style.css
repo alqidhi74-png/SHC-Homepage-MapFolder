@@ -253,6 +253,7 @@ body.mobile-mode .sys-form-grid{grid-template-columns:1fr;}
 .header-account-btn > svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
 .header-account-btn .av{width:20px;height:20px;border-radius:50%;background:var(--gold-gradient);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--velvet);font-weight:700;flex-shrink:0;}
 .header-account-btn.guest{width:34px;height:34px;padding:0;justify-content:center;border-radius:50%;}
+.header-account-btn.icon-only{width:34px;height:34px;padding:0;justify-content:center;border-radius:50%;}
 
 .header-dropdown-wrap{position:relative;}
 .header-dropdown{
@@ -350,45 +351,6 @@ html[dir="ltr"] .site-frame.enter-left{animation-name:enterFromRight;}
   .site-frame{opacity:1 !important;animation:none !important;}
 }
 
-/* ============ PAGE VEIL (calm cross-page transition) ============ */
-#page-curtain{
-  position:fixed;inset:0;z-index:999;pointer-events:none;opacity:0;visibility:hidden;
-  background:radial-gradient(ellipse at 50% 30%,rgba(73,17,29,.94) 0%,rgba(20,53,52,.93) 62%,rgba(12,16,14,.96) 100%);
-  display:flex;align-items:flex-end;justify-content:center;overflow:hidden;
-  transition:opacity .26s ease, visibility 0s linear .26s;
-}
-#page-curtain.show{transition:opacity .22s ease, visibility 0s;}
-#page-curtain.show{opacity:1;visibility:visible;pointer-events:auto;}
-/* single soft gold light-sweep, no spinning */
-#page-curtain .curtain-sweep{
-  position:absolute;inset:0;overflow:hidden;opacity:0;
-}
-#page-curtain .curtain-sweep:before{
-  content:"";position:absolute;top:-10%;bottom:-10%;width:40%;
-  background:linear-gradient(90deg, transparent, rgba(249,237,184,.14), transparent);
-  transform:translateX(-140%) skewX(-8deg);
-}
-#page-curtain.show .curtain-sweep{opacity:1;}
-#page-curtain.show .curtain-sweep:before{animation:veilShimmer .9s cubic-bezier(.4,.1,.2,1) both;}
-@keyframes veilShimmer{from{transform:translateX(-140%) skewX(-8deg);}to{transform:translateX(240%) skewX(-8deg);}}
-#page-curtain .curtain-chapter{
-  position:absolute;top:26%;left:50%;transform:translate(-50%,8px);opacity:0;
-  font-family:var(--font-body);font-size:11px;letter-spacing:3px;color:var(--gold-mid);
-  transition:opacity .4s ease .06s, transform .5s cubic-bezier(.2,.7,.2,1) .06s;
-}
-#page-curtain .curtain-line{
-  position:absolute;top:32%;left:50%;transform:translate(-50%,10px);opacity:0;text-align:center;
-  font-family:var(--font-display);color:var(--gold-light);font-size:clamp(19px,3.2vw,29px);max-width:min(90vw,520px);line-height:1.4;margin:0;
-  transition:opacity .45s ease .12s, transform .55s cubic-bezier(.2,.7,.2,1) .12s;
-}
-#page-curtain.show .curtain-chapter,#page-curtain.show .curtain-line{opacity:1;transform:translate(-50%,0);}
-#page-curtain .curtain-skyline{width:120%;max-width:none;height:34vh;opacity:.85;transform:translateY(60%);transition:transform .65s cubic-bezier(.16,.9,.2,1), opacity .5s ease;}
-#page-curtain.show .curtain-skyline{transform:translateY(0);}
-#page-curtain .curtain-skyline .win-lite{animation:winBlink 4s ease-in-out infinite;}
-#page-curtain .curtain-skyline .beacon{animation:beaconPulse 1.6s ease-in-out infinite;transform-origin:center;}
-@media(prefers-reduced-motion:reduce){
-  #page-curtain *{animation:none !important;transition:none !important;}
-}
 /* ============ بروز إبداعي عند اختيار الخدمة / ابدأ الطلب ============ */
 /* ===== Service card hover / 3D lift effect ===== */
 .svc-card2{
@@ -487,11 +449,6 @@ html[dir="ltr"] .site-frame.enter-left{animation-name:enterFromRight;}
   --hdr-h:68px;
 }
 
-/* ---------- وصول بين الصفحات: خلفية بلون الستارة تذوب في الصفحة الجديدة ---------- */
-html.arriving{background:radial-gradient(ellipse at 50% 30%,#44121c 0%,#163230 62%,#0c100e 100%) fixed #1b1b1d;}
-body.is-leaving .site-frame{transition:transform .34s var(--ease-soft), opacity .34s ease;transform:scale(.992);opacity:.85;}
-#page-curtain[data-dir]{background-color:transparent;}
-
 /* ---------- عنصر مراقبة التمرير (للهيدر) ---------- */
 .scroll-sentinel{position:absolute;top:72px;left:0;width:1px;height:1px;pointer-events:none;visibility:hidden;}
 
@@ -530,6 +487,26 @@ body.is-scrolled .site-header .logo-word b{font-size:13px;}
 .header-svc-btn,.header-icon-btn,.header-account-btn,.back-arrow{transition:background-color .2s ease, border-color .2s ease, transform .15s ease;}
 .header-svc-btn:active,.header-icon-btn:active,.header-account-btn:active{transform:scale(.94);}
 .header-dropdown a.hd-item{text-decoration:none;}
+.header-dropdown .hd-home{display:grid;place-items:center;width:36px;height:36px;margin:6px 10px 2px;padding:0;color:var(--velvet);border:1px solid rgba(179,145,87,.28);border-radius:9px;background:rgba(179,145,87,.06);}
+.header-dropdown .hd-home:hover{border-color:rgba(179,145,87,.62);background:rgba(179,145,87,.14);}
+.header-dropdown .hd-home svg{width:18px;height:18px;fill:none;stroke:var(--gold-dark);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.header-account-wrap .header-dropdown{right:0;left:auto;}
+html[dir="ltr"] .header-account-wrap .header-dropdown{right:auto;left:0;}
+
+@media(max-width:760px){
+  .header-account-wrap .header-dropdown,
+  html[dir="ltr"] .header-account-wrap .header-dropdown{
+    position:fixed;
+    top:64px;
+    right:12px;
+    left:12px;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    z-index:1500;
+  }
+  .header-account-wrap .header-dropdown .hd-item{white-space:normal;}
+}
 
 /* ---------- الأزرار ---------- */
 .btn-gold{position:relative;text-decoration:none;transition:transform .18s var(--ease-out), box-shadow .25s ease, filter .2s ease;box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 6px 14px -10px rgba(73,17,29,.55);}
@@ -1005,6 +982,5 @@ body[data-page="request-docs"] #btn-step2-next>span:last-child{position:absolute
   .site-header,.site-header *,.svc-toolbar,.sys-search,.btn-gold,.btn-ghost,.doc-card,.toast,.bar i{transition-duration:.01ms !important;}
   .skel:after,.fade-in,.doc-card.need-attention,.st-uploading:before{animation:none !important;}
   .svc-card2:hover{transform:none !important;}
-  body.is-leaving .site-frame{transform:none;}
   .btn-spinner{animation-duration:1.4s;}
 }
