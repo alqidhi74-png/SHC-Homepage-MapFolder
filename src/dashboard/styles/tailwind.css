@@ -20,7 +20,7 @@
   --color-gold-light: #f9edb8;
   --color-gold-dark: #b39157;
 
-  --font-sans: 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+  --font-sans: 'IBM Plex Sans Arabic', sans-serif;
 
   --radius-card: 1rem;
 }

@@ -3,7 +3,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let lang = 'ar', mode = 'satellite', category = 'all', selectedDistrict = 'nb5', selectedBuilding = null, activeTab = 'overview', facilityFilter = null;
+  let lang = (()=>{try{return localStorage.getItem('sh_lang')==='en'?'en':'ar'}catch(_){return'ar'}})(), mode = 'satellite', category = 'all', selectedDistrict = 'nb5', selectedBuilding = null, activeTab = 'overview', facilityFilter = null;
   const tr = (ar, en) => lang === 'ar' ? ar : en;
   const mobile = () => innerWidth <= 760;
   const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 950;
@@ -308,6 +308,13 @@
       setCategory(layer);
       return true;
     }
+    if(layer==='green') {
+      setCategory('all');
+      const green=$('[data-layer="green"]');
+      if(green)green.checked=true;
+      applyLayers();scheduleMarkers();
+      return true;
+    }
     if(!markerLayerKeys.includes(layer)||['district-labels','investment'].includes(layer))return false;
     if(!layersBeforeFilter)layersBeforeFilter=Object.fromEntries(markerLayerKeys.map(key=>[key,layerEnabled(key)]));
     markCategory('facilities');
@@ -354,9 +361,10 @@
     host.hidden=false;$('#searchInput').setAttribute('aria-expanded','true');
     $$('[data-result]',host).forEach(el=>el.onclick=()=>{matches[+el.dataset.result].action();closeSearch();$('#searchInput').blur();});
   }
-  function setLanguage(next){
-    if(!['ar','en'].includes(next)||next===lang)return;
+  function setLanguage(next,force=false){
+    if(!['ar','en'].includes(next)||(!force&&next===lang))return;
     lang=next;document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+    try{localStorage.setItem('sh_lang',lang)}catch(_){}
     $$('[data-en]').forEach(el=>el.textContent=el.dataset[lang]);
     $$('.header-actions a').forEach(el=>el.title=$('[data-en]',el).textContent);
     $$('[data-language]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.language===lang)));
@@ -412,7 +420,7 @@
   map.on('load',()=>{
     clearTimeout(loadTimeout);
     try {
-      addPlanLayers();ready=true;addMarkers();bindUI();
+      addPlanLayers();ready=true;addMarkers();bindUI();setLanguage(lang,true);
       toggleLayers(innerWidth>1000);applyLayers();renderCard();cardVisible(false);setHighlight(null);overview(0);
       const params=new URLSearchParams(location.search);
       if(params.has('bld'))selectBuilding(buildingById.get(params.get('bld')));

@@ -54,9 +54,7 @@
 }
 
 .login-languages span {
-  width: 1px;
-  height: 25px;
-  background: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .login-languages a {

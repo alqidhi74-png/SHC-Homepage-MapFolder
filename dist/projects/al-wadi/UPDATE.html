@@ -54,6 +54,17 @@
             overflow-x: hidden;
         }
 
+        html[dir="ltr"] body { direction: ltr; }
+        html[dir="ltr"] .search-box input { padding: 0 12px 0 42px; }
+        html[dir="ltr"] .search-icon { right: auto; left: 14px; }
+        html[dir="ltr"] .status { right: auto; left: 12px; }
+        html[dir="ltr"] .heart { left: auto; right: 12px; }
+        html[dir="ltr"] .floor-menu { left: auto; right: 20px; }
+        html[dir="ltr"] .interior-popup { right: auto; left: 25px; }
+        html[dir="ltr"] .close-modal-btn { left: auto; right: 15px; }
+        html[dir="ltr"] .form-group,
+        html[dir="ltr"] .order-summary { text-align: left; }
+
         /* طبقة الترانزيشن بين الصفحات */
         #transition-overlay {
             position: fixed;
@@ -328,69 +339,69 @@
             </nav>
 
             <div class="hero-title-sec">
-                <h1>العقارات المتاحة للتمليك</h1>
+                <h1 data-i18n="heroTitle">العقارات المتاحة للتمليك</h1>
             </div>
 
             <div class="filter-wrapper">
-                <button class="mobile-filter" onclick="openFilters()">☰ &nbsp; تصفية العقارات</button>
+                <button class="mobile-filter" onclick="openFilters()">☰ &nbsp; <span data-i18n="filterProperties">تصفية العقارات</span></button>
                 <div class="filters">
                     <div class="filter-item search-box">
-                        <label>بحث</label>
+                        <label data-i18n="search">بحث</label>
                         
                         
                         <input id="search" type="text" placeholder="بالاسم أو رقم القطعة" onkeyup="filterProperties()">
                     </div>
 
                     <div class="filter-item">
-                        <label>نوع العقار</label>
+                        <label data-i18n="propertyType">نوع العقار</label>
                         <select id="typeFilter" onchange="filterProperties()">
-                            <option value="">الكل</option>
-                            <option value="شقة">شقة</option>
-                            <option value="فيلا">فيلا</option>
-                            <option value="تاون هاوس">تاون هاوس</option>
-                            <option value="تجاري">تجاري</option>
+                            <option value="" data-i18n="all">الكل</option>
+                            <option value="apartment" data-i18n="apartment">شقة</option>
+                            <option value="villa" data-i18n="villa">فيلا</option>
+                            <option value="townhouse" data-i18n="townhouse">تاون هاوس</option>
+                            <option value="commercial" data-i18n="commercial">تجاري</option>
                         </select>
                     </div>
 
                     <div class="filter-item">
-                        <label>الحي</label>
+                        <label data-i18n="district">الحي</label>
                         <select id="districtFilter" onchange="filterProperties()">
-                            <option value="">كل الأحياء</option>
-                            <option value="حي المروج">حي المروج</option>
-                            <option value="حي الواحة">حي الواحة</option>
-                            <option value="حي النسيم">حي النسيم</option>
+                            <option value="" data-i18n="allDistricts">كل الأحياء</option>
+                            <option value="meadows" data-i18n="meadows">حي المروج</option>
+                            <option value="oasis" data-i18n="oasis">حي الواحة</option>
+                            <option value="breeze" data-i18n="breeze">حي النسيم</option>
                         </select>
                     </div>
 
                     <div class="filter-item">
-                        <label>عدد الغرف</label>
+                        <label data-i18n="roomsCount">عدد الغرف</label>
                         <select id="roomsFilter" onchange="filterProperties()">
-                            <option value="">الكل</option>
-                            <option value="2">غرفتين+</option>
-                            <option value="3">3 غرف+</option>
-                            <option value="4">4 غرف+</option>
-                            <option value="5">5 غرف+</option>
+                            <option value="" data-i18n="all">الكل</option>
+                            <option value="2" data-i18n="twoRooms">غرفتين+</option>
+                            <option value="3" data-i18n="threeRooms">3 غرف+</option>
+                            <option value="4" data-i18n="fourRooms">4 غرف+</option>
+                            <option value="5" data-i18n="fiveRooms">5 غرف+</option>
                         </select>
                     </div>
 
                     <div class="filter-item">
-                        <label>الحالة</label>
+                        <label data-i18n="status">الحالة</label>
                         <select id="statusFilter" onchange="filterProperties()">
-                            <option value="">الكل</option>
-                            <option value="متاح">متاح</option>
-                            <option value="محجوز">محجوز</option>
-                            <option value="تحت الإنشاء">تحت الإنشاء</option>
+                            <option value="" data-i18n="all">الكل</option>
+                            <option value="available" data-i18n="available">متاح</option>
+                            <option value="reserved" data-i18n="reserved">محجوز</option>
+                            <option value="construction" data-i18n="construction">تحت الإنشاء</option>
                         </select>
                     </div>
 
-                    <button class="clear-btn" onclick="clearFilters()">مسح الكل</button>
+                    <button class="clear-btn" onclick="clearFilters()" data-i18n="clearAll">مسح الكل</button>
                 </div>
             </div>
         </header>
 
         <main class="content">
             <div class="results-header">
-                <h2>عدد النتائج: <strong id="resultCount">8</strong> وحدة</h2>
+                <h2><span data-i18n="results">عدد النتائج</span>: <strong id="resultCount">8</strong> <span data-i18n="units">وحدة</span></h2>
                 <div class="controls">
                     <button class="control-btn active" title="عرض شبكي">▦</button>
                     <button class="control-btn" title="عرض الخريطة" onclick="scrollToBuilding()">◫</button>
@@ -405,11 +416,11 @@
                     <div class="building-overlay"></div>
 
                     <div class="floor-menu">
-                        <button onclick="showApartment('a5')">الطابق 5</button>
-                        <button onclick="showApartment('a4')">الطابق 4</button>
-                        <button onclick="showApartment('a3')">الطابق 3</button>
-                        <button onclick="showApartment('a2')">الطابق 2</button>
-                        <button onclick="showApartment('a1')">الطابق 1</button>
+                        <button onclick="showApartment('a5')"><span data-floor="5">الطابق 5</span></button>
+                        <button onclick="showApartment('a4')"><span data-floor="4">الطابق 4</span></button>
+                        <button onclick="showApartment('a3')"><span data-floor="3">الطابق 3</span></button>
+                        <button onclick="showApartment('a2')"><span data-floor="2">الطابق 2</span></button>
+                        <button onclick="showApartment('a1')"><span data-floor="1">الطابق 1</span></button>
                     </div>
 
                     <div class="apartment a1" onclick="showApartment('a1')" onmouseenter="showApartment('a1')" title="شقة 105"></div>
@@ -429,7 +440,7 @@
                             <img id="room2" src="" alt="غرفة" onclick="openImageLightbox(this.src, this.alt)">
                             <img id="room3" src="" alt="غرفة" onclick="openImageLightbox(this.src, this.alt)">
                         </div>
-                        <div class="apartment-info">🛏 3 غرف &nbsp;&nbsp; 🚿 3 دورات مياه &nbsp;&nbsp; 📐 185 م²</div>
+                        <div class="apartment-info" id="apartmentInfo">🛏 3 غرف &nbsp;&nbsp; 🚿 3 دورات مياه &nbsp;&nbsp; 📐 185 م²</div>
                         <div class="popup-price">OMR 32,000</div>
                     </div>
                 </div>
@@ -438,15 +449,15 @@
            <br><br/>
 
             <div style="text-align:center">
-                <button onclick="showMore()" style="background:var(--burgundy); border:1px solid var(--gold); color:var(--gold); border-radius:50px; padding:12px 35px; cursor:pointer; font-weight:bold; font-size:15px;">عرض المزيد</button>
+                <button onclick="showMore()" data-i18n="showMore" style="background:var(--burgundy); border:1px solid var(--gold); color:var(--gold); border-radius:50px; padding:12px 35px; cursor:pointer; font-weight:bold; font-size:15px;">عرض المزيد</button>
             </div>
         </main>
 
         <section class="footer-banner">
             <div class="footer-icon">🏢</div>
             <div>
-                <h2>العقارات التي تناسبك .. في مكان واحد</h2>
-                <p>اكتشف أفضل الخيارات السكنية والتجارية داخل مدينة السلطان هيثم.</p>
+                <h2 data-i18n="footerTitle">العقارات التي تناسبك .. في مكان واحد</h2>
+                <p data-i18n="footerText">اكتشف أفضل الخيارات السكنية والتجارية داخل مدينة السلطان هيثم.</p>
             </div>
         </section>
     </div>
@@ -460,7 +471,7 @@
                 <div class="booking-header-info">
                     <h2 id="bookingTitle">فيلا الواحة</h2>
                     <span class="sub-title" id="bookingSub">مشروع الواحة · حي الواحة</span>
-                    <div class="price-tag">سعر العقار التمليكي: OMR <span id="bookingFullPrice">85,000</span></div>
+                    <div class="price-tag"><span data-i18n="propertyPrice">سعر العقار التمليكي</span>: OMR <span id="bookingFullPrice">85,000</span></div>
                 </div>
                 <img id="bookingImg" src="" alt="صورة العقار">
             </div>
@@ -468,54 +479,54 @@
             <form onsubmit="confirmBooking(event)">
                 <div class="booking-form">
                     <div class="form-group full">
-                        <label>الاسم الكامل للمشتري</label>
-                        <input type="text" placeholder="أدخل اسمك كما في البطاقة الشخصية" required>
+                        <label data-i18n="fullName">الاسم الكامل للمشتري</label>
+                        <input id="buyerName" type="text" placeholder="أدخل اسمك كما في البطاقة الشخصية" required>
                     </div>
 
                     <div class="form-group">
-                        <label>رقم الهاتف / الواتساب</label>
+                        <label data-i18n="phone">رقم الهاتف / الواتساب</label>
                         <input type="tel" placeholder="+968 0000 0000" required>
                     </div>
 
                     <div class="form-group">
-                        <label>رقم الرقم المدني / الهوية</label>
+                        <label data-i18n="civilId">رقم الرقم المدني / الهوية</label>
                         <input type="text" placeholder="12345678" required>
                     </div>
 
                     <div class="form-group">
-                        <label>طريقة الشراء والمتابعة</label>
+                        <label data-i18n="purchaseMethod">طريقة الشراء والمتابعة</label>
                         <select id="paymentType" onchange="calculateTotal()">
-                            <option value="full">دفع نقدي كامل (100%)</option>
-                            <option value="deposit">عربون حجز (10%)</option>
-                            <option value="finance">خطة تمويل عقاري</option>
+                            <option value="full" data-i18n="fullPayment">دفع نقدي كامل (100%)</option>
+                            <option value="deposit" data-i18n="deposit">عربون حجز (10%)</option>
+                            <option value="finance" data-i18n="finance">خطة تمويل عقاري</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>البريد الإلكتروني</label>
+                        <label data-i18n="email">البريد الإلكتروني</label>
                         <input type="email" placeholder="example@domain.com" required>
                     </div>
                 </div>
 
                 <!-- ملخص طلب شراء وتملك العقار -->
                 <div class="order-summary">
-                    <h3>ملخص طلب شراء وتملك العقار</h3>
+                    <h3 data-i18n="summaryTitle">ملخص طلب شراء وتملك العقار</h3>
                     <div class="summary-row">
-                        <span>سعر العقار الإجمالي:</span>
+                        <span data-i18n="totalPrice">سعر العقار الإجمالي:</span>
                         <span>OMR <span id="summaryFullPrice">85,000</span></span>
                     </div>
                     <div class="summary-row">
-                        <span>رسوم الإجراءات والمعاملات والتمليك:</span>
+                        <span data-i18n="fees">رسوم الإجراءات والمعاملات والتمليك:</span>
                         <span>OMR <span id="regFee">250</span></span>
                     </div>
                     <div class="summary-divider"></div>
                     <div class="total-row">
-                        <span>المبلغ المطلوب في هذا الطلب:</span>
+                        <span data-i18n="amountDue">المبلغ المطلوب في هذا الطلب:</span>
                         <span>OMR <span id="grandTotal">85,250</span></span>
                     </div>
                 </div>
 
-                <button type="submit" class="confirm-booking-btn">تأكيد طلب التمليك وحجز العقار الآن 🔑</button>
+                <button type="submit" class="confirm-booking-btn" data-i18n="confirmBooking">تأكيد طلب التمليك وحجز العقار الآن 🔑</button>
             </form>
         </div>
     </div>
@@ -548,11 +559,23 @@
                 });
         }
 
+        const I18N = {
+            ar: {
+                heroTitle:'العقارات المتاحة للتمليك', filterProperties:'تصفية العقارات', search:'بحث', propertyType:'نوع العقار', all:'الكل', apartment:'شقة', villa:'فيلا', townhouse:'تاون هاوس', commercial:'تجاري', district:'الحي', allDistricts:'كل الأحياء', meadows:'حي المروج', oasis:'حي الواحة', breeze:'حي النسيم', roomsCount:'عدد الغرف', twoRooms:'غرفتين+', threeRooms:'3 غرف+', fourRooms:'4 غرف+', fiveRooms:'5 غرف+', status:'الحالة', available:'متاح', reserved:'محجوز', construction:'تحت الإنشاء', clearAll:'مسح الكل', results:'عدد النتائج', units:'وحدة', showMore:'عرض المزيد', footerTitle:'العقارات التي تناسبك .. في مكان واحد', footerText:'اكتشف أفضل الخيارات السكنية والتجارية داخل مدينة السلطان هيثم.', propertyPrice:'سعر العقار التمليكي', fullName:'الاسم الكامل للمشتري', phone:'رقم الهاتف / الواتساب', civilId:'الرقم المدني / الهوية', purchaseMethod:'طريقة الشراء والمتابعة', fullPayment:'دفع نقدي كامل (100%)', deposit:'عربون حجز (10%)', finance:'خطة تمويل عقاري', email:'البريد الإلكتروني', summaryTitle:'ملخص طلب شراء وتملك العقار', totalPrice:'سعر العقار الإجمالي:', fees:'رسوم الإجراءات والمعاملات والتمليك:', amountDue:'المبلغ المطلوب في هذا الطلب:', confirmBooking:'تأكيد طلب التمليك وحجز العقار الآن 🔑', bookNow:'احجز الآن', details:'التفاصيل', rooms:'غرف', bathrooms:'دورات مياه', floor:'الطابق', city:'مدينة السلطان هيثم', gridView:'عرض شبكي', mapView:'عرض الخريطة'
+            },
+            en: {
+                heroTitle:'Properties Available for Ownership', filterProperties:'Filter properties', search:'Search', propertyType:'Property type', all:'All', apartment:'Apartment', villa:'Villa', townhouse:'Townhouse', commercial:'Commercial', district:'District', allDistricts:'All districts', meadows:'Al Muruj District', oasis:'Al Waha District', breeze:'Al Naseem District', roomsCount:'Bedrooms', twoRooms:'2+ bedrooms', threeRooms:'3+ bedrooms', fourRooms:'4+ bedrooms', fiveRooms:'5+ bedrooms', status:'Status', available:'Available', reserved:'Reserved', construction:'Under construction', clearAll:'Clear all', results:'Results', units:'units', showMore:'Show more', footerTitle:'The right properties for you, all in one place', footerText:'Discover the best residential and commercial options in Sultan Haitham City.', propertyPrice:'Property price', fullName:'Buyer full name', phone:'Phone / WhatsApp', civilId:'Civil ID', purchaseMethod:'Purchase and follow-up method', fullPayment:'Full cash payment (100%)', deposit:'Reservation deposit (10%)', finance:'Mortgage finance plan', email:'Email address', summaryTitle:'Property ownership request summary', totalPrice:'Total property price:', fees:'Processing and ownership fees:', amountDue:'Amount due with this request:', confirmBooking:'Confirm ownership request and reserve now 🔑', bookNow:'Book now', details:'Details', rooms:'bedrooms', bathrooms:'bathrooms', floor:'Floor', city:'Sultan Haitham City', gridView:'Grid view', mapView:'Map view'
+            }
+        };
+        let pageLang = (() => { try { return localStorage.getItem('sh_lang') === 'en' ? 'en' : 'ar'; } catch (_) { return 'ar'; } })();
+        const txt = key => I18N[pageLang][key] || key;
+        const localValue = (item, key) => item[key + (pageLang === 'en' ? 'En' : 'Ar')];
+
         const properties = [
-            { id: 1, title: 'فيلا الواحة', type: 'فيلا', district: 'حي الواحة', project: 'مشروع الواحة', rooms: 5, price: 85000, status: 'متاح', img: 'uu.jpeg', link: 'details.html' },
-            { id: 2, title: ' مساكن الوادي', type: 'شقة', district: 'حي المروج', project: 'مشروع المروج', rooms: 3, price: 41000, status: 'متاح', img: 'image/b.jpg', link: 'index.html', hideBooking: true },
-            { id: 3, title: 'تاون هاوس النسيم', type: 'تاون هاوس', district: 'حي النسيم', project: 'مشروع النسيم', rooms: 4, price: 29000, status: 'محجوز', img: 'image/c.jpg', link: 'details.html' },
-            { id: 4, title: 'مجمع تجاري الواحة', type: 'تجاري', district: 'حي الواحة', project: 'مشروع الواحة', rooms: 2, price: 35000, status: 'تحت الإنشاء', img: 'image/d.jpg', link: 'details.html' }
+            { id: 1, titleAr: 'فيلا الواحة', titleEn: 'Al Waha Villa', type: 'villa', district: 'oasis', projectAr: 'مشروع الواحة', projectEn: 'Al Waha Project', rooms: 5, price: 85000, status: 'available', img: 'uu.jpeg', link: 'details.html' },
+            { id: 2, titleAr: 'مساكن الوادي', titleEn: 'Al Wadi Residences', type: 'apartment', district: 'meadows', projectAr: 'مشروع المروج', projectEn: 'Al Muruj Project', rooms: 3, price: 41000, status: 'available', img: 'image/b.jpg', link: 'index.html', hideBooking: true },
+            { id: 3, titleAr: 'تاون هاوس النسيم', titleEn: 'Al Naseem Townhouse', type: 'townhouse', district: 'breeze', projectAr: 'مشروع النسيم', projectEn: 'Al Naseem Project', rooms: 4, price: 29000, status: 'reserved', img: 'image/c.jpg', link: 'details.html' },
+            { id: 4, titleAr: 'مجمع تجاري الواحة', titleEn: 'Al Waha Commercial Complex', type: 'commercial', district: 'oasis', projectAr: 'مشروع الواحة', projectEn: 'Al Waha Project', rooms: 2, price: 35000, status: 'construction', img: 'image/d.jpg', link: 'details.html' }
         ];
 
         let currentSelectedProperty = null;
@@ -562,28 +585,30 @@
             grid.innerHTML = '';
 
             items.forEach((item) => {
-                let statusClass = item.status === 'متاح' ? 'available' : (item.status === 'محجوز' ? 'reserved' : 'under-construction');
-                let detailsUrl = (item.title.includes('المروج') || item.id === 2) ? 'index.html' : (item.link || 'details.html');
+                const title = localValue(item, 'title');
+                const district = txt(item.district);
+                let statusClass = item.status === 'available' ? 'available' : (item.status === 'reserved' ? 'reserved' : 'under-construction');
+                let detailsUrl = item.id === 2 ? 'index.html' : (item.link || 'details.html');
 
                 let actionButtons = item.hideBooking 
-                    ? `<a href="${detailsUrl}" class="btn-details" style="width: 100%;" onclick="navigateWithTransition(event, '${detailsUrl}')">التفاصيل</a>`
-                    : `<button class="booking-btn" onclick="openBookingModal(${item.id})">احجز الآن</button>
-                       <a href="${detailsUrl}" class="btn-details" onclick="navigateWithTransition(event, '${detailsUrl}')">التفاصيل</a>`;
+                    ? `<a href="${detailsUrl}" class="btn-details" style="width: 100%;" onclick="navigateWithTransition(event, '${detailsUrl}')">${txt('details')}</a>`
+                    : `<button class="booking-btn" onclick="openBookingModal(${item.id})">${txt('bookNow')}</button>
+                       <a href="${detailsUrl}" class="btn-details" onclick="navigateWithTransition(event, '${detailsUrl}')">${txt('details')}</a>`;
 
                 grid.innerHTML += `
                     <div class="card">
                         <div class="card-image">
-                            <img src="${item.img}" alt="${item.title}" onclick="openImageLightbox('${item.img}', '${item.title}')">
-                            <span class="status ${statusClass}">${item.status}</span>
+                            <img src="${item.img}" alt="${title}" onclick="openImageLightbox('${item.img}', '${title}')">
+                            <span class="status ${statusClass}">${txt(item.status)}</span>
                             <button class="heart" onclick="saveProperty(this)">♡</button>
                         </div>
                         <div class="card-body">
-                            <div class="card-title">${item.title}</div>
-                            <div class="project">${item.district} - مدينة السلطان هيثم</div>
+                            <div class="card-title">${title}</div>
+                            <div class="project">${district} - ${txt('city')}</div>
                             <div class="features">
-                                <span>🛏 ${item.rooms} غرف</span>
+                                <span>🛏 ${item.rooms} ${txt('rooms')}</span>
                                 <span>📐 240 م²</span>
-                                <span>🏡 ${item.type}</span>
+                                <span>🏡 ${txt(item.type)}</span>
                             </div>
                             <div class="price">OMR ${item.price.toLocaleString()}</div>
                             <div class="card-actions">
@@ -601,8 +626,8 @@
             if (!currentSelectedProperty) return;
 
             document.getElementById("bookingImg").src = currentSelectedProperty.img;
-            document.getElementById("bookingTitle").textContent = currentSelectedProperty.title;
-            document.getElementById("bookingSub").textContent = currentSelectedProperty.project + " · " + currentSelectedProperty.district;
+            document.getElementById("bookingTitle").textContent = localValue(currentSelectedProperty, 'title');
+            document.getElementById("bookingSub").textContent = localValue(currentSelectedProperty, 'project') + " · " + txt(currentSelectedProperty.district);
             document.getElementById("bookingFullPrice").textContent = currentSelectedProperty.price.toLocaleString();
             document.getElementById("summaryFullPrice").textContent = currentSelectedProperty.price.toLocaleString();
             
@@ -635,7 +660,10 @@
 
         function confirmBooking(e) {
             e.preventDefault();
-            alert(`تم تقديم طلب تملك العقار (${currentSelectedProperty.title}) بنجاح!\nسيقوم فريقنا بالتواصل معك لتأكيد الحجز وتلقي الإجراءات.`);
+            const title = localValue(currentSelectedProperty, 'title');
+            alert(pageLang === 'en'
+                ? `Your ownership request for (${title}) was submitted successfully!\nOur team will contact you to confirm the reservation and next steps.`
+                : `تم تقديم طلب تملك العقار (${title}) بنجاح!\nسيقوم فريقنا بالتواصل معك لتأكيد الحجز وتلقي الإجراءات.`);
             closeBookingModal();
         }
 
@@ -649,7 +677,8 @@
             const status = document.getElementById("statusFilter").value;
 
             const filtered = properties.filter(p => {
-                const matchSearch = !search || p.title.toLowerCase().includes(search) || p.project.toLowerCase().includes(search) || p.district.toLowerCase().includes(search);
+                const searchable = `${p.titleAr} ${p.titleEn} ${p.projectAr} ${p.projectEn} ${I18N.ar[p.district]} ${I18N.en[p.district]}`.toLowerCase();
+                const matchSearch = !search || searchable.includes(search);
                 const matchType = !type || p.type === type;
                 const matchDistrict = !district || p.district === district;
                 const matchRooms = !rooms || p.rooms >= Number(rooms);
@@ -674,17 +703,20 @@
         }
 
         const apartments = {
-            a1:{ title:"شقة 105 – الطابق الخامس", main:"image/10.jpg", rooms:["image/11.jpg", "image/12.jpg", "image/13.jpg"] },
-            a2:{ title:"شقة 104 – الطابق الرابع", main:"image/20.jpg", rooms:["image/21.jpg", "image/22.jpg", "image/23.jpg"] },
-            a3:{ title:"شقة 103 – الطابق الثالث", main:"image/30.jpg", rooms:["image/31.jpg", "image/32.jpg", "image/33.jpg"] },
-            a4:{ title:"شقة 102 – الطابق الثاني", main:"image/40.jpg", rooms:["image/41.jpg", "image/42.jpg", "image/43.jpg"] },
-            a5:{ title:"شقة 101 – الطابق الأول", main:"image/50.jpg", rooms:["image/51.jpg", "image/52.jpg", "image/53.jpg"] }
+            a1:{ titleAr:"شقة 105 – الطابق الخامس", titleEn:"Apartment 105 – Fifth floor", main:"image/10.jpg", rooms:["image/11.jpg", "image/12.jpg", "image/13.jpg"] },
+            a2:{ titleAr:"شقة 104 – الطابق الرابع", titleEn:"Apartment 104 – Fourth floor", main:"image/20.jpg", rooms:["image/21.jpg", "image/22.jpg", "image/23.jpg"] },
+            a3:{ titleAr:"شقة 103 – الطابق الثالث", titleEn:"Apartment 103 – Third floor", main:"image/30.jpg", rooms:["image/31.jpg", "image/32.jpg", "image/33.jpg"] },
+            a4:{ titleAr:"شقة 102 – الطابق الثاني", titleEn:"Apartment 102 – Second floor", main:"image/40.jpg", rooms:["image/41.jpg", "image/42.jpg", "image/43.jpg"] },
+            a5:{ titleAr:"شقة 101 – الطابق الأول", titleEn:"Apartment 101 – First floor", main:"image/50.jpg", rooms:["image/51.jpg", "image/52.jpg", "image/53.jpg"] }
         };
+
+        let currentApartmentId = null;
 
         function showApartment(id) {
             const data = apartments[id];
             if(!data) return;
-            document.getElementById("popupTitle").textContent = data.title;
+            currentApartmentId = id;
+            document.getElementById("popupTitle").textContent = localValue(data, 'title');
             document.getElementById("interiorMain").src = data.main;
             document.getElementById("room1").src = data.rooms[0];
             document.getElementById("room2").src = data.rooms[1];
@@ -698,7 +730,7 @@
             document.getElementById("building").scrollIntoView({ behavior:"smooth", block:"center" });
         }
 
-        function showMore() { alert("سيتم تحميل المزيد من عقارات مدينة السلطان هيثم."); }
+        function showMore() { alert(pageLang === 'en' ? 'More Sultan Haitham City properties will be loaded.' : 'سيتم تحميل المزيد من عقارات مدينة السلطان هيثم.'); }
 
         function openImageLightbox(src, alt="صورة مكبرة") {
             if(!src) return;
@@ -717,6 +749,27 @@
             document.getElementById("lightboxImage").src = "";
             document.body.style.overflow = "";
         }
+
+        function applyLang(lang) {
+            pageLang = lang === 'en' ? 'en' : 'ar';
+            document.documentElement.lang = pageLang;
+            document.documentElement.dir = pageLang === 'ar' ? 'rtl' : 'ltr';
+            document.title = pageLang === 'en' ? 'Sultan Haitham City | Properties for Ownership' : 'مدينة السلطان هيثم | عقارات التمليك';
+            try { localStorage.setItem('sh_lang', pageLang); } catch (_) {}
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = txt(el.dataset.i18n); });
+            document.getElementById('search').placeholder = pageLang === 'en' ? 'By name or plot number' : 'بالاسم أو رقم القطعة';
+            document.getElementById('buyerName').placeholder = pageLang === 'en' ? 'Enter your name as shown on your ID' : 'أدخل اسمك كما في البطاقة الشخصية';
+            document.querySelectorAll('[data-floor]').forEach(el => { el.textContent = `${txt('floor')} ${el.dataset.floor}`; });
+            document.getElementById('apartmentInfo').innerHTML = `🛏 3 ${txt('rooms')} &nbsp;&nbsp; 🚿 3 ${txt('bathrooms')} &nbsp;&nbsp; 📐 185 م²`;
+            const controls = document.querySelectorAll('.control-btn');
+            if (controls[0]) controls[0].title = txt('gridView');
+            if (controls[1]) controls[1].title = txt('mapView');
+            renderProperties(properties);
+            if (currentSelectedProperty && document.getElementById('bookingModal').classList.contains('active')) openBookingModal(currentSelectedProperty.id);
+            if (currentApartmentId && document.getElementById('interiorPopup').style.display === 'block') showApartment(currentApartmentId);
+        }
+        window.applyLang = applyLang;
+        applyLang(pageLang);
     </script>
 </body>
 </html>

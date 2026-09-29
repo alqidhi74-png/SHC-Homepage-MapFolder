@@ -6,7 +6,7 @@
 <title>مراجعة الطلب — مدينة السلطان هيثم</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body data-lang="ar" data-page="request-review">
@@ -25,7 +25,7 @@
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-6 2 2-6 6-2Z"/></svg>
           <span class="lbl" data-i18n="services-guide">دليل الخدمات</span>
         </a>
-        <button class="header-icon-btn" id="header-lang-btn" type="button" title="تغيير اللغة">EN</button>
+        <button class="header-icon-btn" id="header-lang-btn" type="button" title="تغيير اللغة">Ar / En</button>
         <button class="header-icon-btn device" id="header-device-btn" type="button" title="عرض النظام">📱</button>
       </div>
     </div>
@@ -79,9 +79,9 @@
     <canvas id="sign-canvas" width="360" height="140" aria-label="مساحة التوقيع"></canvas>
     <p class="sign-hint" id="sign-hint" aria-live="polite"></p>
     <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end;">
-      <button type="button" id="sign-clear" style="background:#fff;border:1px solid var(--line);padding:9px 18px;border-radius:20px;font-family:inherit;cursor:pointer;">مسح</button>
-      <button type="button" id="sign-cancel" style="background:#fff;border:1px solid var(--gold-dark);padding:9px 18px;border-radius:20px;font-family:inherit;cursor:pointer;">إلغاء</button>
-      <button type="button" class="btn-gold" id="sign-save" style="padding:9px 18px;font-size:12px;">اعتماد التوقيع</button>
+      <button type="button" id="sign-clear" style="background:#fff;border:1px solid var(--line);padding:9px 18px;border-radius:20px;font-family:inherit;cursor:pointer;" data-i18n="clear">مسح</button>
+      <button type="button" id="sign-cancel" style="background:#fff;border:1px solid var(--gold-dark);padding:9px 18px;border-radius:20px;font-family:inherit;cursor:pointer;" data-i18n="cancel">إلغاء</button>
+      <button type="button" class="btn-gold" id="sign-save" style="padding:9px 18px;font-size:12px;" data-i18n="save-signature">اعتماد التوقيع</button>
     </div>
   </div>
 </div>
@@ -93,7 +93,7 @@ if(!state.type){
   navigateWithTransition('services-catalog.html', 'right', 'الفصل الأول · دليل الخدمات', 'اختر الخدمة، والباقي مرتّب لك');
 }
 const svc = SERVICE_CATALOG[state.serviceId] || SERVICE_CATALOG['realestate-reg'];
-function docKeys(){ return svc.docs; }
+function docKeys(){ return getServiceCopy(svc).docs; }
 
 const ackRow = document.getElementById('ack-row');
 const ackBox = document.getElementById('ack-box');
@@ -104,8 +104,10 @@ function updateSubmitState(){ const s = loadState(); btnSubmit.disabled = !s.ack
 
 function syncReviewPanel(){
   const s = loadState();
-  document.getElementById('rev-type').textContent = s.type || '—';
-  document.getElementById('rev-desc').textContent = s.desc || '—';
+  const serviceCopy = getServiceCopy(svc);
+  const requestType = !s.type || s.type === svc.requestType ? serviceCopy.requestType : s.type;
+  document.getElementById('rev-type').textContent = requestType || '—';
+  document.getElementById('rev-desc').textContent = s.desc || serviceCopy.desc || '—';
   document.getElementById('rev-docs').innerHTML = docKeys().map((label,i)=>{
     const d = s.docs['doc'+i];
     const ok = isDocDone(d);
@@ -116,7 +118,10 @@ function syncReviewPanel(){
   const applicantKeys = ['fullName','civilId','phone','email','governorate','wilayat','address'];
   document.getElementById('rev-applicant').innerHTML = c
     ? applicantKeys.map(k=>{ const f = CITIZEN_FIELDS.find(x=>x.key===k); return `<div class="row"><span>${escapeHtml(currentLang==='en'?f.en:f.label)}</span><span ${f.ltr?'dir="ltr"':''}>${escapeHtml(formatCitizenValue(f, c[k]))}</span></div>`; }).join('')
-    : `<div class="row"><span>—</span><span class="sys-link" style="cursor:pointer" id="rev-applicant-missing">أكمل بيانات المواطن</span></div>`;
+    : `<div class="row"><span>—</span><span class="sys-link" style="cursor:pointer" id="rev-applicant-missing">${currentLang === 'en' ? 'Complete citizen details' : 'أكمل بيانات المواطن'}</span></div>`;
+  btnSign.textContent = s.signed
+    ? (currentLang === 'en' ? '✓ Signed' : '✓ تم التوقيع')
+    : (currentLang === 'en' ? 'E-Signature' : 'توقيع إلكتروني');
   updateSubmitState();
 }
 syncReviewPanel();
@@ -129,7 +134,7 @@ function toggleAck(){
   ackRow.setAttribute('aria-checked', s.ack ? 'true' : 'false');
   ackBox.textContent = s.ack ? '✓' : '';
   btnSign.disabled = !s.ack;
-  if(!s.ack){ s.signed = false; saveState(s); btnSign.textContent = 'توقيع إلكتروني'; }
+  if(!s.ack){ s.signed = false; saveState(s); btnSign.textContent = currentLang === 'en' ? 'E-Signature' : 'توقيع إلكتروني'; }
   updateSubmitState();
 }
 ackRow?.addEventListener('click', toggleAck);
@@ -139,7 +144,7 @@ ackRow?.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.p
   ackRow.classList.toggle('checked', !!s.ack);
   ackBox.textContent = s.ack ? '✓' : '';
   btnSign.disabled = !s.ack;
-  if(s.signed) btnSign.textContent = '✓ تم التوقيع';
+  if(s.signed) btnSign.textContent = currentLang === 'en' ? '✓ Signed' : '✓ تم التوقيع';
 })();
 
 const signOverlay = document.getElementById('sign-overlay');
@@ -179,13 +184,13 @@ document.getElementById('sign-cancel')?.addEventListener('click', ()=>{ signOver
 document.getElementById('sign-save')?.addEventListener('click', ()=>{
   if(!signHasInk){
     const hint = document.getElementById('sign-hint');
-    hint.textContent = 'يرجى رسم التوقيع أولاً';
+    hint.textContent = currentLang === 'en' ? 'Please draw your signature first' : 'يرجى رسم التوقيع أولاً';
     signCanvas.animate?.([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}], {duration:300});
     return;
   }
   document.getElementById('sign-hint').textContent = '';
   const s = loadState(); s.signed = true; saveState(s);
-  btnSign.textContent = '✓ تم التوقيع';
+  btnSign.textContent = currentLang === 'en' ? '✓ Signed' : '✓ تم التوقيع';
   signOverlay.classList.remove('open'); signOverlay.setAttribute('aria-hidden','true');
   updateSubmitState();
 });

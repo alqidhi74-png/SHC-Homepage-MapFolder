@@ -7,7 +7,7 @@
 <meta name="description" content="Choose, tour and book an apartment at Al Wadi Residences in Sultan Haitham City, Muscat.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Jost:wght@300;400;500;600&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../portal-header.css">
 <script src="../../portal-header.js" data-assets="../../assets/" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -21,8 +21,8 @@
   --gold-on-light:linear-gradient(180deg,#8C7A45 0%,#C1B061 50%,#AF954B 100%);
   --evergreen:#3D4E1E; --vermilion:#F8633E; --orchid:#AC6492; --emerald:#143534; --sunburst:#F1BB4D;
   --map-land:#E4DDCF; --map-block:#D5CBB8; --map-park:#BCCFAE; --map-sea:#B5CFD3; --map-road:#FBF9F4; --map-major:#F3E3BF; --map-ink:#4A524D;
-  --font-display:"Marcellus","Iowan Old Style","Palatino Linotype",Georgia,serif;
-  --font-body:"Jost","Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-display:"IBM Plex Sans Arabic",sans-serif;
+  --font-body:"IBM Plex Sans Arabic",sans-serif;
   --r-s:8px; --r-m:14px; --r-l:26px;
   --shadow:0 24px 60px -30px rgba(40,12,18,.55);
   --ease:cubic-bezier(.2,.75,.2,1);
@@ -48,8 +48,8 @@
   color-scheme:dark;
 }
 html[lang="ar"]{
-  --font-display:"Noto Kufi Arabic","Geeza Pro","Segoe UI",Tahoma,sans-serif;
-  --font-body:"IBM Plex Sans Arabic","Geeza Pro","Segoe UI",Tahoma,sans-serif;
+  --font-display:"IBM Plex Sans Arabic",sans-serif;
+  --font-body:"IBM Plex Sans Arabic",sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);scroll-behavior:smooth;background:var(--bg);-webkit-text-size-adjust:100%}
@@ -437,6 +437,72 @@ body.al-wadi-residences.shc-project-page>main{height:auto!important}
 @media(max-width:900px){
   body.al-wadi-residences.shc-project-page>main{height:auto!important}
 }
+/* =========================================================
+   SCROLL DRAWING PATH
+   Same motion system as ZIP reference
+========================================================= */
+
+.motion-story {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* محتوى الأقسام يبقى فوق الخط */
+.motion-story > section > .wrap {
+  position: relative;
+  z-index: 3;
+}
+
+/* SVG الموجود خلف المحتوى */
+.motion-path {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 90%;
+  height: 100%;
+
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.motion-path svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+#stroke-path {
+  fill: none;
+  opacity: 0;
+  will-change: stroke-dashoffset;
+}
+
+/* منع وميض النص الإنجليزي قبل تطبيق اللغة المحفوظة. */
+html:not(.i18n-ready) body {
+  visibility: hidden;
+}
+
+
+/* ===== Mobile ===== */
+
+@media (max-width: 1000px) {
+
+  .motion-path {
+    top: 0;
+
+    /*
+      نفس فكرة ملف ZIP:
+      المسار يصبح أعرض بكثير على الهاتف
+    */
+    width: 275%;
+    height: 100%;
+  }
+}
 </style>
 </head>
 <body class="al-wadi-residences">
@@ -501,7 +567,7 @@ body.al-wadi-residences.shc-project-page>main{height:auto!important}
       <a href="#booking" data-i18n="navBook">Booking</a>
     </nav>
     <div class="nav-tools">
-      <button class="lang-btn" id="langBtn" type="button" aria-label="Switch language"><svg class="i"><use href="#i-globe"/></svg><span id="langLbl">العربية</span></button>
+      <button class="lang-btn" id="langBtn" type="button" aria-label="Switch language"><svg class="i"><use href="#i-globe"/></svg><span id="langLbl">Ar / En</span></button>
       <a class="btn btn-primary book-cta" href="#booking" data-i18n="ctaBook">Book a viewing</a>
       <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="navLinks" data-i18n-aria="menu" aria-label="Menu"><svg class="i" style="width:26px;height:26px"><use href="#i-menu"/></svg></button>
     </div>
@@ -531,6 +597,7 @@ body.al-wadi-residences.shc-project-page>main{height:auto!important}
     <span class="hero-note" data-i18n="renderNote">Illustrative photo</span>
   </section>
 
+  <div class="motion-story">
   <section class="sec" id="residences" aria-labelledby="resTitle">
     <div class="wrap">
       <div class="sec-head">
@@ -630,7 +697,27 @@ body.al-wadi-residences.shc-project-page>main{height:auto!important}
       </div>
     </div>
   </section>
-
+  <!-- ===== Scroll Drawing Path ===== -->
+  <div class="motion-path" aria-hidden="true">
+    <svg
+      viewBox="0 0 1378 2760"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+    >
+      <path
+        id="stroke-path"
+        d="M689 0
+           C689 0 105.669 0 199.669 601.503
+           C293.669 1103.01 1277.17 691.502 1277.17 1399.5
+           C1277.17 2107.5 -155.332 1968 140.168 1438.5
+           C435.669 909.002 1442.66 2093.5 713.168 2760"
+        stroke="#DBC47D"
+        stroke-width="32"
+        stroke-linecap="round"
+      />
+    </svg>
+  </div>
   <section class="sec" id="booking" aria-labelledby="bookTitle" style="padding-top:0">
     <div class="wrap">
       <div class="sec-head">
@@ -724,6 +811,7 @@ body.al-wadi-residences.shc-project-page>main{height:auto!important}
       </div>
     </div>
   </section>
+</div>
 </main>
 
 <footer>
@@ -766,7 +854,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.quer
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let LANG='ar';
-try{localStorage.setItem('sh_lang','ar');localStorage.setItem('shc-lang',JSON.stringify('ar'))}catch(e){}
+try{const saved=localStorage.getItem('sh_lang');const legacy=store.get('shc-lang','ar');LANG=saved==='ar'||saved==='en'?saved:(legacy==='en'?'en':'ar')}catch(e){}
 
 /* ======================= translations ======================= */
 const I18N={
@@ -896,12 +984,13 @@ function applyLang(){
   $$('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh)});
   $$('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.i18nAria))});
   $$('[data-i18n-alt]').forEach(el=>{el.alt=t(el.dataset.i18nAlt)});
-  $('#langLbl').textContent=LANG==='ar'?'English':'العربية';
+  $('#langLbl').textContent='Ar / En';
   document.title=LANG==='ar'?'مساكن الوادي، مدينة السلطان هيثم':'Al Wadi Residences, Sultan Haitham City';
   renderFacts();renderPanel();renderGallery();renderMapUI();renderFormOptions();renderSelApt();
   if(state.sel&&$('#drawer').classList.contains('open'))renderDrawer(state.sel);
   if(lb.open)showLB(lb.i);
   bus.emit('lang',LANG);
+  document.documentElement.classList.add('i18n-ready');
 }
 window.applyLang=(lang)=>{
   LANG=lang==='en'?'en':'ar';
@@ -909,7 +998,7 @@ window.applyLang=(lang)=>{
   try{localStorage.setItem('sh_lang',LANG)}catch(e){}
   applyLang();
 };
-$('#langBtn').addEventListener('click',()=>{LANG=LANG==='ar'?'en':'ar';store.set('shc-lang',LANG);applyLang()});
+$('#langBtn').addEventListener('click',()=>{LANG=LANG==='ar'?'en':'ar';store.set('shc-lang',LANG);try{localStorage.setItem('sh_lang',LANG)}catch(e){}applyLang()});
 
 /* ======================= nav ======================= */
 const nav=$('#nav');
@@ -1948,5 +2037,46 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  document.addEventListener("visibilitychange",()=>document.hidden?clearInterval(timer):restart());
 })();
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const path = document.getElementById("stroke-path");
+    const story = document.querySelector(".motion-story");
+    if (!path || !story) return;
+
+    const pathLength = path.getTotalLength();
+    path.style.strokeDasharray = String(pathLength);
+    path.style.strokeDashoffset = String(pathLength);
+    path.style.opacity = "1";
+
+    let start = 0;
+    let end = 1;
+    let frame = 0;
+
+    const draw = () => {
+      const progress = Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
+      path.style.strokeDashoffset = String(pathLength * (1 - progress));
+      frame = 0;
+    };
+
+    const requestDraw = () => {
+      if (!frame) frame = requestAnimationFrame(draw);
+    };
+
+    const measure = () => {
+      const rect = story.getBoundingClientRect();
+      start = window.scrollY + rect.top;
+      end = Math.max(start + 1, start + story.offsetHeight - window.innerHeight);
+      requestDraw();
+    };
+
+    window.addEventListener("scroll", requestDraw, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
+    window.addEventListener("load", measure, { once: true });
+    if (document.fonts?.ready) document.fonts.ready.then(measure);
+    requestAnimationFrame(measure);
+  });
+</script>
+
+
 </body>
 </html>

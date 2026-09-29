@@ -7,7 +7,11 @@
 .topbar .login-link,.topbar .lang{pointer-events:auto;font-size:12px;letter-spacing:.03em;color:#f3ecdd;text-decoration:none;text-shadow:0 2px 12px rgba(0,0,0,.45)}
 .topbar .login-link{padding:9px 0;border-bottom:1px solid rgba(228,194,107,.42);transition:color .25s ease,border-color .25s ease}
 .topbar .login-link:hover{color:#E4C26B;border-color:#E4C26B}
+.site-account-actions{display:flex;align-items:center;gap:10px;pointer-events:auto}
 .site-account{position:relative;pointer-events:auto}
+.site-home-link{display:grid;place-items:center;width:44px;height:44px;flex:0 0 auto;border:1px solid rgba(228,194,107,.55);border-radius:50%;background:rgba(7,18,16,.42);color:#E4C26B;box-shadow:0 7px 24px rgba(0,0,0,.2);backdrop-filter:blur(9px);text-decoration:none;transition:background .2s ease,border-color .2s ease,color .2s ease}
+.site-home-link:hover{border-color:#E4C26B;background:rgba(20,53,52,.8);color:#f0d586}
+.site-home-link svg{width:20px;height:20px}
 .site-account-trigger{display:flex;align-items:center;justify-content:center;gap:2px;width:44px;height:44px;padding:0;border:1px solid rgba(228,194,107,.55);border-radius:50%;background:rgba(7,18,16,.42);color:#E4C26B;box-shadow:0 7px 24px rgba(0,0,0,.2);backdrop-filter:blur(9px);cursor:pointer;transition:background .2s ease,border-color .2s ease,color .2s ease}
 .site-account-trigger:hover,.site-account-trigger[aria-expanded="true"]{border-color:#E4C26B;background:rgba(20,53,52,.8);color:#f0d586}
 .site-account-trigger>svg:first-child{width:21px;height:21px}
@@ -19,15 +23,14 @@
 .site-account-identity>span:last-child{display:flex;min-width:0;flex-direction:column;gap:2px}
 .site-account-identity strong{overflow:hidden;color:#fff;font-size:13px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
 .site-account-identity small{color:rgba(255,255,255,.58);font-size:10px}
-.site-account-home{display:grid;place-items:center;width:36px;height:36px;margin:7px 7px 1px;border:1px solid rgba(228,194,107,.28);border-radius:9px;background:rgba(255,255,255,.04);color:#E4C26B;text-decoration:none;transition:background .2s ease,border-color .2s ease,color .2s ease}
-.site-account-home:hover{border-color:rgba(228,194,107,.62);background:rgba(228,194,107,.12);color:#f0d586}
-.site-account-home svg{width:18px;height:18px}
 .site-account-logout{display:flex;align-items:center;gap:9px;width:100%;margin-top:6px;padding:10px 9px;border:0;border-radius:9px;background:transparent;color:#f0d5d8;font-family:inherit;font-size:12px;text-align:right;cursor:pointer;transition:background .2s ease,color .2s ease}
 .site-account-logout:hover{background:rgba(172,55,71,.16);color:#fff}
 .site-account-logout svg{width:17px;height:17px}
 @keyframes siteAccountIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.topbar .lang{direction:rtl}
+.topbar .lang{direction:ltr}
 .topbar .lang span{opacity:.35;margin:0 8px}
+.topbar .lang strong{font-weight:400;opacity:.45;transition:color .2s ease,opacity .2s ease}
+.topbar .lang strong.is-active{color:#E4C26B;font-weight:600;opacity:1}
 .topbar button.lang{appearance:none;border:0;background:none;padding:0;font-family:inherit;line-height:inherit;cursor:pointer}
 .topbar a:focus-visible,.topbar button:focus-visible{outline:2px solid #E4C26B;outline-offset:4px}
 

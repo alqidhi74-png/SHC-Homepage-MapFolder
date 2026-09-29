@@ -69,7 +69,7 @@
 .masterplan-stat > svg { color: var(--plan-gold); }
 .masterplan-stat dt { order: 2; font-size: clamp(9px, .84vw, 13px); direction: rtl; }
 .masterplan-stat dd { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin: 0; color: var(--plan-light); }
-.masterplan-stat dd b { font-family: Arial, sans-serif; font-weight: 500; font-size: clamp(17px, 1.35vw, 23px); }
+.masterplan-stat dd b { font-family: var(--font-arabic); font-weight: 500; font-size: clamp(17px, 1.35vw, 23px); }
 .masterplan-stat dd span { font-size: 12px; direction: rtl; }
 .masterplan-marker { position: absolute; z-index: 1; width: 0; height: 0; }
 .masterplan-pin {
@@ -100,7 +100,7 @@
 .masterplan-marker.is-selected { z-index: 2; }
 .masterplan-marker.is-selected .masterplan-pin, .masterplan-pin:hover { border-color: #ffdf99; background: linear-gradient(100deg, #594025f5, #302822f2); box-shadow: 0 0 30px #efb95499; transform: scale(1.06); }
 .masterplan-marker.is-selected .masterplan-point::after { opacity: 1; box-shadow: 0 0 18px #ffd27280; }
-.masterplan-compass { position: absolute; right: 2.7%; top: 21.5%; display: flex; flex-direction: column; align-items: center; gap: 5px; font: 15px Georgia, serif; color: var(--plan-gold); text-shadow: 0 2px 5px #000; }
+.masterplan-compass { position: absolute; right: 2.7%; top: 21.5%; display: flex; flex-direction: column; align-items: center; gap: 5px; font: 15px var(--font-arabic); color: var(--plan-gold); text-shadow: 0 2px 5px #000; }
 .masterplan-compass span { width: 19px; height: 25px; background: linear-gradient(90deg, #ffe7a7 50%, #b99150 50%); clip-path: polygon(50% 0, 100% 100%, 50% 75%, 0 100%); filter: drop-shadow(0 2px 3px #000); }
 .masterplan-footer { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; padding: 32px 2.5% 24px; background: linear-gradient(transparent, #1b1616bd 35%, #181516ed); }
 .masterplan-caption { display: none; }
@@ -115,6 +115,13 @@
 .masterplan-card.is-selected { transform: translateY(-5px) scale(1.025); border-color: #ffe5a7; box-shadow: 0 0 0 1px #f7d99180, 0 0 28px #f2bf606b; }
 .masterplan-card.is-selected .masterplan-card-image { filter: saturate(1.22) contrast(1.06) brightness(1.4); transform: scale(1.08); }
 .masterplan-card.is-selected::after { content: ''; position: absolute; bottom: 0; left: 15%; right: 15%; height: 1px; background: linear-gradient(90deg, transparent, #fff0c3, transparent); box-shadow: 0 0 8px 2px #efba6966; }
+.masterplan-stage[dir="ltr"] .masterplan-stat dt,
+.masterplan-stage[dir="ltr"] .masterplan-stat dd span,
+.masterplan-stage[dir="ltr"] .masterplan-caption p,
+.masterplan-stage[dir="ltr"] .masterplan-hint,
+.masterplan-stage[dir="ltr"] .masterplan-card-label { direction: ltr; }
+.masterplan-stage[dir="rtl"] .masterplan-categories { direction: rtl; }
+.masterplan-stage[dir="rtl"] .masterplan-stat + .masterplan-stat { border-left: 0; border-right: 1px solid rgba(231, 197, 130, .72); }
 .masterplan-card:hover { transform: translateY(-6px) scale(1.025); border-color: var(--plan-light); box-shadow: 0 0 24px #f2c66a59; }
 .masterplan-card:hover .masterplan-card-image { filter: saturate(1.2) contrast(1.05) brightness(1.38); transform: scale(1.07); }
 .masterplan-card:active .masterplan-card-image { filter: saturate(1.28) brightness(1.52); transform: scale(1.12); }

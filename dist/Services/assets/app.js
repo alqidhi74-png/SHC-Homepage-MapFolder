@@ -28,29 +28,45 @@ const SERVICE_CATALOG = {
     cat: 'realestate', catLabel: 'المعاملات العقارية', title: 'تسجيل ملكية عقار',
     desc: 'خدمة نقل وتسجيل ملكية قطعة أرض أو عقار باسم المالك الجديد، بعد استيفاء المستندات المطلوبة والتحقق من سند الملكية السابق.',
     days: '5 أيام', fee: '20 ر.ع', dept: 'قسم العقارات', requestType: 'تسجيل ملكية',
+    catLabelEn: 'Real Estate Transactions', titleEn: 'Property Ownership Registration',
+    descEn: 'Transfer and register a plot or property in the new owner’s name after verifying the required ownership documents.',
+    daysEn: '5 days', feeEn: 'OMR 20', deptEn: 'Real Estate Department', requestTypeEn: 'Ownership Registration',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><path d="M4 21V9l8-6 8 6v12"/><path d="M9 21v-6h6v6"/></svg>',
-    docs: ['البطاقة الشخصية', 'سند الملكية الحالي', 'المخطط / الوثيقة المطلوبة']
+    docs: ['البطاقة الشخصية', 'سند الملكية الحالي', 'المخطط / الوثيقة المطلوبة'],
+    docsEn: ['Identity Card', 'Current Ownership Deed', 'Required Plan or Document']
   },
   'planning-res': {
     cat: 'planning', catLabel: 'الموافقات التخطيطية', title: 'موافقة تخطيطية — بناء سكني',
     desc: 'موافقة تخطيطية أولية لإنشاء مبنى سكني جديد ضمن قطعة الأرض، وفق اشتراطات التخطيط في المدينة.',
     days: '10 أيام', fee: '45 ر.ع', dept: 'قسم التخطيط', requestType: 'موافقة تخطيطية',
+    catLabelEn: 'Planning Approvals', titleEn: 'Planning Approval — Residential Construction',
+    descEn: 'Initial planning approval to construct a new residential building in accordance with the city planning requirements.',
+    daysEn: '10 days', feeEn: 'OMR 45', deptEn: 'Planning Department', requestTypeEn: 'Planning Approval',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M8 9V6a4 4 0 018 0v3"/></svg>',
-    docs: ['البطاقة الشخصية', 'سند الملكية', 'مخطط الموقع']
+    docs: ['البطاقة الشخصية', 'سند الملكية', 'مخطط الموقع'],
+    docsEn: ['Identity Card', 'Ownership Deed', 'Site Plan']
   },
   'permits-work': {
     cat: 'permits', catLabel: 'التصاريح', title: 'تصريح عمل مؤقت',
     desc: 'استخراج تصريح عمل لفترة محددة لأصحاب الأعمال داخل حدود مدينة السلطان هيثم.',
     days: '3 أيام', fee: '15 ر.ع', dept: 'قسم التراخيص', requestType: 'تصريح عمل',
+    catLabelEn: 'Permits', titleEn: 'Temporary Work Permit',
+    descEn: 'Apply for a temporary work permit for business owners operating within Sultan Haitham City.',
+    daysEn: '3 days', feeEn: 'OMR 15', deptEn: 'Licensing Department', requestTypeEn: 'Work Permit',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>',
-    docs: ['البطاقة الشخصية', 'عقد الإيجار أو سند الملكية', 'صورة النشاط']
+    docs: ['البطاقة الشخصية', 'عقد الإيجار أو سند الملكية', 'صورة النشاط'],
+    docsEn: ['Identity Card', 'Lease Contract or Ownership Deed', 'Business Activity Image']
   },
   'business-lic': {
     cat: 'business', catLabel: 'تراخيص الأعمال', title: 'رخصة نشاط تجاري',
     desc: 'إصدار أو تجديد رخصة مزاولة نشاط تجاري داخل حدود المدينة بعد استكمال المتطلبات.',
     days: '4 أيام', fee: '30 ر.ع', dept: 'قسم التراخيص', requestType: 'رخصة نشاط تجاري',
+    catLabelEn: 'Business Licences', titleEn: 'Business Activity Licence',
+    descEn: 'Issue or renew a licence to conduct a business activity within the city after completing the requirements.',
+    daysEn: '4 days', feeEn: 'OMR 30', deptEn: 'Licensing Department', requestTypeEn: 'Business Activity Licence',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" style="width:26px;height:26px;stroke:var(--velvet);"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>',
-    docs: ['البطاقة الشخصية', 'سجل تجاري', 'صورة واجهة المحل']
+    docs: ['البطاقة الشخصية', 'سجل تجاري', 'صورة واجهة المحل'],
+    docsEn: ['Identity Card', 'Commercial Registration', 'Storefront Image']
   }
 };
 
@@ -145,7 +161,7 @@ const DICT = {
   'filter-realestate': { ar: 'المعاملات العقارية', en: 'Real Estate' },
   'filter-business': { ar: 'تراخيص الأعمال', en: 'Business Licenses' },
   'filter-planning': { ar: 'الموافقات التخطيطية', en: 'Planning Approvals' },
-  'start-request': { ar: 'ابدأ الطلب', en: 'Start Request' },
+  'start-request': { ar: 'ابدأ الخدمات', en: 'Start Services' },
   'services-guide': { ar: 'دليل الخدمات', en: 'Services Guide' },
   'req-docs-title': { ar: 'المستندات المطلوبة', en: 'Required Documents' },
   'expected-duration': { ar: 'المدة المتوقعة', en: 'Expected Duration' },
@@ -177,6 +193,9 @@ const DICT = {
   'ack-text': { ar: 'أقر أن جميع البيانات المدخلة والمرفقة في الطلب صحيحة ومطابقة للجهات الرسمية.', en: 'I confirm that all entered and attached information is accurate and matches official records.' },
   'e-sign': { ar: 'توقيع إلكتروني', en: 'E-Signature' },
   'submit-request': { ar: 'إرسال الطلب', en: 'Submit Request' },
+  'clear': { ar: 'مسح', en: 'Clear' },
+  'cancel': { ar: 'إلغاء', en: 'Cancel' },
+  'save-signature': { ar: 'اعتماد التوقيع', en: 'Save Signature' },
   'confirm-title': { ar: 'تم إرسال الطلب بنجاح', en: 'Request Submitted Successfully' },
   'confirm-sub': { ar: 'سيتم إشعارك بأي تحديث على حالة الطلب', en: 'You will be notified of any updates to your request' },
   'service-type': { ar: 'نوع الخدمة', en: 'Service Type' },
@@ -188,6 +207,39 @@ const DICT = {
   'track-title': { ar: 'تتبع الطلب', en: 'Track Request' },
   'track-sub': { ar: 'أدخل رقم الطلب لعرض حالته ومسار معالجته', en: 'Enter the request number to view its status and progress' },
   'search': { ar: 'بحث', en: 'Search' },
+  'my-requests': { ar: 'طلباتي ▾', en: 'My Requests ▾' },
+  'request-number': { ar: 'رقم الطلب', en: 'Request Number' },
+  'current-dept': { ar: 'القسم الحالي', en: 'Current Department' },
+  'realestate-dept': { ar: 'قسم العقارات', en: 'Real Estate Department' },
+  'assigned-agent': { ar: 'الموظف المسؤول', en: 'Assigned Agent' },
+  'agent-sarah': { ar: 'سارة الهنائية', en: 'Sarah Al Hinai' },
+  'status-progress': { ar: 'قيد المعالجة', en: 'In Progress' },
+  'received-stage': { ar: 'استقبال الطلب', en: 'Request Received' },
+  'employee-ahmed': { ar: 'الموظف: أحمد', en: 'Employee: Ahmed' },
+  'started-finished': { ar: 'بدأ وانتهى: 18/09/2026', en: 'Started and completed: 18/09/2026' },
+  'received-note': { ar: 'تم التحقق من اكتمال الطلب وإحالته للمراجعة', en: 'The request was checked for completeness and sent for review' },
+  'review-stage': { ar: 'المراجعة', en: 'Review' },
+  'employee-sarah': { ar: 'الموظف: سارة', en: 'Employee: Sarah' },
+  'started-date': { ar: 'بدأ: 18/09/2026', en: 'Started: 18/09/2026' },
+  'needs-completion': { ar: 'مطلوب استكمال', en: 'Action Required' },
+  'extra-doc-needed': { ar: 'مطلوب استكمال مستند إضافي', en: 'An additional document is required' },
+  'upload-document': { ar: 'رفع مستند', en: 'Upload Document' },
+  'processing-stage': { ar: 'المعالجة', en: 'Processing' },
+  'final-approval': { ar: 'الاعتماد النهائي', en: 'Final Approval' },
+  'request-notifications': { ar: 'إشعارات هذا الطلب', en: 'Request Notifications' },
+  'notification-extra-doc': { ar: 'مطلوب استكمال مستند إضافي لإتمام مرحلة المراجعة', en: 'An additional document is required to complete the review' },
+  'notification-transferred': { ar: 'تم تحويل طلبك إلى قسم العقارات للمراجعة', en: 'Your request was transferred to the Real Estate Department for review' },
+  'notification-received': { ar: 'تم استلام طلبك بنجاح، رقم الطلب SR-2026-0045', en: 'Your request was received successfully, request number SR-2026-0045' },
+  'today-time': { ar: 'اليوم — 10:24 ص', en: 'Today — 10:24 AM' },
+  'back-receipt': { ar: 'العودة إلى الإيصال', en: 'Back to Receipt' },
+  'back-services': { ar: 'العودة إلى الخدمات', en: 'Back to Services' },
+  'notifications': { ar: 'الإشعارات', en: 'Notifications' },
+  'notif-doc': { ar: 'طلبك SR-2026-0045 يحتاج مستنداً إضافياً', en: 'Your request SR-2026-0045 needs an additional document' },
+  'notif-transfer': { ar: 'تم تحويل طلبك إلى قسم العقارات', en: 'Your request was transferred to the Real Estate Department' },
+  'notif-welcome': { ar: 'مرحباً بك في بوابة خدمات المدينة', en: 'Welcome to the City Services Portal' },
+  'minutes-ago': { ar: 'قبل 12 دقيقة', en: '12 minutes ago' },
+  'yesterday': { ar: 'أمس', en: 'Yesterday' },
+  'days-ago': { ar: 'قبل 3 أيام', en: '3 days ago' },
   /* صفحة بيانات المواطن */
   'cz-title': { ar: 'بيانات المواطن', en: 'Citizen Details' },
   'cz-sub': { ar: 'جلبنا بياناتك من حسابك — لا حاجة لإعادة إدخال ما هو موجود', en: 'We pulled your details from your account — no need to re-enter them' },
@@ -201,6 +253,20 @@ const DICT = {
 };
 
 let currentLang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+
+function getServiceCopy(service, lang = currentLang) {
+  const english = lang === 'en';
+  return {
+    catLabel: english ? service.catLabelEn : service.catLabel,
+    title: english ? service.titleEn : service.title,
+    desc: english ? service.descEn : service.desc,
+    days: english ? service.daysEn : service.days,
+    fee: english ? service.feeEn : service.fee,
+    dept: english ? service.deptEn : service.dept,
+    requestType: english ? service.requestTypeEn : service.requestType,
+    docs: english ? service.docsEn : service.docs,
+  };
+}
 
 function applyLang(lang) {
   currentLang = lang;
@@ -217,11 +283,17 @@ function applyLang(lang) {
   });
   const btn = document.getElementById('header-lang-btn');
   if (btn) btn.innerHTML = lang === 'ar'
-    ? '<span>English</span><i aria-hidden="true">/</i><strong>العربية</strong>'
-    : '<strong>English</strong><i aria-hidden="true">/</i><span>العربية</span>';
+    ? '<strong>Ar</strong><i aria-hidden="true">/</i><span>En</span>'
+    : '<span>Ar</span><i aria-hidden="true">/</i><strong>En</strong>';
   const brandHome = document.querySelector('.service-brand-home');
-  if (brandHome) brandHome.setAttribute('aria-label', lang === 'en' ? 'Sultan Haitham City — Home' : 'مدينة السلطان هيثم — الرئيسية');
+  if (brandHome) brandHome.setAttribute('aria-label', lang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر');
+  document.querySelectorAll('.header-home-link').forEach(link => {
+    const label = lang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر';
+    link.setAttribute('aria-label', label);
+    link.title = label;
+  });
   if (document.getElementById('header-account-btn')) refreshAccountButton();
+  updateLoginModalLanguage();
   try { localStorage.setItem('sh_lang', lang); } catch (_) {}
   renderChapterStrip();
   document.dispatchEvent(new CustomEvent('sh:langchange', { detail: { lang } }));
@@ -257,9 +329,9 @@ function currentUser() {
 
 /* طلبات وهمية لعرضها في قائمة "طلباتي" وفي إشعارات المستخدم */
 const MY_REQUESTS = [
-  { num: 'SR-2026-0045', type: 'تسجيل ملكية', status: 'قيد المعالجة', badge: 'progress' },
-  { num: 'SR-2026-0032', type: 'رخصة نشاط تجاري', status: 'مكتمل', badge: 'done' },
-  { num: 'SR-2026-0019', type: 'تصريح عمل مؤقت', status: 'مكتمل', badge: 'done' },
+  { num: 'SR-2026-0045', type: 'تسجيل ملكية', typeEn: 'Property Registration', status: 'قيد المعالجة', statusEn: 'In Progress', badge: 'progress' },
+  { num: 'SR-2026-0032', type: 'رخصة نشاط تجاري', typeEn: 'Business License', status: 'مكتمل', statusEn: 'Completed', badge: 'done' },
+  { num: 'SR-2026-0019', type: 'تصريح عمل مؤقت', typeEn: 'Temporary Work Permit', status: 'مكتمل', statusEn: 'Completed', badge: 'done' },
 ];
 
 /* ============================================================
@@ -413,15 +485,16 @@ function buildHeaderExtras() {
     notifWrap.innerHTML = `
       <button class="header-icon-btn" id="header-notif-btn" type="button" title="الإشعارات" aria-label="الإشعارات" aria-haspopup="true" aria-expanded="false">🔔<span class="header-notif-dot" id="header-notif-dot"></span></button>
       <div class="header-dropdown" id="header-notif-dropdown">
-        <div class="hd-title">الإشعارات</div>
-        <div class="hd-item"><b>طلبك SR-2026-0045 يحتاج مستنداً إضافياً</b><span class="sub">قبل 12 دقيقة</span></div>
-        <div class="hd-item"><b>تم تحويل طلبك إلى قسم العقارات</b><span class="sub">أمس</span></div>
-        <div class="hd-item"><b>مرحباً بك في بوابة خدمات المدينة</b><span class="sub">قبل 3 أيام</span></div>
+        <div class="hd-title" data-i18n="notifications">الإشعارات</div>
+        <div class="hd-item"><b data-i18n="notif-doc">طلبك SR-2026-0045 يحتاج مستنداً إضافياً</b><span class="sub" data-i18n="minutes-ago">قبل 12 دقيقة</span></div>
+        <div class="hd-item"><b data-i18n="notif-transfer">تم تحويل طلبك إلى قسم العقارات</b><span class="sub" data-i18n="yesterday">أمس</span></div>
+        <div class="hd-item"><b data-i18n="notif-welcome">مرحباً بك في بوابة خدمات المدينة</b><span class="sub" data-i18n="days-ago">قبل 3 أيام</span></div>
       </div>`;
 
     const accountWrap = document.createElement('div');
     accountWrap.className = 'header-dropdown-wrap header-account-wrap';
-    accountWrap.innerHTML = `<button class="header-account-btn guest" id="header-account-btn" type="button"></button>
+    accountWrap.innerHTML = `<a class="header-home-link" href="/#direct-access" aria-label="العودة إلى الدخول المباشر" title="العودة إلى الدخول المباشر"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
+      <button class="header-account-btn guest" id="header-account-btn" type="button"></button>
       <div class="header-dropdown" id="header-account-dropdown"></div>`;
 
     actions.appendChild(notifWrap);
@@ -457,10 +530,9 @@ function refreshAccountButton() {
       btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>`;
       btn.setAttribute('aria-label', currentLang === 'en' ? 'Account menu' : 'قائمة الحساب');
       btn.title = currentLang === 'en' ? 'Account menu' : 'قائمة الحساب';
-      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${escapeHtml(user.name)}</b><span class="sub">حساب مُسجَّل</span></div>
-        <a class="hd-item hd-home" href="/" aria-label="الصفحة الرئيسية" title="الصفحة الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-8 9 8M5 9v12h14V9M9 21v-8h6v8"></path></svg></a>
-        <a class="hd-item" href="citizen-data.html" data-dir="down">بياناتي الشخصية</a>
-        <div class="hd-sep"></div><div class="hd-item hd-logout" id="hd-logout-btn" role="button" tabindex="0">تسجيل الخروج</div>`;
+      if (dropdown) dropdown.innerHTML = `<div class="hd-item"><b>${escapeHtml(user.name)}</b><span class="sub">${currentLang === 'en' ? 'Signed-in account' : 'حساب مُسجَّل'}</span></div>
+        <a class="hd-item" href="citizen-data.html" data-dir="down">${currentLang === 'en' ? 'My details' : 'بياناتي الشخصية'}</a>
+        <div class="hd-sep"></div><div class="hd-item hd-logout" id="hd-logout-btn" role="button" tabindex="0">${currentLang === 'en' ? 'Sign out' : 'تسجيل الخروج'}</div>`;
     } else {
       btn.classList.remove('icon-only');
       btn.classList.add('guest');
@@ -477,7 +549,7 @@ function refreshAccountButton() {
         const logoutBtn = document.getElementById('hd-logout-btn');
         if (logoutBtn) logoutBtn.onclick = () => {
           setLoggedIn(false); refreshAccountButton(); dropdown.classList.remove('open');
-          showToast('تم تسجيل الخروج', 'info');
+          showToast(currentLang === 'en' ? 'Signed out' : 'تم تسجيل الخروج', 'info');
           document.dispatchEvent(new CustomEvent('sh:authchange', { detail: { loggedIn: false } }));
           window.setTimeout(() => window.location.replace('/login'), 250);
         };
@@ -497,8 +569,8 @@ function makeServiceBrandClickable() {
     if (!mark || !word) return;
     const link = document.createElement('a');
     link.className = 'service-brand-home';
-    link.href = '/';
-    link.setAttribute('aria-label', currentLang === 'en' ? 'Sultan Haitham City — Home' : 'مدينة السلطان هيثم — الرئيسية');
+    link.href = '/#direct-access';
+    link.setAttribute('aria-label', currentLang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر');
     group.insertBefore(link, mark);
     link.append(mark, word);
   });
@@ -550,15 +622,15 @@ function buildLoginModal() {
     const status = document.getElementById('lm-status');
     if (btn.classList.contains('is-loading')) return;
     btn.classList.add('is-loading'); btn.disabled = true;
-    btn.querySelector('.btn-label').textContent = 'جارٍ التحقق من هويتك…';
+    btn.querySelector('.btn-label').textContent = currentLang === 'en' ? 'Verifying your identity…' : 'جارٍ التحقق من هويتك…';
     status.className = 'lm-status'; status.textContent = '';
     try {
       const user = await AuthAPI.login();
       setLoggedIn(true);
       refreshAccountButton();
       status.className = 'lm-status ok';
-      status.textContent = '✓ مرحباً ' + user.name.split(' ')[0] + '، تم تسجيل الدخول';
-      btn.querySelector('.btn-label').textContent = 'تم';
+      status.textContent = currentLang === 'en' ? `✓ Welcome ${user.name.split(' ')[0]}, you are signed in` : '✓ مرحباً ' + user.name.split(' ')[0] + '، تم تسجيل الدخول';
+      btn.querySelector('.btn-label').textContent = currentLang === 'en' ? 'Done' : 'تم';
       document.dispatchEvent(new CustomEvent('sh:authchange', { detail: { loggedIn: true } }));
       setTimeout(() => {
         const action = pendingLoginAction;
@@ -567,11 +639,22 @@ function buildLoginModal() {
       }, 520);
     } catch (_) {
       status.className = 'lm-status err';
-      status.textContent = 'تعذّر تسجيل الدخول. تحقق من الاتصال وحاول مجدداً.';
+      status.textContent = currentLang === 'en' ? 'Sign-in failed. Check your connection and try again.' : 'تعذّر تسجيل الدخول. تحقق من الاتصال وحاول مجدداً.';
       btn.classList.remove('is-loading'); btn.disabled = false;
-      btn.querySelector('.btn-label').textContent = 'إعادة المحاولة';
+      btn.querySelector('.btn-label').textContent = currentLang === 'en' ? 'Try again' : 'إعادة المحاولة';
     }
   });
+}
+function updateLoginModalLanguage() {
+  const modal = document.getElementById('login-modal');
+  if (!modal) return;
+  modal.querySelector('#lm-title').textContent = currentLang === 'en' ? 'Sign in to continue' : 'سجّل الدخول للمتابعة';
+  modal.querySelector('#lm-desc').textContent = currentLang === 'en'
+    ? 'To start your application, sign in first. We will automatically retrieve your saved details.'
+    : 'لبدء تقديم الطلب، يجب تسجيل الدخول إلى حسابك أولاً. سنجلب بياناتك المسجّلة تلقائياً.';
+  modal.querySelector('#lm-cancel-btn').textContent = currentLang === 'en' ? 'Cancel' : 'إلغاء';
+  const button = modal.querySelector('#lm-login-btn .btn-label');
+  if (button && !modal.querySelector('#lm-login-btn').classList.contains('is-loading')) button.textContent = currentLang === 'en' ? 'Sign in now' : 'تسجيل الدخول الآن';
 }
 function closeLoginModal() {
   const m = document.getElementById('login-modal');
@@ -590,12 +673,13 @@ function cancelLoginModal() {
 function requireLogin(action, opts = {}) {
   if (isLoggedIn()) { action(); return; }
   buildLoginModal();
+  updateLoginModalLanguage();
   pendingLoginAction = action;
   pendingLoginCancel = opts.onCancel || null;
   loginReturnFocus = document.activeElement;
   const btn = document.getElementById('lm-login-btn');
   btn.classList.remove('is-loading'); btn.disabled = false;
-  btn.querySelector('.btn-label').textContent = 'تسجيل الدخول الآن';
+  btn.querySelector('.btn-label').textContent = currentLang === 'en' ? 'Sign in now' : 'تسجيل الدخول الآن';
   const status = document.getElementById('lm-status');
   status.className = 'lm-status'; status.textContent = '';
   const m = document.getElementById('login-modal');
@@ -714,6 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildHeaderExtras();
   makeServiceBrandClickable();
   standardizeServiceHeader();
+  applyLang(currentLang);
   wireStartButtons();
   initPageTransitions();
   initHeaderScroll();

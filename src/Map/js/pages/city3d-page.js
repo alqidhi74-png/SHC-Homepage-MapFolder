@@ -2,7 +2,7 @@
    صفحة المدينة ثلاثية الأبعاد — منطق الصفحة (مأخوذ حرفيًا من js/08-pages-b.js)
    3D City page logic (verbatim from js/08-pages-b.js)
    ============================================================ */
-PAGES.city3d={immersive:true,title:()=>_('المدينة ثلاثية الأبعاد','3D city'),skeleton:mapSk,delay:520,
+PAGES.city3d={immersive:true,title:()=>_('المدينة ثلاثية الأبعاد','3D city'),skeleton:null,delay:0,
 render(){return `<div class="c3"><canvas id="c3cv" aria-label="${_('نموذج ثلاثي الأبعاد للمدينة','3D city model')}" role="img"></canvas>
   <div class="c3-top"><div class="c3-row"><label class="srch2 c3s">${ic('search',18)}<input id="c3q" type="search" placeholder="${_('رقم القطعة أو اسم المبنى','Plot number or building name')}" aria-label="${_('بحث','Search')}"></label>
   <select id="c3t" aria-label="${_('نوع المبنى','Building type')}"><option value="all">${_('كل الأنواع','All types')}</option>${Object.entries(BT).map(([k,v])=>`<option value="${k}">${L(v)}</option>`).join('')}</select>

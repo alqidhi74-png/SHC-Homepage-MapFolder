@@ -16,8 +16,8 @@
   --line:#e9dfc9;
 
   --font-arabic:"IBM Plex Sans Arabic",sans-serif;
-  --font-display:'Cormorant Garamond', serif;
-  --font-body:'Jost', sans-serif;
+  --font-display:var(--font-arabic);
+  --font-body:var(--font-arabic);
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -254,6 +254,12 @@ body.mobile-mode .sys-form-grid{grid-template-columns:1fr;}
 .header-account-btn .av{width:20px;height:20px;border-radius:50%;background:var(--gold-gradient);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--velvet);font-weight:700;flex-shrink:0;}
 .header-account-btn.guest{width:34px;height:34px;padding:0;justify-content:center;border-radius:50%;}
 .header-account-btn.icon-only{width:34px;height:34px;padding:0;justify-content:center;border-radius:50%;}
+.header-account-wrap{display:flex;align-items:center;gap:8px;}
+.header-home-link{display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;border:1px solid rgba(249,237,184,.35);border-radius:50%;background:rgba(249,237,184,.08);color:var(--gold-light);text-decoration:none;transition:background-color .2s ease,border-color .2s ease,transform .15s ease;}
+.header-home-link:hover{border-color:var(--gold-mid);background:rgba(249,237,184,.14);}
+.header-home-link:active{transform:scale(.94);}
+.header-home-link svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+[dir="rtl"] .header-home-link svg{transform:scaleX(-1);}
 
 .header-dropdown-wrap{position:relative;}
 .header-dropdown{
@@ -487,9 +493,6 @@ body.is-scrolled .site-header .logo-word b{font-size:13px;}
 .header-svc-btn,.header-icon-btn,.header-account-btn,.back-arrow{transition:background-color .2s ease, border-color .2s ease, transform .15s ease;}
 .header-svc-btn:active,.header-icon-btn:active,.header-account-btn:active{transform:scale(.94);}
 .header-dropdown a.hd-item{text-decoration:none;}
-.header-dropdown .hd-home{display:grid;place-items:center;width:36px;height:36px;margin:6px 10px 2px;padding:0;color:var(--velvet);border:1px solid rgba(179,145,87,.28);border-radius:9px;background:rgba(179,145,87,.06);}
-.header-dropdown .hd-home:hover{border-color:rgba(179,145,87,.62);background:rgba(179,145,87,.14);}
-.header-dropdown .hd-home svg{width:18px;height:18px;fill:none;stroke:var(--gold-dark);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
 .header-account-wrap .header-dropdown{right:0;left:auto;}
 html[dir="ltr"] .header-account-wrap .header-dropdown{right:auto;left:0;}
 
@@ -725,7 +728,6 @@ body[data-page="request-review"] #btn-sign[hidden]{display:none!important;}
 body[data-page="request-review"] .review-actions .btn-ghost{min-width:150px;min-height:42px;padding:8px 22px;}
 body[data-page="request-review"] .review-edit-data{color:#6f271b;}
 body[data-page="request-review"] #btn-submit{position:relative;min-width:166px;min-height:42px;justify-content:center;padding:8px 42px;background:linear-gradient(100deg,#b80035,#72091f);color:#fff;}
-body[data-page="request-review"] #btn-submit:after{content:"←";position:absolute;left:18px;font-size:18px;font-weight:400;}
 body[data-page="request-review"] #sign-save,
 body[data-page="confirm"] .btn-gold,
 body[data-page="detail"] #s9-start{background:linear-gradient(100deg,#b80035,#72091f);color:#fff;}
@@ -869,6 +871,8 @@ body[data-page] #header-lang-btn i{font-style:normal;color:#9f7a4e;}
 body[data-page] #header-lang-btn strong{color:var(--velvet);font-weight:700;}
 body[data-page] .header-account-wrap{position:absolute;right:5.5vw;top:18px;}
 body[data-page] .header-account-btn{width:42px;height:42px;padding:0;border:1px solid #b97718;border-radius:50%;background:rgba(255,255,255,.5);color:#a96913;justify-content:center;}
+body[data-page] .header-home-link{width:42px;height:42px;border-color:#b97718;background:rgba(255,255,255,.5);color:#a96913;}
+body[data-page] .header-home-link:hover{background:rgba(255,247,220,.82);}
 body[data-page] .header-account-btn>span:not(.av){display:none;}
 body[data-page] .header-account-btn .av{width:28px;height:28px;}
 body[data-page] .chapter-strip{
@@ -919,8 +923,6 @@ body[data-page="citizen"] .save-bar .btn-gold,
 body[data-page="citizen"] .save-bar .btn-ghost{position:relative;min-height:46px;border-radius:24px;font-size:15px;}
 body[data-page="citizen"] .save-bar .btn-gold{min-width:232px;padding-inline:54px;background:linear-gradient(100deg,#b80035,#72091f);color:#fff;}
 body[data-page="citizen"] .save-bar .btn-ghost{min-width:212px;padding-inline:46px;border-color:#cd8b2a;color:var(--velvet);background:#fff;}
-body[data-page="citizen"] .save-bar .btn-gold:after{content:"←";position:absolute;left:26px;font-size:22px;font-weight:400;}
-body[data-page="citizen"] .save-bar .btn-ghost:after{content:"→";position:absolute;right:26px;font-size:22px;font-weight:400;}
 
 /* صفحة المستندات */
 body[data-page="request-docs"] .sys-wrap>.sys-form-grid,
@@ -945,7 +947,6 @@ body[data-page="request-docs"] .ui-actions{margin-top:14px;padding:9px 14px;bord
 body[data-page="request-docs"] .ui-actions .btn-gold{min-width:250px;background:linear-gradient(100deg,#b80035,#72091f);color:#fff;}
 body[data-page="request-docs"] .ui-actions .btn-ghost{min-width:190px;}
 body[data-page="request-docs"] #btn-step2-next{position:relative;min-width:132px;min-height:40px;padding:8px 42px;font-size:13px;justify-content:center;}
-body[data-page="request-docs"] #btn-step2-next>span:last-child{position:absolute;left:18px;font-size:18px;}
 
 @media(max-width:900px){
   body[data-page]:before{height:184px;background-position:center top,center 32%;background-size:100% 100%,auto 360px;}
@@ -957,6 +958,7 @@ body[data-page="request-docs"] #btn-step2-next>span:last-child{position:absolute
   body[data-page] #header-lang-btn{left:16px;top:18px;gap:6px;font-size:10px;}
   body[data-page] .header-account-wrap{right:16px;top:17px;}
   body[data-page] .header-account-btn{width:36px;height:36px;}
+  body[data-page] .header-home-link{width:36px;height:36px;}
   body[data-page] .service-home-button{right:67px;top:18px;width:32px;height:34px;}
   body[data-page] .service-home-button:after{right:-8px;height:30px;}
   body[data-page] .service-home-button .ic{width:24px;height:24px;}

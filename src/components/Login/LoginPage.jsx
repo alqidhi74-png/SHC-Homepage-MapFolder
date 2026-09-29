@@ -304,16 +304,16 @@ export default function LoginPage() {
             className="is-active"
             href="/login"
           >
-            العربية
+            Ar
           </a>
 
-          <span aria-hidden="true" />
+          <span aria-hidden="true">/</span>
 
           <a
             href="/login"
             lang="en"
           >
-            English
+            En
           </a>
         </nav>
 

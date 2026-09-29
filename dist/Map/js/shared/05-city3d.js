@@ -203,7 +203,7 @@ function City3D(canvas,cb={}){
     if(st.labels&&cam.dist<5200){const L_=[];for(const q of LBL){const p=prog[q.idx];if(p<=0&&!st.fv)continue;const d=Math.hypot(q.x-eye[0],q.z-eye[2],eye[1]);if(d>3200||d<40)continue;
         const imp=q.kind==='villa'?0:['mosque_grand','hospital','university','stadium','mall','park_central','civic','police_hq','museum','hotel','souq','cultural','library','college'].includes(q.kind)?2.2:q.kind==='masjid'||q.kind==='kindergarten'?.7:1;if(d>1400*imp)continue;
         const s=proj(q.x,q.h*Math.max(p,st.fv?1:0)+6,q.z);if(!s||s[0]<0||s[1]<0||s[0]>w||s[1]>h)continue;L_.push({q,s,d:d/imp})}
-      L_.sort((a,b)=>a.d-b.d);const boxes=[];og.font=`600 ${12*DPR}px system-ui,sans-serif`;og.textBaseline='middle';og.textAlign='center';let n=0;
+      L_.sort((a,b)=>a.d-b.d);const boxes=[];og.font=`600 ${12*DPR}px "IBM Plex Sans Arabic", sans-serif`;og.textBaseline='middle';og.textAlign='center';let n=0;
       for(const l of L_){if(n>=22)break;const txt=tr(l.q.name);const tw=og.measureText(txt).width+16*DPR,th=22*DPR;const x=l.s[0],y=l.s[1]-th;const bx=[x-tw/2,y-th/2,x+tw/2,y+th/2];
         if(boxes.some(o=>!(bx[2]<o[0]||bx[0]>o[2]||bx[3]<o[1]||bx[1]>o[3])))continue;boxes.push(bx);n++;const a=clampN(1.25-l.d/2400,.35,1);
         og.globalAlpha=a;og.strokeStyle='rgba(255,255,255,.8)';og.lineWidth=1*DPR;og.beginPath();og.moveTo(x,l.s[1]);og.lineTo(x,y+th/2);og.stroke();

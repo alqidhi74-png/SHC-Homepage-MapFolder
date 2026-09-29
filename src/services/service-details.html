@@ -6,7 +6,7 @@
 <title>تفاصيل الخدمة — مدينة السلطان هيثم</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body data-lang="ar" data-page="detail">
@@ -25,7 +25,7 @@
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-6 2 2-6 6-2Z"/></svg>
           <span class="lbl" data-i18n="services-guide">دليل الخدمات</span>
         </a>
-        <button class="header-icon-btn" id="header-lang-btn" type="button" title="تغيير اللغة">EN</button>
+        <button class="header-icon-btn" id="header-lang-btn" type="button" title="تغيير اللغة">Ar / En</button>
         <button class="header-icon-btn device" id="header-device-btn" type="button" title="عرض النظام">📱</button>
       </div>
     </div>
@@ -48,7 +48,7 @@
           <hr class="soft">
           <div class="head"><b data-i18n="req-docs-title">المستندات المطلوبة</b></div>
           <ul style="font-size:13px;color:var(--ink-soft);line-height:2;padding-inline-start:18px;margin:8px 0 0;" id="s9-docs"></ul>
-          <p style="font-size:12px;color:var(--ink-soft);margin:14px 0 0;background:var(--cream);border-radius:10px;padding:10px 12px;">💡 بعد تسجيل الدخول نملأ بياناتك الشخصية تلقائياً — ستحتاج فقط لرفع المستندات.</p>
+          <p id="s9-note" style="font-size:12px;color:var(--ink-soft);margin:14px 0 0;background:var(--cream);border-radius:10px;padding:10px 12px;">💡 بعد تسجيل الدخول نملأ بياناتك الشخصية تلقائياً — ستحتاج فقط لرفع المستندات.</p>
         </div>
         <div>
           <div class="sys-review" style="margin-bottom:16px;">
@@ -67,14 +67,23 @@
 <script>
 const state = loadState();
 const svc = SERVICE_CATALOG[state.serviceId] || SERVICE_CATALOG['realestate-reg'];
-document.getElementById('s9-breadcrumb').innerHTML = `دليل الخدمات / ${svc.catLabel} / <b style="color:var(--velvet);">${svc.title}</b>`;
 document.getElementById('s9-icon').innerHTML = svc.icon;
-document.getElementById('s9-title').textContent = svc.title;
-document.getElementById('s9-desc').textContent = svc.desc;
-document.getElementById('s9-days').textContent = svc.days;
-document.getElementById('s9-fee').textContent = svc.fee;
-document.getElementById('s9-dept').textContent = svc.dept;
-document.getElementById('s9-docs').innerHTML = svc.docs.map(d=>`<li>${d}</li>`).join('');
+function renderServiceDetails(){
+  const item = getServiceCopy(svc);
+  const guide = currentLang === 'en' ? 'Services Guide' : 'دليل الخدمات';
+  document.getElementById('s9-breadcrumb').innerHTML = `${guide} / ${item.catLabel} / <b style="color:var(--velvet);">${item.title}</b>`;
+  document.getElementById('s9-title').textContent = item.title;
+  document.getElementById('s9-desc').textContent = item.desc;
+  document.getElementById('s9-days').textContent = item.days;
+  document.getElementById('s9-fee').textContent = item.fee;
+  document.getElementById('s9-dept').textContent = item.dept;
+  document.getElementById('s9-docs').innerHTML = item.docs.map(d=>`<li>${d}</li>`).join('');
+  document.getElementById('s9-note').textContent = currentLang === 'en'
+    ? '💡 After signing in, your personal details are filled automatically — you only need to upload the documents.'
+    : '💡 بعد تسجيل الدخول نملأ بياناتك الشخصية تلقائياً — ستحتاج فقط لرفع المستندات.';
+}
+renderServiceDetails();
+document.addEventListener('sh:langchange', renderServiceDetails);
 
 const reduceMotionQ2 = window.matchMedia('(prefers-reduced-motion: reduce)');
 document.getElementById('s9-start')?.addEventListener('click', (e)=>{

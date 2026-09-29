@@ -39,6 +39,7 @@
 .header-actions { gap: 10px; }
 .header-actions .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .header-actions [data-icon] { width: 25px; height: 25px; color: var(--gold); }
+[dir="rtl"] .header-actions .home-link [data-icon="arrow"] { transform: scaleX(-1); }
 .header-actions a:hover { color: var(--gold-soft); background: #e5c47712; }
 .map-language { direction: ltr; gap: 18px; }
 .map-language button {

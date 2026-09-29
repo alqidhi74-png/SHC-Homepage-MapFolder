@@ -10,19 +10,7 @@
     services: { ar: 'خدمات', en: 'services' },
     fees: { ar: 'الرسوم', en: 'Fees' },
     duration: { ar: 'المدة', en: 'Duration' },
-    start: { ar: 'ابدأ الطلب', en: 'Start application' },
-  };
-  const descriptions = {
-    'planning-res': { ar: 'موافقة تخطيطية أولية لإنشاء مبنى سكني جديد ضمن قطعة الأرض.', en: 'Initial planning approval to build a new home on your land.' },
-    'realestate-reg': { ar: 'نقل وتسجيل ملكية قطعة أرض أو وحدة باسم المالك الجديد.', en: 'Transfer and register a plot or property in the new owner’s name.' },
-    'business-lic': { ar: 'إصدار أو تجديد رخصة مزاولة نشاط تجاري داخل حدود المدينة.', en: 'Issue or renew a licence to operate a business within the city.' },
-    'permits-work': { ar: 'استخراج تصريح عمل لفترة محددة لأصحاب الأعمال داخل المدينة.', en: 'Apply for a temporary work permit for business owners in the city.' },
-  };
-  const englishTitles = {
-    'planning-res': 'Planning approval – residential',
-    'realestate-reg': 'Property ownership registration',
-    'business-lic': 'Business activity licence',
-    'permits-work': 'Temporary work permit',
+    start: { ar: 'ابدأ الخدمات', en: 'Start Services' },
   };
 
   function renderLanguage(lang) {
@@ -52,12 +40,12 @@
     document.querySelectorAll('.catalog-card').forEach(card => {
       const id = card.dataset.service;
       const service = SERVICE_CATALOG[id];
-      const title = language === 'ar' ? service.title.replace('—', '–') : englishTitles[id];
-      card.querySelector('[data-service-title]').textContent = title;
-      card.querySelector('[data-service-description]').textContent = descriptions[id][language];
-      card.querySelector('[data-service-days]').textContent = language === 'ar' ? service.days : `${parseInt(service.days, 10)} days`;
-      card.querySelector('[data-service-fee]').textContent = language === 'ar' ? service.fee : `OMR ${parseInt(service.fee, 10)}`;
-      card.querySelector('.catalog-start').setAttribute('aria-label', `${copy.start[language]}: ${title}`);
+      const localized = getServiceCopy(service, language);
+      card.querySelector('[data-service-title]').textContent = localized.title.replace('—', '–');
+      card.querySelector('[data-service-description]').textContent = localized.desc;
+      card.querySelector('[data-service-days]').textContent = localized.days;
+      card.querySelector('[data-service-fee]').textContent = localized.fee;
+      card.querySelector('.catalog-start').setAttribute('aria-label', `${copy.start[language]}: ${localized.title}`);
     });
   }
 

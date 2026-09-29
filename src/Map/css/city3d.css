@@ -8,9 +8,7 @@
    Verified pixel-identical to the full stylesheet.
 
    الخطوط (Google Fonts، محمّلة في <head>):
-     --ff    : Jost / IBM Plex Sans Arabic         (النص الأساسي والواجهة)
-     --ff-d  : Cormorant Garamond / IBM Plex Sans Arabic (العناوين)
-     --ff-n  : Cormorant Garamond / IBM Plex Sans Arabic (الأرقام .num)
+     --ff / --ff-d / --ff-n : IBM Plex Sans Arabic
    الألوان الرئيسية (:root):
      عنابي  --bur #49111D  --bur-d #2E0A12  --bur-l #6B1C2C
      ذهبي   --gold #DBC47D --gold-l #F4E2A3 --gold-d #AF9056
@@ -21,7 +19,7 @@
 :root{--bur:#49111D;--bur-d:#2E0A12;--bur-l:#6B1C2C;--em:#143534;--em-d:#0B2120;--em-l:#1F5150;--ever:#3D4E1E;--ever-d:#26320F;--ever-l:#5B7330;--ever-x:#89A356;--verm:#F8633E;--or:#F8633E;--or-d:#D9481F;--orch:#AC6492;--orch-d:#6E3C5C;--sun:#F1BB4D;
 --gold:#DBC47D;--gold-l:#F4E2A3;--gold-d:#AF9056;--gold-ink:#8A6F3F;--gold-dd:#8A6F3F;--gold-grad-l:linear-gradient(135deg,#F4E2A3 0%,#DBC47D 100%);--gold-grad-d:linear-gradient(135deg,#E5B585 0%,#AF9056 100%);--gold-grad:linear-gradient(135deg,#F4E2A3 0%,#DBC47D 36%,#E5B585 70%,#AF9056 100%);
 --bg:#F8F2E7;--surf:#FFFDF8;--surf2:#F2EADB;--ink:#2A0E14;--mut:#6E5A5C;--hair:rgba(73,17,29,.14);--line:rgba(219,196,125,.45);--hdr:76px;--ease:cubic-bezier(.22,.8,.24,1);--r:18px;--sh:0 14px 34px -16px rgba(46,10,18,.38);
---font-arabic:"IBM Plex Sans Arabic",sans-serif;--ff-n:'Berlingske Serif','Cormorant Garamond',serif;--ff-d:'Berlingske Serif','Cormorant Garamond',serif;--ff-c:'Canela','Berlingske Serif','Cormorant Garamond',serif;--ff:'Brown LL','Brown','Jost','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+--font-arabic:"IBM Plex Sans Arabic",sans-serif;--ff-n:var(--font-arabic);--ff-d:var(--font-arabic);--ff-c:var(--font-arabic);--ff:var(--font-arabic);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html[lang="ar"]{--ff:var(--font-arabic);--ff-d:var(--font-arabic);--ff-n:var(--font-arabic);--ff-c:var(--font-arabic)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#160A0E;--surf:#20120F;--surf2:#2A1518;--ink:#F4EADC;--mut:#BBA8A6;--hair:rgba(219,196,125,.16)}}
@@ -142,6 +140,7 @@ body.immersive #view>*{animation:none}
 .lang{display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--line);border-radius:99px;color:var(--gold);font-size:.8rem;font-weight:600;letter-spacing:.06em}
 .lang span{opacity:.5}
 .lang span.on{opacity:1;color:var(--gold-l)}
+.lang i{font-style:normal;opacity:.5}
 .lang:hover{background:rgba(219,196,125,.12)}
 .hdr .btn-gold{color:var(--bur-d)}
 .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold-l),var(--gold-d));color:var(--bur-d);font-weight:700;font-size:.9rem}

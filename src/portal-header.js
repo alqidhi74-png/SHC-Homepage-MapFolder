@@ -24,7 +24,7 @@
   const icon = (name) => {
     if (name === 'logout') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 012 2v14a2 2 0 01-2 2h-5"/></svg>';
     if (name === 'chevron') return '<svg class="shc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>';
-    if (name === 'home') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m3 10 9-8 9 8M5 9v12h14V9M9 21v-8h6v8"/></svg>';
+    if (name === 'back') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
     return '<svg class="shc-user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0115 0"/></svg>';
   };
 
@@ -32,17 +32,19 @@
   header.className = 'shc-portal-header';
   header.setAttribute('aria-label', 'أدوات الحساب واللغة');
   header.innerHTML = `
-    <div class="shc-portal-account">
-      <button class="shc-portal-account-button" type="button" aria-label="${authenticated ? 'فتح قائمة الحساب' : 'تسجيل الدخول'}" aria-haspopup="menu" aria-expanded="false">
-        ${icon('user')}${authenticated ? icon('chevron') : ''}
-      </button>
-      <div class="shc-portal-account-menu" role="menu">
-        <div class="shc-portal-identity">
-          <span class="shc-portal-avatar" aria-hidden="true"></span>
-          <span class="shc-portal-person"><strong></strong><small>${profile.role === 'admin' ? 'حساب إداري' : 'حساب مواطن'}</small></span>
+    <div class="shc-portal-account-actions">
+      <a class="shc-portal-home" href="/#direct-access" aria-label="العودة إلى الدخول المباشر" title="العودة إلى الدخول المباشر">${icon('back')}</a>
+      <div class="shc-portal-account">
+        <button class="shc-portal-account-button" type="button" aria-label="${authenticated ? 'فتح قائمة الحساب' : 'تسجيل الدخول'}" aria-haspopup="menu" aria-expanded="false">
+          ${icon('user')}${authenticated ? icon('chevron') : ''}
+        </button>
+        <div class="shc-portal-account-menu" role="menu">
+          <div class="shc-portal-identity">
+            <span class="shc-portal-avatar" aria-hidden="true"></span>
+            <span class="shc-portal-person"><strong></strong><small>${profile.role === 'admin' ? 'حساب إداري' : 'حساب مواطن'}</small></span>
+          </div>
+          <button class="shc-portal-logout" type="button" role="menuitem">${icon('logout')}<span>تسجيل الخروج</span></button>
         </div>
-        <a class="shc-portal-home" href="/" role="menuitem" aria-label="الصفحة الرئيسية" title="الصفحة الرئيسية">${icon('home')}</a>
-        <button class="shc-portal-logout" type="button" role="menuitem">${icon('logout')}<span>تسجيل الخروج</span></button>
       </div>
     </div>
     <div class="shc-portal-brand" aria-label="مدينة السلطان هيثم">
@@ -50,7 +52,7 @@
       <img src="${assets}city-name.png" alt="مدينة السلطان هيثم">
     </div>
     <div class="shc-portal-language" role="group" aria-label="اختيار اللغة">
-      <button type="button" data-shc-lang="ar" aria-pressed="true">العربية</button><span>/</span><button type="button" data-shc-lang="en" lang="en" aria-pressed="false">English</button>
+      <button type="button" data-shc-lang="ar" aria-pressed="true">Ar</button><span>/</span><button type="button" data-shc-lang="en" lang="en" aria-pressed="false">En</button>
     </div>`;
 
   const existing = document.querySelector('.site-header');
@@ -115,6 +117,18 @@
       projectBackLabel.textContent = label;
       projectBackLabel.parentElement.setAttribute('aria-label', label);
     }
+    const directBack = header.querySelector('.shc-portal-home');
+    const directBackLabel = lang === 'en' ? 'Back to direct access' : 'العودة إلى الدخول المباشر';
+    directBack.setAttribute('aria-label', directBackLabel);
+    directBack.title = directBackLabel;
+    header.setAttribute('aria-label', lang === 'en' ? 'Account and language tools' : 'أدوات الحساب واللغة');
+    accountButton.setAttribute('aria-label', authenticated
+      ? (lang === 'en' ? 'Open account menu' : 'فتح قائمة الحساب')
+      : (lang === 'en' ? 'Sign in' : 'تسجيل الدخول'));
+    header.querySelector('.shc-portal-person small').textContent = profile.role === 'admin'
+      ? (lang === 'en' ? 'Administrator account' : 'حساب إداري')
+      : (lang === 'en' ? 'Citizen account' : 'حساب مواطن');
+    header.querySelector('.shc-portal-logout span').textContent = lang === 'en' ? 'Sign out' : 'تسجيل الخروج';
   };
 
   header.querySelectorAll('[data-shc-lang]').forEach((button) => {

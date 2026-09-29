@@ -2,7 +2,8 @@
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const store={get(k,d){try{const v=localStorage.getItem('chs_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('chs_'+k,JSON.stringify(v))}catch(e){}}};
-const S={lang:store.get('lang','ar'),user:store.get('user',null),favs:new Set(store.get('favs',['p3','p9'])),force:null,range:'month',dashSec:'overview',view:'grid',requests:[],saved:new Set()};
+const initialLang=(()=>{try{const lang=localStorage.getItem('sh_lang');return lang==='ar'||lang==='en'?lang:store.get('lang','ar')}catch(e){return store.get('lang','ar')}})();
+const S={lang:initialLang,user:store.get('user',null),favs:new Set(store.get('favs',['p3','p9'])),force:null,range:'month',dashSec:'overview',view:'grid',requests:[],saved:new Set()};
 const _=(a,e)=>S.lang==='ar'?a:e;
 const N=n=>Number(n).toLocaleString('en-US');
 const OMR=n=>N(Math.round(n))+' '+_('ر.ع','OMR');

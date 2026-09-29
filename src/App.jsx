@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  ArrowUpLeft,
   Building2,
   ChevronDown,
   House,
@@ -41,37 +40,84 @@ const PROJECTS_URL = import.meta.env.DEV
 
 const services = [
   {
+    id: 'map',
     icon: Map,
-    title: 'الخريطة الذكية',
-    text: 'الأحياء والمشاريع والمرافق في تجربة مكانية مترابطة.',
-    action: 'افتح الخريطة',
+    title: { ar: 'الخريطة الذكية', en: 'Smart Map' },
+    text: { ar: 'الأحياء والمشاريع والمرافق في تجربة مكانية مترابطة.', en: 'Districts, projects, and facilities in one connected spatial experience.' },
+    action: { ar: 'افتح الخريطة', en: 'Open the map' },
     href: SMART_MAP_URL,
   },
   {
+    id: 'projects',
     icon: Building2,
-    title: 'المشاريع والعقارات',
-    text: 'اكتشف المشاريع والوحدات واربطها مباشرة بموقعها داخل المدينة.',
-    action: 'استكشف المشاريع',
+    title: { ar: 'المشاريع والعقارات', en: 'Projects and Properties' },
+    text: { ar: 'اكتشف المشاريع والوحدات واربطها مباشرة بموقعها داخل المدينة.', en: 'Explore projects and units and locate them directly within the city.' },
+    action: { ar: 'استكشف المشاريع', en: 'Explore projects' },
     href: PROJECTS_URL,
     requiresAuth: true,
   },
   {
+    id: 'services',
     icon: Landmark,
-    title: 'الخدمات الإلكترونية',
-    text: 'وصول مباشر للخدمات والطلبات والمعاملات الرقمية.',
-    action: 'ابدأ الخدمة',
+    title: { ar: 'الخدمات الإلكترونية', en: 'Digital Services' },
+    text: { ar: 'وصول مباشر للخدمات والطلبات والمعاملات الرقمية.', en: 'Direct access to services, requests, and digital transactions.' },
+    action: { ar: 'ابدأ الخدمات', en: 'Start Services' },
     href: SERVICES_URL,
     requiresAuth: true,
   },
 ]
+
+const homeCopy = {
+  ar: {
+    pageTitle: 'مدينة السلطان هيثم', scroll: 'مرّر للاستكشاف', headerTools: 'أدوات الحساب واللغة', home: 'الصفحة الرئيسية',
+    accountMenu: 'فتح قائمة الحساب', adminAccount: 'حساب إداري', citizenAccount: 'حساب مواطن', logout: 'تسجيل الخروج', login: 'تسجيل الدخول',
+    language: 'اختيار اللغة', city: 'مدينة السلطان هيثم', cityView: 'مشهد جوي لمدينة السلطان هيثم',
+    legacyStart: 'رؤيةٌ تتحول', legacyEnd: 'إلى مدينة.', accessStart: 'دخول مباشر', accessEnd: 'إلى ما تحتاجه.', digitalGates: 'بوابات المدينة الرقمية',
+    footerView: 'إطلالة مدينة السلطان هيثم وقت الغروب', contact: 'تواصل معنا', contactUs: 'اتصل بنا', faq: 'الأسئلة الشائعة', location: 'الموقع', social: 'حسابات التواصل الاجتماعي',
+    services: 'الخدمات', eServices: 'الخدمات الإلكترونية', properties: 'العقارات', facilities: 'المرافق والخدمات',
+    explore: 'استكشف', about: 'عن المدينة', interactiveMap: 'الخريطة التفاعلية', projects: 'المشاريع', districts: 'الأحياء السكنية', green: 'المساحات الخضراء',
+    identity: <>وجهة عمرانية متكاملة<br />تضع الإنسان وجودة الحياة<br />في قلب المدينة.</>, legal: 'الروابط القانونية', privacy: 'سياسة الخصوصية', terms: 'شروط الاستخدام', accessibility: 'إمكانية الوصول',
+    copyright: '© 2026 مدينة السلطان هيثم. جميع الحقوق محفوظة.', ministry: 'موقع وزارة الإسكان والتخطيط العمراني',
+  },
+  en: {
+    pageTitle: 'Sultan Haitham City', scroll: 'Scroll to explore', headerTools: 'Account and language tools', home: 'Home',
+    accountMenu: 'Open account menu', adminAccount: 'Administrator account', citizenAccount: 'Citizen account', logout: 'Sign out', login: 'Sign in',
+    language: 'Choose language', city: 'Sultan Haitham City', cityView: 'Aerial view of Sultan Haitham City',
+    legacyStart: 'A vision transformed', legacyEnd: 'into a city.', accessStart: 'Direct access', accessEnd: 'to what you need.', digitalGates: 'Digital city gateways',
+    footerView: 'Sultan Haitham City at sunset', contact: 'Contact us', contactUs: 'Get in touch', faq: 'Frequently asked questions', location: 'Location', social: 'Social media accounts',
+    services: 'Services', eServices: 'Digital services', properties: 'Properties', facilities: 'Facilities and services',
+    explore: 'Explore', about: 'About the city', interactiveMap: 'Interactive map', projects: 'Projects', districts: 'Residential districts', green: 'Green spaces',
+    identity: <>An integrated urban destination<br />placing people and quality of life<br />at the heart of the city.</>, legal: 'Legal links', privacy: 'Privacy policy', terms: 'Terms of use', accessibility: 'Accessibility',
+    copyright: '© 2026 Sultan Haitham City. All rights reserved.', ministry: 'Ministry of Housing and Urban Planning website',
+  },
+}
 
 export default function App() {
   const root = useRef(null)
   const accountRef = useRef(null)
   const [accountOpen, setAccountOpen] = useState(false)
   const [siteProfile, setSiteProfile] = useState(() => getSiteProfile())
+  const [language, setLanguage] = useState(() => {
+    try { return localStorage.getItem('sh_lang') === 'en' ? 'en' : 'ar' } catch (_) { return 'ar' }
+  })
   const { signOut } = useAdminAuth()
   const { navigateWithTransition, isTransitioning } = usePageTransition()
+  const copy = homeCopy[language]
+  const isArabic = language === 'ar'
+
+  useEffect(() => {
+    document.documentElement.lang = language
+    document.documentElement.dir = isArabic ? 'rtl' : 'ltr'
+    document.title = copy.pageTitle
+    try { localStorage.setItem('sh_lang', language) } catch (_) {}
+    requestAnimationFrame(() => ScrollTrigger.refresh())
+  }, [copy.pageTitle, isArabic, language])
+
+  const protectFooterLink = (event, href) => {
+    if (isSiteAuthenticated()) return
+    event.preventDefault()
+    window.location.assign(`/login?returnTo=${encodeURIComponent(href)}`)
+  }
 
   useEffect(() => {
     const syncAccount = () => {
@@ -168,6 +214,7 @@ export default function App() {
           scrub: 1,
           pin: true,
           anticipatePin: 1,
+          invalidateOnRefresh: true,
         },
       })
 
@@ -195,7 +242,7 @@ export default function App() {
 
         // 03 — بوابات المدينة
         .fromTo('.access-stage', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 3.02)
-        .fromTo('.access-head', { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.45 }, 3.1)
+        .fromTo('.access-head', { opacity: 0, x: () => document.documentElement.dir === 'rtl' ? 24 : -24 }, { opacity: 1, x: 0, duration: 0.45 }, 3.1)
         .fromTo('.access-link', { opacity: 0, y: 24, filter: 'blur(5px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', stagger: 0.1, duration: 0.5 }, 3.2)
         .to('.access-stage', { autoAlpha: 0, y: -16, duration: 0.5 }, 4.5)
 
@@ -209,6 +256,15 @@ export default function App() {
         .to('.topbar', { autoAlpha: 0, y: -10, duration: 0.18 }, 4.72)
         .fromTo('.footer-panel', { opacity: 0, yPercent: 35 }, { opacity: 1, yPercent: 0, duration: 0.66, ease: 'power2.out' }, 4.88)
         .fromTo('.footer-reveal', { opacity: 0, y: 15 }, { opacity: 1, y: 0, stagger: 0.055, duration: 0.38 }, 5.02)
+
+      if (window.location.hash === '#direct-access') {
+        requestAnimationFrame(() => {
+          const trigger = story.scrollTrigger
+          const destination = trigger.start + (trigger.end - trigger.start) * 0.65
+          lenis.scrollTo(destination, { immediate: true })
+          ScrollTrigger.update()
+        })
+      }
 
       const statNumbers = gsap.utils.toArray('.masterplan-stat-number')
       statNumbers.forEach((node, index) => {
@@ -383,7 +439,7 @@ if (supportsAccessHover && accessRail) {
   }, [])
 
   return (
-    <main ref={root} className="site-shell">
+    <main ref={root} className="site-shell" lang={language} dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="intro" aria-hidden="true">
         <img src={city} className="intro-bg" alt="" />
         <div className="intro-shade" />
@@ -392,17 +448,27 @@ if (supportsAccessHover && accessRail) {
           <img src={logo} className="intro-lockup" alt="" />
           <img src={cityName} className="intro-name" alt="مدينة السلطان هيثم — Sultan Haitham City" />
         </div>
-        <div className="intro-scroll-cue"><span />مرّر للاستكشاف</div>
+        <div className="intro-scroll-cue"><span />{copy.scroll}</div>
       </div>
       <div className="intro-scroll-space" aria-hidden="true" />
 
-      <header className="topbar" aria-label="أدوات الحساب واللغة">
-        {siteProfile ? (
-          <div className="site-account" ref={accountRef}>
+      <header className="topbar" aria-label={copy.headerTools}>
+        <div className="site-account-actions">
+          <a
+            className="site-home-link"
+            href="/"
+            aria-label={copy.home}
+            title={copy.home}
+            onClick={() => setAccountOpen(false)}
+          >
+            <House aria-hidden="true" />
+          </a>
+          {siteProfile ? (
+            <div className="site-account" ref={accountRef}>
             <button
               className="site-account-trigger"
               type="button"
-              aria-label="فتح قائمة الحساب"
+              aria-label={copy.accountMenu}
               aria-haspopup="menu"
               aria-expanded={accountOpen}
               onClick={() => setAccountOpen((open) => !open)}
@@ -419,19 +485,9 @@ if (supportsAccessHover && accessRail) {
                   </span>
                   <span>
                     <strong>{siteProfile.name}</strong>
-                    <small>{siteProfile.role === 'admin' ? 'حساب إداري' : 'حساب مواطن'}</small>
+                    <small>{siteProfile.role === 'admin' ? copy.adminAccount : copy.citizenAccount}</small>
                   </span>
                 </div>
-                <a
-                  className="site-account-home"
-                  href="/"
-                  role="menuitem"
-                  aria-label="الصفحة الرئيسية"
-                  title="الصفحة الرئيسية"
-                  onClick={() => setAccountOpen(false)}
-                >
-                  <House aria-hidden="true" />
-                </a>
                 <button
                   className="site-account-logout"
                   type="button"
@@ -444,34 +500,37 @@ if (supportsAccessHover && accessRail) {
                   }}
                 >
                   <LogOut aria-hidden="true" />
-                  تسجيل الخروج
+                  {copy.logout}
                 </button>
               </div>
             )}
-          </div>
-        ) : (
-          <a
-            id="login"
-            className="login-link"
-            href="/login"
-            aria-disabled={isTransitioning}
-            onClick={(event) => {
-              event.preventDefault()
-              navigateWithTransition('/login', { direction: 'forward' })
-            }}
-          >
-            تسجيل الدخول
-          </a>
-        )}
-        <a className="header-brand" href="#experience" aria-label="مدينة السلطان هيثم">
+            </div>
+          ) : (
+            <a
+              id="login"
+              className="login-link"
+              href="/login"
+              aria-disabled={isTransitioning}
+              onClick={(event) => {
+                event.preventDefault()
+                navigateWithTransition('/login', { direction: 'forward' })
+              }}
+            >
+              {copy.login}
+            </a>
+          )}
+        </div>
+        <a className="header-brand" href="#experience" aria-label={copy.city}>
           <img src={logo} alt="" />
-          <img src={cityName} alt="مدينة السلطان هيثم" />
+          <img src={cityName} alt={copy.city} />
         </a>
-        <div className="lang" aria-label="اختيار اللغة">العربية <span>/</span> English</div>
+        <button className="lang" type="button" aria-label={copy.language} onClick={() => setLanguage(isArabic ? 'en' : 'ar')}>
+          <strong className={isArabic ? 'is-active' : ''}>Ar</strong><span>/</span><strong className={!isArabic ? 'is-active' : ''}>En</strong>
+        </button>
       </header>
 
       <section id="experience" className="story">
-        <img src={city} className="city-base" alt="مشهد جوي لمدينة السلطان هيثم" />
+        <img src={city} className="city-base" alt={copy.cityView} />
         <div className="cinematic-grade" />
 
         <div className="legacy-frame" aria-hidden="true">
@@ -480,27 +539,27 @@ if (supportsAccessHover && accessRail) {
         <div className="sultan-glow" />
 
         <div className="legacy-copy">
-          <h2>رؤيةٌ تتحول<br /><em>إلى مدينة.</em></h2>
+          <h2>{copy.legacyStart}<br /><em>{copy.legacyEnd}</em></h2>
         </div>
 
         <div className="portal-glow" />
 
-        <CityExplore mapUrl={SMART_MAP_URL} />
+        <CityExplore mapUrl={SMART_MAP_URL} language={language} />
 
         <div
-          id="services"
+          id="direct-access"
           className="access-stage story-stage"
           style={{ '--access-background': `url(${accessBackground})` }}
         >
           <div className="access-head">
-            <h2>دخول مباشر<br /><em>إلى ما تحتاجه.</em></h2>
+            <h2>{copy.accessStart}<br /><em>{copy.accessEnd}</em></h2>
           </div>
 
-          <nav className="access-rail" aria-label="بوابات المدينة الرقمية">
-            {services.map(({ icon: Icon, title, text, action, href, requiresAuth }) => (
+          <nav className="access-rail" aria-label={copy.digitalGates}>
+            {services.map(({ id, icon: Icon, title, text, action, href, requiresAuth }) => (
               <button
                 className="access-link"
-                key={title}
+                key={id}
                 type="button"
                 onClick={() => {
                   if (!href) return
@@ -515,10 +574,10 @@ if (supportsAccessHover && accessRail) {
               >
                 <span className="access-orbit"><Icon size={22} /></span>
                 <span className="access-copy">
-                  <strong>{title}</strong>
-                  <span>{text}</span>
+                  <strong>{title[language]}</strong>
+                  <span>{text[language]}</span>
                 </span>
-                <span className="access-action">{action} <ArrowUpLeft size={17} /></span>
+                <span className="access-action">{action[language]}</span>
                 <span className="access-pulse" aria-hidden="true" />
               </button>
             ))}
@@ -526,25 +585,23 @@ if (supportsAccessHover && accessRail) {
         </div>
 
         <div id="contact" className="footer-stage story-stage">
-          <img className="footer-stage-bg" src={footerImage} alt="إطلالة مدينة السلطان هيثم وقت الغروب" />
+          <img className="footer-stage-bg" src={footerImage} alt={copy.footerView} />
           <div className="footer-stage-shade" aria-hidden="true" />
 
           <div className="footer-hero-lockup">
             <img className="footer-hero-mark" src={logo} alt="" />
-            <img className="footer-hero-name" src={cityName} alt="مدينة السلطان هيثم" />
-            <div className="footer-hero-slogan"><span />زاهية بناسها<span /></div>
-            <p>مدينة تُبنى للإنسان، وتزدهر بناسها.</p>
+            <img className="footer-hero-name" src={cityName} alt={copy.city} />
           </div>
 
           <div className="footer-panel">
             <div className="footer-grid">
               <section className="footer-column footer-reveal">
-                <h3>تواصل معنا</h3>
+                <h3>{copy.contact}</h3>
                 <i aria-hidden="true" />
-                <a href="https://mohup.gov.om/ar/contact-us" target="_blank" rel="noreferrer">اتصل بنا</a>
-                <a href="https://mohup.gov.om/ar/contact-us" target="_blank" rel="noreferrer">الأسئلة الشائعة</a>
-                <a href="https://mohup.gov.om/ar/contact-us?tab=location" target="_blank" rel="noreferrer">الموقع</a>
-                <div className="footer-socials" aria-label="حسابات التواصل الاجتماعي">
+                <a href={`https://mohup.gov.om/${language}/contact-us`} target="_blank" rel="noreferrer">{copy.contactUs}</a>
+                <a href={`https://mohup.gov.om/${language}/contact-us`} target="_blank" rel="noreferrer">{copy.faq}</a>
+                <a href={SMART_MAP_URL}>{copy.location}</a>
+                <div className="footer-socials" aria-label={copy.social}>
                   <a href="https://www.instagram.com/housingoman/" target="_blank" rel="noreferrer" aria-label="Instagram">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle className="footer-social-dot" cx="17.4" cy="6.7" r="1" /></svg>
                   </a>
@@ -556,50 +613,49 @@ if (supportsAccessHover && accessRail) {
               </section>
 
               <section className="footer-column footer-reveal">
-                <h3>الخدمات</h3>
+                <h3>{copy.services}</h3>
                 <i aria-hidden="true" />
-                <a href={SERVICES_URL}>الخدمات الإلكترونية</a>
-                <a href="https://mohup.gov.om/ar/e-services" target="_blank" rel="noreferrer">العقارات</a>
-                <a href="https://mohup.gov.om/ar/e-services" target="_blank" rel="noreferrer">المرافق والخدمات</a>
-                <a href="/login">تسجيل الدخول</a>
+                <a href={SERVICES_URL} onClick={(event) => protectFooterLink(event, SERVICES_URL)}>{copy.eServices}</a>
+                <a href={PROJECTS_URL} onClick={(event) => protectFooterLink(event, PROJECTS_URL)}>{copy.properties}</a>
+                <a href={`${SMART_MAP_URL}?layer=facilities`}>{copy.facilities}</a>
+                <a href="/login">{copy.login}</a>
               </section>
 
               <section className="footer-column footer-reveal">
-                <h3>استكشف</h3>
+                <h3>{copy.explore}</h3>
                 <i aria-hidden="true" />
-                <a href="#experience">عن المدينة</a>
-                <a href="#city-map">الخريطة التفاعلية</a>
-                <a href="#city-map">المشاريع</a>
-                <a href="#city-map">الأحياء السكنية</a>
-                <a href="#city-map">المساحات الخضراء</a>
+                <a href="#experience">{copy.about}</a>
+                <a href={SMART_MAP_URL}>{copy.interactiveMap}</a>
+                <a href={PROJECTS_URL} onClick={(event) => protectFooterLink(event, PROJECTS_URL)}>{copy.projects}</a>
+                <a href={`${SMART_MAP_URL}?layer=districts`}>{copy.districts}</a>
+                <a href={`${SMART_MAP_URL}?layer=green`}>{copy.green}</a>
               </section>
 
               <section className="footer-identity footer-reveal">
                 <div className="footer-identity-brand">
                   <img src={logo} alt="" />
-                  <img src={cityName} alt="مدينة السلطان هيثم" />
-                  <div><span />زاهية بناسها<span /></div>
+                  <img src={cityName} alt={copy.city} />
                 </div>
-                <p>وجهة عمرانية متكاملة<br />تضع الإنسان وجودة الحياة<br />في قلب المدينة.</p>
+                <p>{copy.identity}</p>
               </section>
             </div>
 
             <div className="footer-bottom footer-reveal">
               <div className="footer-legal">
-                <div className="footer-language"><a href="https://mohup.gov.om/ar" target="_blank" rel="noreferrer">العربية</a><span /><a href="https://mohup.gov.om/en" target="_blank" rel="noreferrer" lang="en">English</a></div>
-                <nav aria-label="الروابط القانونية">
-                  <a href="https://mohup.gov.om/ar/privacy-policy" target="_blank" rel="noreferrer">سياسة الخصوصية</a>
-                  <a href="https://mohup.gov.om/ar/terms-of-use" target="_blank" rel="noreferrer">شروط الاستخدام</a>
-                  <a href="https://mohup.gov.om/ar/terms-of-use" target="_blank" rel="noreferrer">إمكانية الوصول</a>
+                <button className="footer-language" type="button" aria-label={copy.language} onClick={() => setLanguage(isArabic ? 'en' : 'ar')}><strong className={isArabic ? 'is-active' : ''}>Ar</strong><span>/</span><strong className={!isArabic ? 'is-active' : ''}>En</strong></button>
+                <nav aria-label={copy.legal}>
+                  <a href={`https://mohup.gov.om/${language}/privacy-policy`} target="_blank" rel="noreferrer">{copy.privacy}</a>
+                  <a href={`https://mohup.gov.om/${language}/terms-of-use`} target="_blank" rel="noreferrer">{copy.terms}</a>
+                  <a href={`https://mohup.gov.om/${language}/terms-of-use`} target="_blank" rel="noreferrer">{copy.accessibility}</a>
                 </nav>
               </div>
-              <p>© 2026 مدينة السلطان هيثم. جميع الحقوق محفوظة.</p>
-              <a className="footer-ministry-link" href="https://mohup.gov.om/" target="_blank" rel="noreferrer" aria-label="موقع وزارة الإسكان والتخطيط العمراني">
-                <span className="footer-ministry-emblem"><img src={housingLogo} alt="" /></span>
-                <span className="footer-ministry-copy">
-                  <strong>وزارة الإسكان والتخطيط العمراني</strong>
-                  <small>Ministry of Housing and Urban Planning</small>
-                </span>
+              <p>{copy.copyright}</p>
+              <a className="footer-ministry-link" href="https://mohup.gov.om/" target="_blank" rel="noreferrer" aria-label={copy.ministry}>
+                <img
+                  className="footer-ministry-image"
+                  src={housingLogo}
+                  alt="وزارة الإسكان والتخطيط العمراني — Ministry of Housing and Urban Planning"
+                />
               </a>
             </div>
           </div>
