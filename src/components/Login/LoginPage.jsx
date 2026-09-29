@@ -353,7 +353,9 @@ export default function LoginPage() {
 
             if (isTransitioning) return
 
-            window.location.assign('/#direct-access')
+            navigateWithTransition('/#direct-access', {
+              direction: 'reverse',
+            })
           }}
         >
           <ArrowLeft aria-hidden="true" />
