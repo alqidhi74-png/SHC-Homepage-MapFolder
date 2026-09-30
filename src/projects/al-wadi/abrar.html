@@ -10,7 +10,10 @@
             } catch (_) {}
             if (!authenticated) {
                 const returnTo = location.pathname + location.search + location.hash;
-                location.replace('/login?returnTo=' + encodeURIComponent(returnTo));
+                const target = '/login?returnTo=' + encodeURIComponent(returnTo);
+                const redirect = () => window.shcNavigateToLogin(target, { replace: true });
+                window.addEventListener('shc:login-transition-ready', redirect, { once: true });
+                window.setTimeout(() => { if (!window.shcNavigateToLogin) location.replace(target); }, 900);
             }
         })();
     </script>
@@ -48,6 +51,7 @@
     
     <!-- Arabic typography -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../../login-transition.js" defer data-shc-login-transition></script>
     <script src="../../chatbot.js" defer data-shc-chatbot-loader></script>
 
     <!-- GSAP Animation Library -->

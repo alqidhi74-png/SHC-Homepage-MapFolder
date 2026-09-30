@@ -14,6 +14,7 @@ await cp(resolve('src/projects'), resolve('dist/projects'), { recursive: true, f
 await cp(resolve('src/header.css'), resolve('dist/header.css'))
 await cp(resolve('src/portal-header.css'), resolve('dist/portal-header.css'))
 await cp(resolve('src/portal-header.js'), resolve('dist/portal-header.js'))
+await cp(resolve('src/login-transition.js'), resolve('dist/login-transition.js'))
 await cp(resolve('src/chatbot.js'), resolve('dist/chatbot.js'))
 await mkdir(resolve('dist/assets'), { recursive: true })
 for (const asset of ['logo.png', 'city-name.png']) {

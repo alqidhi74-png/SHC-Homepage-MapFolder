@@ -27,6 +27,47 @@ export function PageTransitionProvider({ children }) {
   useLayoutEffect(() => {
     const overlay = overlayRef.current
     const path = pathRef.current
+    let continueExternalTransition = false
+
+    try {
+      continueExternalTransition = sessionStorage.getItem('shc.external-login-transition') === 'forward'
+      sessionStorage.removeItem('shc.external-login-transition')
+    } catch (_) {}
+
+    if (continueExternalTransition) {
+      gsap.set(overlay, {
+        opacity: 1,
+        visibility: 'visible',
+      })
+      gsap.set(path, {
+        drawSVG: '100%',
+        strokeWidth: 300,
+      })
+
+      timelineRef.current = gsap.timeline({
+        onComplete: () => {
+          gsap.set(path, { drawSVG: '0%', strokeWidth: 2 })
+          gsap.set(overlay, { opacity: 0, visibility: 'hidden' })
+          timelineRef.current = null
+        },
+      })
+        .to(path, {
+          drawSVG: '100% 100%',
+          strokeWidth: 2,
+          duration: 1.5,
+          ease: 'power2.inOut',
+        }, 0)
+        .to(overlay, {
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.inOut',
+        }, 1)
+
+      return () => {
+        timelineRef.current?.kill()
+        gsap.killTweensOf([overlay, path])
+      }
+    }
 
     gsap.set(overlay, {
       opacity: 0,

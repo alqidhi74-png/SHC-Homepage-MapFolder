@@ -10,7 +10,10 @@
             } catch (_) {}
             if (!authenticated) {
                 const returnTo = location.pathname + location.search + location.hash;
-                location.replace('/login?returnTo=' + encodeURIComponent(returnTo));
+                const target = '/login?returnTo=' + encodeURIComponent(returnTo);
+                const redirect = () => window.shcNavigateToLogin(target, { replace: true });
+                window.addEventListener('shc:login-transition-ready', redirect, { once: true });
+                window.setTimeout(() => { if (!window.shcNavigateToLogin) location.replace(target); }, 900);
             }
         })();
     </script>
@@ -489,7 +492,7 @@
         <div class="breadcrumb">
             <a href="UPDATE.html" data-ar="العقارات" data-en="Properties">العقارات</a>
             <span>‹</span>
-            <span data-ar="فيلا A-108" data-en="Villa A-108">فيلا A-108</span>
+            <span data-property-name data-ar="فيلا A-108" data-en="Villa A-108">فيلا A-108</span>
         </div>
 
         <!-- GALLERY -->
@@ -514,7 +517,7 @@
             <div>
                 <div class="details-header">
                     <div class="property-title-section">
-                        <h1 data-ar="فيلا A-108" data-en="Villa A-108">فيلا A-108</h1>
+                        <h1 data-property-name data-ar="فيلا A-108" data-en="Villa A-108">فيلا A-108</h1>
                         <p data-ar="📍 أفياء الواحة · الواحة الخضراء" data-en="📍 Afyaa Al Waha · Green Oasis">📍 أفياء الواحة · الواحة الخضراء</p>
                     </div>
                     <div class="status-badge-group">
@@ -557,7 +560,7 @@
                 <div class="specs-grid">
                     <div class="spec-item">
                         <span class="s-label" data-ar="اسم الوحدة" data-en="Unit Name">اسم الوحدة</span>
-                        <span class="s-val" data-ar="فيلا A-108" data-en="Villa A-108">فيلا A-108</span>
+                        <span class="s-val" data-property-name data-ar="فيلا A-108" data-en="Villa A-108">فيلا A-108</span>
                     </div>
                     <div class="spec-item">
                         <span class="s-label" data-ar="المشروع" data-en="Project">المشروع</span>
@@ -653,6 +656,16 @@
     </div>
 
     <script>
+        const propertyCode = (() => {
+            const value = new URLSearchParams(location.search).get('code') || 'A-108';
+            return /^[A-Z0-9-]{1,24}$/i.test(value) ? value.toUpperCase() : 'A-108';
+        })();
+        const propertyName = { ar: `فيلا ${propertyCode}`, en: `Villa ${propertyCode}` };
+        document.querySelectorAll('[data-property-name]').forEach((element) => {
+            element.dataset.ar = propertyName.ar;
+            element.dataset.en = propertyName.en;
+        });
+
         function applyLang(lang) {
             const next = lang === 'en' ? 'en' : 'ar';
             document.documentElement.lang = next;
@@ -661,8 +674,8 @@
                 element.textContent = element.dataset[next];
             });
             document.title = next === 'en'
-                ? 'Property Details | Villa A-108 - Afyaa Al Waha'
-                : 'تفاصيل العقار | فيلا A-108 - أفياء الواحة';
+                ? `Property Details | ${propertyName.en} - Afyaa Al Waha`
+                : `تفاصيل العقار | ${propertyName.ar} - أفياء الواحة`;
             try { localStorage.setItem('sh_lang', next); } catch (_) {}
         }
         window.applyLang = applyLang;

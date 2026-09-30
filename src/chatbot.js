@@ -271,7 +271,8 @@
       :host{--wine:#5b1021;--wine-deep:#330914;--gold:#e4c26b;--cream:#fffaf0;position:fixed;inset:auto 22px 22px auto;z-index:2147483000;font-family:"IBM Plex Sans Arabic",Arial,sans-serif;color:#2c171c}
       *,*::before,*::after{box-sizing:border-box}
       button,input,textarea{font:inherit}
-      .launcher{display:flex;align-items:center;gap:9px;min-height:52px;padding:0 18px;border:1px solid rgba(228,194,107,.78);border-radius:999px;background:linear-gradient(135deg,var(--wine),var(--wine-deep));color:#fff6dc;box-shadow:0 14px 38px rgba(35,5,13,.34);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
+      .launcher{display:flex;align-items:center;gap:9px;min-height:52px;padding:0 18px;border:1px solid rgba(228,194,107,.78);border-radius:999px;background:linear-gradient(135deg,var(--wine),var(--wine-deep));color:#fff6dc;box-shadow:0 14px 38px rgba(35,5,13,.34);cursor:grab;touch-action:none;user-select:none;transition:transform .2s ease,box-shadow .2s ease}
+      .launcher.dragging{cursor:grabbing;transform:none}
       .launcher:hover{transform:translateY(-2px);box-shadow:0 17px 44px rgba(35,5,13,.42)}
       .launcher svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
       .launcher span{font-size:13px;font-weight:600;white-space:nowrap}
@@ -436,7 +437,50 @@
     input.focus();
   });
 
-  launcher.addEventListener('click', open);
+  let drag = null;
+  let suppressLauncherClick = false;
+  const clampLauncher = (left, top) => {
+    const rect = host.getBoundingClientRect();
+    const margin = 8;
+    return {
+      left: Math.min(Math.max(margin, left), Math.max(margin, innerWidth - rect.width - margin)),
+      top: Math.min(Math.max(margin, top), Math.max(margin, innerHeight - rect.height - margin)),
+    };
+  };
+  launcher.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    const rect = host.getBoundingClientRect();
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
+    launcher.setPointerCapture(event.pointerId);
+  });
+  launcher.addEventListener('pointermove', (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+    drag.moved = true;
+    launcher.classList.add('dragging');
+    const position = clampLauncher(drag.left + dx, drag.top + dy);
+    host.style.inset = 'auto';
+    host.style.left = `${position.left}px`;
+    host.style.top = `${position.top}px`;
+  });
+  const finishLauncherDrag = (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    suppressLauncherClick = drag.moved;
+    drag = null;
+    launcher.classList.remove('dragging');
+  };
+  launcher.addEventListener('pointerup', finishLauncherDrag);
+  launcher.addEventListener('pointercancel', finishLauncherDrag);
+  launcher.addEventListener('click', (event) => {
+    if (suppressLauncherClick) {
+      suppressLauncherClick = false;
+      event.preventDefault();
+      return;
+    }
+    open();
+  });
   closeButton.addEventListener('click', close);
   backdrop.addEventListener('pointerdown', (event) => { if (event.target === backdrop) close(); });
   shadow.addEventListener('keydown', (event) => {

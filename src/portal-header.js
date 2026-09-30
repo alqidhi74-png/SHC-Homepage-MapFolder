@@ -5,6 +5,13 @@
   const script = document.currentScript;
   const assets = script?.dataset.assets || '/assets/';
 
+  if (script?.src && !document.querySelector('script[data-shc-login-transition]')) {
+    const transition = document.createElement('script');
+    transition.src = new URL('login-transition.js', script.src).href;
+    transition.dataset.shcLoginTransition = '';
+    document.head.appendChild(transition);
+  }
+
   if (script?.src && !document.querySelector('script[data-shc-chatbot-loader]')) {
     const chatbot = document.createElement('script');
     chatbot.src = new URL('chatbot.js', script.src).href;
@@ -106,7 +113,15 @@
   accountButton.addEventListener('click', () => {
     if (!authenticated) {
       const returnTo = location.pathname + location.search + location.hash;
-      location.assign('/login?returnTo=' + encodeURIComponent(returnTo));
+      const target = '/login?returnTo=' + encodeURIComponent(returnTo);
+      if (window.shcNavigateToLogin) window.shcNavigateToLogin(target);
+      else {
+        const fallback = window.setTimeout(() => location.assign(target), 900);
+        window.addEventListener('shc:login-transition-ready', () => {
+          window.clearTimeout(fallback);
+          window.shcNavigateToLogin(target);
+        }, { once: true });
+      }
       return;
     }
     const open = accountMenu.classList.toggle('is-open');

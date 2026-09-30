@@ -132,7 +132,7 @@ export default function App() {
     rememberHomeEntry()
     if (isSiteAuthenticated()) return
     event.preventDefault()
-    window.location.assign(`/login?returnTo=${encodeURIComponent(href)}`)
+    navigateWithTransition(`/login?returnTo=${encodeURIComponent(href)}`, { direction: 'forward' })
   }
 
   useEffect(() => {
@@ -581,7 +581,7 @@ if (supportsAccessHover && accessRail) {
                   rememberHomeEntry()
 
                   if (requiresAuth && !isSiteAuthenticated()) {
-                    window.location.assign(`/login?returnTo=${encodeURIComponent(href)}`)
+                    navigateWithTransition(`/login?returnTo=${encodeURIComponent(href)}`, { direction: 'forward' })
                     return
                   }
 
@@ -634,7 +634,11 @@ if (supportsAccessHover && accessRail) {
                 <a href={SERVICES_URL} onClick={(event) => protectFooterLink(event, SERVICES_URL)}>{copy.eServices}</a>
                 <a href={PROJECTS_URL} onClick={(event) => protectFooterLink(event, PROJECTS_URL)}>{copy.properties}</a>
                 <a href={`${SMART_MAP_URL}?layer=facilities`} onClick={rememberHomeEntry}>{copy.facilities}</a>
-                <a href="/login" onClick={rememberHomeEntry}>{copy.login}</a>
+                <a href="/login" onClick={(event) => {
+                  event.preventDefault()
+                  rememberHomeEntry()
+                  navigateWithTransition('/login', { direction: 'forward' })
+                }}>{copy.login}</a>
               </section>
 
               <section className="footer-column footer-reveal">

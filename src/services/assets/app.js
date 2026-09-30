@@ -8,12 +8,20 @@
 
 (() => {
   const source = document.currentScript?.src;
-  if (!source || document.querySelector('script[data-shc-chatbot-loader]')) return;
-  const chatbot = document.createElement('script');
-  chatbot.src = new URL('../../chatbot.js', source).href;
-  chatbot.defer = true;
-  chatbot.dataset.shcChatbotLoader = '';
-  document.head.appendChild(chatbot);
+  if (!source) return;
+  if (!document.querySelector('script[data-shc-login-transition]')) {
+    const transition = document.createElement('script');
+    transition.src = new URL('../../login-transition.js', source).href;
+    transition.dataset.shcLoginTransition = '';
+    document.head.appendChild(transition);
+  }
+  if (!document.querySelector('script[data-shc-chatbot-loader]')) {
+    const chatbot = document.createElement('script');
+    chatbot.src = new URL('../../chatbot.js', source).href;
+    chatbot.defer = true;
+    chatbot.dataset.shcChatbotLoader = '';
+    document.head.appendChild(chatbot);
+  }
 })();
 
 /* Require a signed-in site session before any service page can be used. */
@@ -29,7 +37,16 @@
 
   if (!authenticated) {
     const returnTo = window.location.pathname + window.location.search + window.location.hash;
-    window.location.replace('/login?returnTo=' + encodeURIComponent(returnTo));
+    const target = '/login?returnTo=' + encodeURIComponent(returnTo);
+    const redirect = () => window.shcNavigateToLogin(target, { replace: true });
+    if (window.shcNavigateToLogin) redirect();
+    else {
+      const fallback = window.setTimeout(() => window.location.replace(target), 900);
+      window.addEventListener('shc:login-transition-ready', () => {
+        window.clearTimeout(fallback);
+        redirect();
+      }, { once: true });
+    }
   }
 })();
 
@@ -774,7 +791,9 @@ function cancelLoginModal() {
 function requireLogin(action, opts = {}) {
   if (isLoggedIn()) { action(); return; }
   const returnTo = location.pathname + location.search + location.hash;
-  location.assign('/login?returnTo=' + encodeURIComponent(returnTo));
+  const target = '/login?returnTo=' + encodeURIComponent(returnTo);
+  if (window.shcNavigateToLogin) window.shcNavigateToLogin(target);
+  else location.assign(target);
 }
 
 /* يبدأ طلباً جديداً لخدمة معيّنة ويأخذ المستخدم للخطوة الأولى (بيانات المواطن) */
