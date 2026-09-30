@@ -14,7 +14,10 @@
   }
 
   const authenticated = (() => {
-    try { return localStorage.getItem(AUTH_KEY) === '1'; } catch (_) { return false; }
+    try {
+      const value = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+      return localStorage.getItem(AUTH_KEY) === '1' && value?.role === 'citizen';
+    } catch (_) { return false; }
   })();
 
   const profile = (() => {
@@ -22,7 +25,7 @@
       const value = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
       return {
         name: String(value?.name || 'المستخدم'),
-        role: value?.role === 'admin' ? 'admin' : 'citizen',
+        role: 'citizen',
       };
     } catch (_) {
       return { name: 'المستخدم', role: 'citizen' };

@@ -847,16 +847,17 @@ body[data-page] .page-canvas{position:relative;z-index:1;max-width:none;margin:0
 body[data-page] .site-frame{min-height:100vh;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible;}
 body[data-page] .site-header,
 body[data-page].is-scrolled .site-header{
-  position:relative;top:auto;height:78px;padding:0 5.5vw;background:rgba(255,252,246,.1);border:0;border-bottom:1px solid rgba(188,132,51,.62);border-radius:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;
+  position:relative;top:auto;height:78px;padding:0 clamp(22px,4vw,64px);background:rgba(255,252,246,.1);border:0;border-bottom:1px solid rgba(188,132,51,.62);border-radius:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;
 }
 body[data-page] .logo-group{position:static;}
 body[data-page] .back-arrow{display:none!important;}
 body[data-page] .service-brand-home{
-  position:absolute;z-index:3;top:2px;left:50%;transform:translateX(-50%);width:190px;min-height:76px;padding:2px 12px 5px;display:flex;flex-direction:column;justify-content:center;gap:2px;background:transparent;border:0;border-radius:0;box-shadow:none;
+  position:absolute;z-index:3;top:6px;left:50%;transform:translateX(-50%);width:130px;min-height:0;padding:0;display:flex;flex-direction:column;justify-content:center;gap:2px;background:transparent;border:0;border-radius:0;box-shadow:none;
 }
 body[data-page] .service-brand-home:after{display:none;}
-body[data-page] .service-brand-home .logo-mark{width:30px;height:30px;transform:none!important;}
+body[data-page] .service-brand-home .logo-mark{width:26px!important;height:26px!important;transform:none!important;}
 body[data-page] .service-brand-home .logo-word{align-items:center;text-align:center;}
+body[data-page] .service-brand-home .logo-word{width:118px!important;}
 body[data-page] .service-brand-home .logo-word b{color:#b47720;font-size:15px;white-space:nowrap;}
 body[data-page] .service-brand-home .logo-word span{display:block;max-height:none;color:#a86b18;font-size:9px;opacity:1;}
 body[data-page] .header-actions{position:static;}
@@ -865,12 +866,12 @@ body[data-page] .header-notif-wrap{display:none!important;}
 body[data-page] .service-home-button{position:absolute;right:calc(5.5vw + 66px);top:20px;width:38px;height:38px;padding:0;border:0;border-radius:0;color:#ad701e;display:grid;place-items:center;}
 body[data-page] .service-home-button:after{content:"";position:absolute;right:-16px;top:0;width:1px;height:38px;background:rgba(172,112,39,.55);}
 body[data-page] .service-home-button .ic{width:29px;height:29px;}
-body[data-page] #header-lang-btn{position:absolute;left:5.5vw;top:22px;width:auto;height:34px;padding:0;border:0;border-radius:0;color:#575352;background:transparent;display:flex;gap:12px;font-size:14px;font-weight:500;}
+body[data-page] #header-lang-btn{position:absolute;left:clamp(22px,4vw,64px);top:22px;width:auto;height:34px;padding:0;border:0;border-radius:0;color:#575352;background:transparent;display:flex;gap:8px;font-size:12px;font-weight:500;}
 body[data-page] #header-lang-btn i{font-style:normal;color:#9f7a4e;}
 body[data-page] #header-lang-btn strong{color:var(--velvet);font-weight:700;}
-body[data-page] .header-account-wrap{position:absolute;right:5.5vw;top:18px;}
-body[data-page] .header-account-btn{width:42px;height:42px;padding:0;border:1px solid #b97718;border-radius:50%;background:rgba(255,255,255,.5);color:#a96913;justify-content:center;}
-body[data-page] .header-home-link{width:42px;height:42px;border-color:#b97718;background:rgba(255,255,255,.5);color:#a96913;}
+body[data-page] .header-account-wrap{position:absolute;right:clamp(22px,4vw,64px);top:17px;gap:10px;}
+body[data-page] .header-account-btn{width:44px;height:44px;padding:0;border:1px solid #b97718;border-radius:50%;background:rgba(255,255,255,.5);color:#a96913;justify-content:center;}
+body[data-page] .header-home-link{width:44px;height:44px;border-color:#b97718;background:rgba(255,255,255,.5);color:#a96913;}
 body[data-page] .header-home-link:hover{background:rgba(255,247,220,.82);}
 body[data-page] .header-account-btn>span:not(.av){display:none;}
 body[data-page] .header-account-btn .av{width:28px;height:28px;}
@@ -949,15 +950,16 @@ body[data-page="request-docs"] #btn-step2-next{position:relative;min-width:132px
 
 @media(max-width:900px){
   body[data-page]:before{height:184px;background-position:center top,center 32%;background-size:100% 100%,auto 360px;}
-  body[data-page] .site-header{height:70px;padding-inline:16px;}
-  body[data-page] .service-brand-home{top:0;width:118px;min-height:70px;padding:3px 8px 5px;border-radius:0;}
-  body[data-page] .service-brand-home .logo-mark{width:25px;height:25px;}
+  body[data-page] .site-header{height:70px;padding-inline:20px;}
+  body[data-page] .service-brand-home{top:5px;width:108px;min-height:0;padding:0;border-radius:0;}
+  body[data-page] .service-brand-home .logo-mark{width:23px!important;height:23px!important;}
+  body[data-page] .service-brand-home .logo-word{width:96px!important;}
   body[data-page] .service-brand-home .logo-word b{font-size:11px;}
   body[data-page] .service-brand-home .logo-word span{font-size:7px;}
-  body[data-page] #header-lang-btn{left:16px;top:18px;gap:6px;font-size:10px;}
-  body[data-page] .header-account-wrap{right:16px;top:17px;}
-  body[data-page] .header-account-btn{width:36px;height:36px;}
-  body[data-page] .header-home-link{width:36px;height:36px;}
+  body[data-page] #header-lang-btn{left:20px;top:18px;gap:6px;font-size:11px;}
+  body[data-page] .header-account-wrap{right:20px;top:13px;}
+  body[data-page] .header-account-btn{width:44px;height:44px;}
+  body[data-page] .header-home-link{width:44px;height:44px;}
   body[data-page] .service-home-button{right:67px;top:18px;width:32px;height:34px;}
   body[data-page] .service-home-button:after{right:-8px;height:30px;}
   body[data-page] .service-home-button .ic{width:24px;height:24px;}

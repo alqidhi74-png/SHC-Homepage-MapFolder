@@ -4,7 +4,9 @@ export const SITE_PROFILE_KEY = 'sh_site_profile_v2'
 
 export function isSiteAuthenticated() {
   try {
-    return window.localStorage.getItem(SITE_AUTH_KEY) === '1'
+    if (window.localStorage.getItem(SITE_AUTH_KEY) !== '1') return false
+    const profile = JSON.parse(window.localStorage.getItem(SITE_PROFILE_KEY) || 'null')
+    return profile?.role === 'citizen'
   } catch {
     return false
   }
@@ -14,9 +16,10 @@ export function setSiteAuthenticated(authenticated = true, profile = null) {
   try {
     if (authenticated) {
       window.localStorage.setItem(SITE_AUTH_KEY, '1')
-      if (profile) {
-        window.localStorage.setItem(SITE_PROFILE_KEY, JSON.stringify(profile))
-      }
+      window.localStorage.setItem(SITE_PROFILE_KEY, JSON.stringify({
+        name: String(profile?.name || 'المستخدم'),
+        role: 'citizen',
+      }))
     } else {
       window.localStorage.removeItem(SITE_AUTH_KEY)
       window.localStorage.removeItem(SITE_PROFILE_KEY)
@@ -31,15 +34,16 @@ export function getSiteProfile() {
 
   try {
     const stored = window.localStorage.getItem(SITE_PROFILE_KEY)
-    if (!stored) return { name: 'المستخدم', role: 'citizen' }
+    if (!stored) return null
 
     const profile = JSON.parse(stored)
+    if (profile?.role !== 'citizen') return null
     return {
       name: String(profile?.name || 'المستخدم'),
-      role: profile?.role === 'admin' ? 'admin' : 'citizen',
+      role: 'citizen',
     }
   } catch {
-    return { name: 'المستخدم', role: 'citizen' }
+    return null
   }
 }
 

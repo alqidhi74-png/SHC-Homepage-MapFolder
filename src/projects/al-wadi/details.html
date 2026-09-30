@@ -4,7 +4,10 @@
     <script>
         (() => {
             let authenticated = false;
-            try { authenticated = localStorage.getItem('sh_site_logged_in_v2') === '1'; } catch (_) {}
+            try {
+                const profile = JSON.parse(localStorage.getItem('sh_site_profile_v2') || 'null');
+                authenticated = localStorage.getItem('sh_site_logged_in_v2') === '1' && profile?.role === 'citizen';
+            } catch (_) {}
             if (!authenticated) {
                 const returnTo = location.pathname + location.search + location.hash;
                 location.replace('/login?returnTo=' + encodeURIComponent(returnTo));

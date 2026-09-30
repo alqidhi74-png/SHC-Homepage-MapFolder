@@ -1,6 +1,6 @@
 /* Map presentation based on the supplied gold and burgundy reference. */
 :root {
-  --site-header-height: 110px;
+  --site-header-height: 78px;
   --gutter: clamp(24px, 1.9vw, 36px);
   --layer-w: clamp(266px, 17vw, 304px);
   --gold: #e5c477;
@@ -12,13 +12,13 @@
 
 .map-topbar {
   height: var(--site-header-height);
-  padding: 0 var(--gutter) 10px clamp(28px, 4.8vw, 88px);
+  padding: 0 clamp(22px, 4vw, 64px);
   background: linear-gradient(#00131abb, #00131a45 72%, transparent);
   font-family: var(--font);
 }
-.map-topbar .header-brand { top: 8px; width: 180px; gap: 2px; }
-.map-topbar .header-brand img:first-child { width: 35px; }
-.map-topbar .header-brand img:last-child { width: 168px; }
+.map-topbar .header-brand { top: 6px; width: 130px; gap: 2px; }
+.map-topbar .header-brand img:first-child { width: 26px; }
+.map-topbar .header-brand img:last-child { width: 118px; }
 .header-actions, .map-language {
   position: relative;
   display: flex;
@@ -41,14 +41,14 @@
 .header-actions [data-icon] { width: 25px; height: 25px; color: var(--gold); }
 [dir="rtl"] .header-actions .home-link [data-icon="arrow"] { transform: scaleX(-1); }
 .header-actions a:hover { color: var(--gold-soft); background: #e5c47712; }
-.map-language { direction: ltr; gap: 18px; }
+.map-language { direction: ltr; gap: 8px; }
 .map-language button {
   position: relative;
   padding: 8px 0;
   border: 0;
   background: transparent;
   color: #f4eee3;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
 }
 .map-language button[aria-pressed="true"] { color: var(--gold); }
@@ -229,12 +229,16 @@
   .locate-btn { left: auto; right: 24px; bottom: 20px; width: 42px; height: 42px; }
   .maplibregl-ctrl-bottom-right { bottom: 128px !important; }
 }
+@media (max-width: 900px) {
+  :root { --site-header-height: 70px; }
+  .map-topbar { padding: 0 20px; }
+  .map-topbar .header-brand { top: 5px; width: 108px; }
+  .map-topbar .header-brand img:first-child { width: 23px; }
+  .map-topbar .header-brand img:last-child { width: 96px; }
+  .map-language button { font-size: 11px; }
+}
 @media (max-width: 760px) {
-  :root { --site-header-height: 91px; --gutter: 14px; --layer-w: 278px; }
-  .map-topbar { padding: 0 16px 12px; }
-  .map-topbar .header-brand { top: 7px; width: 124px; }
-  .map-topbar .header-brand img:first-child { width: 27px; }
-  .map-topbar .header-brand img:last-child { width: 118px; }
+  :root { --gutter: 14px; --layer-w: 278px; }
   .header-actions { gap: 2px; }
   .header-actions [data-icon] { width: 22px; height: 22px; }
   .map-language { gap: 9px; }
@@ -284,9 +288,7 @@
   .map-stage.card-open .map-tools, .map-stage.card-open .map-mode-switch { bottom: calc(var(--sheet-height, 48%) + 15px); }
 }
 @media (max-width: 370px) {
-  .map-topbar { padding-inline: 12px; }
-  .map-topbar .header-brand img:last-child { width: 100px; }
-  .map-topbar .header-brand img:first-child { width: 25px; }
+  .map-topbar { padding-inline: 20px; }
   .map-language { gap: 6px; }
   .map-language button { font-size: 10px; }
   .header-actions { gap: 0; }
@@ -295,9 +297,6 @@
   .view-switch a.active { min-width: 109px; }
 }
 @media (max-height: 700px) and (min-width: 1001px) {
-  :root { --site-header-height: 96px; }
-  .map-topbar .header-brand img:first-child { width: 29px; }
-  .map-topbar .header-brand img:last-child { width: 144px; }
   .panel-head { min-height: 50px; }
   .layer-row { min-height: 29px; font-size: 12px; }
   .group-title { font-size: 12px; }

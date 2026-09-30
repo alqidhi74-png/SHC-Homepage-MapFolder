@@ -21,7 +21,8 @@
   let authenticated = false;
 
   try {
-    authenticated = window.localStorage.getItem('sh_site_logged_in_v2') === '1';
+    const profile = JSON.parse(window.localStorage.getItem('sh_site_profile_v2') || 'null');
+    authenticated = window.localStorage.getItem('sh_site_logged_in_v2') === '1' && profile?.role === 'citizen';
   } catch (_) {
     authenticated = false;
   }
@@ -82,13 +83,27 @@ const SERVICE_CATALOG = {
 
 /* ---------------- حالة الطلب المشتركة بين الصفحات ---------------- */
 const STATE_KEY = 'sh_request_state';
+const LEGACY_CITIZEN_EMAIL = 'alqidhi74@gmail.com';
+const DEFAULT_CITIZEN_EMAIL = 'salim.alharthi@shc.om';
+function migrateCitizenEmail(record) {
+  if (!record || typeof record !== 'object' || record.email !== LEGACY_CITIZEN_EMAIL) return record;
+  return { ...record, email: DEFAULT_CITIZEN_EMAIL };
+}
 function defaultState() {
   return { serviceId: 'realestate-reg', parcel: '', type: '', desc: '', docs: {}, ack: false, signed: false, requestNumber: '', submittedAt: '', citizen: null };
 }
 function loadState() {
   try {
     const raw = sessionStorage.getItem(STATE_KEY);
-    if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+    if (raw) {
+      const state = Object.assign(defaultState(), JSON.parse(raw));
+      const migratedCitizen = migrateCitizenEmail(state.citizen);
+      if (migratedCitizen !== state.citizen) {
+        state.citizen = migratedCitizen;
+        sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
+      }
+      return state;
+    }
   } catch (_) {}
   return defaultState();
 }
@@ -313,8 +328,13 @@ function toggleLanguage() { applyLang(currentLang === 'ar' ? 'en' : 'ar'); }
 /* ---------------- حالة تسجيل الدخول (مشتركة بين الصفحات) ---------------- */
 const LOGIN_KEY = 'sh_site_logged_in_v2';
 const PROFILE_KEY = 'sh_site_profile_v2';
-const MOCK_USER = { id: 'u-1001', name: 'سالم الحارثي', initials: 'س' };
-function isLoggedIn() { try { return localStorage.getItem(LOGIN_KEY) === '1'; } catch (_) { return false; } }
+const MOCK_USER = { id: 'u-1001', name: 'سالم الحارثي', initials: 'س', role: 'citizen' };
+function isLoggedIn() {
+  try {
+    const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+    return localStorage.getItem(LOGIN_KEY) === '1' && profile?.role === 'citizen';
+  } catch (_) { return false; }
+}
 function setLoggedIn(v) {
   try {
     if (v) {
@@ -431,7 +451,7 @@ function simulateRequest(produce, { fail = false, ms = API_LATENCY } = {}) {
 const CITIZEN_SEED = {
   'u-1001': {
     fullName: 'سالم بن سعيد الحارثي', civilId: '12345678', dob: '1990-04-12', nationality: 'عُماني',
-    phone: '91234567', email: 'alqidhi74@gmail.com', governorate: 'مسقط', wilayat: 'بوشر', address: 'بوشر، مسقط'
+    phone: '91234567', email: DEFAULT_CITIZEN_EMAIL, governorate: 'مسقط', wilayat: 'بوشر', address: 'بوشر، مسقط'
   }
 };
 const CITIZEN_DB_KEY = id => 'sh_db_citizen_' + id;
@@ -446,7 +466,16 @@ const CitizenAPI = {
     if (fail) simErrorConsumed = true;
     return simulateRequest(() => {
       if (flag === 'empty') return null;
-      try { const saved = localStorage.getItem(CITIZEN_DB_KEY(userId)); if (saved) return JSON.parse(saved); } catch (_) {}
+      try {
+        const key = CITIZEN_DB_KEY(userId);
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          const record = JSON.parse(saved);
+          const migrated = migrateCitizenEmail(record);
+          if (migrated !== record) localStorage.setItem(key, JSON.stringify(migrated));
+          return migrated;
+        }
+      } catch (_) {}
       return CITIZEN_SEED[userId] ? { ...CITIZEN_SEED[userId] } : null;
     }, { fail });
   },
@@ -744,19 +773,8 @@ function cancelLoginModal() {
 }
 function requireLogin(action, opts = {}) {
   if (isLoggedIn()) { action(); return; }
-  buildLoginModal();
-  updateLoginModalLanguage();
-  pendingLoginAction = action;
-  pendingLoginCancel = opts.onCancel || null;
-  loginReturnFocus = document.activeElement;
-  const btn = document.getElementById('lm-login-btn');
-  btn.classList.remove('is-loading'); btn.disabled = false;
-  btn.querySelector('.btn-label').textContent = currentLang === 'en' ? 'Sign in now' : 'تسجيل الدخول الآن';
-  const status = document.getElementById('lm-status');
-  status.className = 'lm-status'; status.textContent = '';
-  const m = document.getElementById('login-modal');
-  m.classList.add('show');
-  setTimeout(() => btn.focus({ preventScroll: true }), 60);
+  const returnTo = location.pathname + location.search + location.hash;
+  location.assign('/login?returnTo=' + encodeURIComponent(returnTo));
 }
 
 /* يبدأ طلباً جديداً لخدمة معيّنة ويأخذ المستخدم للخطوة الأولى (بيانات المواطن) */

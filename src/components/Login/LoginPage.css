@@ -37,19 +37,20 @@
 .login-page-topbar {
   position: absolute;
   z-index: 5;
-  top: 27px;
-  right: 64px;
-  left: 64px;
+  top: 0;
+  right: clamp(22px, 4vw, 64px);
+  left: clamp(22px, 4vw, 64px);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 78px;
   direction: ltr;
 }
 
 .login-languages {
   display: flex;
   align-items: center;
-  gap: 21px;
+  gap: 8px;
   direction: ltr;
 }
 
@@ -64,7 +65,7 @@
   border: 0;
   background: transparent;
   color: rgba(255, 255, 255, 0.94);
-  font-size: 18px;
+  font-size: 12px;
   line-height: 1;
   text-decoration: none;
   cursor: pointer;
@@ -74,20 +75,11 @@
 
 .login-languages a::after,
 .login-languages button::after {
-  position: absolute;
-  right: 0;
-  bottom: -16px;
-  width: 0;
-  height: 2px;
-  background: var(--login-gold-light);
-  content: '';
-  transition: width 0.22s ease;
+  display: none;
 }
 
-.login-languages a.is-active::after,
-.login-languages button.is-active::after {
-  width: 58px;
-}
+.login-languages a.is-active,
+.login-languages button.is-active { color: var(--login-gold-light); }
 
 .login-languages a:hover,
 .login-languages a:focus-visible,
@@ -807,9 +799,10 @@
   }
 
   .login-page-topbar {
-    top: 26px;
-    right: 28px;
-    left: 28px;
+    top: 0;
+    right: 20px;
+    left: 20px;
+    height: 70px;
   }
 
   .login-page-main {
@@ -843,28 +836,23 @@
 
 @media (max-width: 620px) {
   .login-page-topbar {
-    top: 20px;
+    top: 0;
     right: 20px;
     left: 20px;
   }
 
   .login-languages {
-    gap: 14px;
+    gap: 8px;
   }
 
   .login-languages a,
   .login-languages button {
-    font-size: 14px;
+    font-size: 10px;
   }
 
   .login-return svg {
     width: 24px;
     height: 24px;
-  }
-
-  .login-languages a.is-active::after,
-  .login-languages button.is-active::after {
-    width: 46px;
   }
 
   .login-page-main {

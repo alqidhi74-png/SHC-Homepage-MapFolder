@@ -11,7 +11,6 @@ import {
 import gsap from 'gsap'
 
 import { useAdminAuth } from '../../auth/AdminAuth'
-import { DEMO_ADMIN_EMAIL } from '../../auth/demoAdminAuth'
 import { getSafeReturnTarget, setSiteAuthenticated } from '../../auth/siteAuth'
 import { usePageTransition } from '../PageTransition/PageTransitionProvider'
 
@@ -28,7 +27,7 @@ export default function LoginPage() {
 
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState('')
-  const [showCitizenId, setShowCitizenId] = useState(false)
+  const [showCitizenId, setShowCitizenId] = useState(() => Boolean(getSafeReturnTarget()))
   const [citizenMethod, setCitizenMethod] = useState('phone')
   const [citizenIdentifier, setCitizenIdentifier] = useState('')
   const [citizenMessage, setCitizenMessage] = useState(null)
@@ -168,30 +167,19 @@ export default function LoginPage() {
     // بيانات الدخول غير صحيحة
     if (!authenticated) {
       signOut()
-      setSiteAuthenticated(false)
       setMessage(T('البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'The email address or password is incorrect.'))
       return
     }
 
-    // نجاح تسجيل الدخول
+    // حساب الإدارة منفصل عن حساب المواطن ولا يفتح بوابات الخدمات أو العقارات.
     setMessage('')
-    setSiteAuthenticated(true, {
-      name: 'إسراء الوهيبية',
-      role: 'admin',
-    })
+    setSiteAuthenticated(false)
 
     if (form.elements.password) {
       form.elements.password.value = ''
     }
 
-    const returnTarget = getSafeReturnTarget()
-
-    if (returnTarget) {
-      window.location.assign(returnTarget)
-      return
-    }
-
-    // الانتقال إلى لوحة التحكم
+    // تسجيل البريد وكلمة المرور ينتقل دائماً إلى لوحة التحكم.
     navigateWithTransition('/dashboard', {
       direction: 'forward',
     })
@@ -277,6 +265,8 @@ export default function LoginPage() {
       return
     }
 
+    // حساب المواطن منفصل عن جلسة الإدارة.
+    signOut()
     setSiteAuthenticated(true, {
       name: 'سالم الحارثي',
       role: 'citizen',
@@ -463,7 +453,6 @@ export default function LoginPage() {
                 autoComplete="username"
                 autoCapitalize="none"
                 spellCheck={false}
-                defaultValue={DEMO_ADMIN_EMAIL}
                 placeholder={T('البريد الإلكتروني', 'Email address')}
                 aria-invalid={Boolean(message)}
                 aria-describedby={
