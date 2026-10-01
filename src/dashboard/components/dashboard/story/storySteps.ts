@@ -46,7 +46,7 @@ export const STORY_STEPS: StoryStep[] = [
     anchor: 'city-map',
     caption: (d) => d.story.captions.district,
     durationMs: 4200,
-    action: { district: 'rimal' },
+    action: { district: 'waha' },
   },
   {
     id: 'timeline',

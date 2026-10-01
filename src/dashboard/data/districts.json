@@ -2,8 +2,8 @@
   {
     "id": "waha",
     "name": {
-      "ar": "حي الواحة",
-      "en": "Al Waha District"
+      "ar": "حي واحة الصاروج",
+      "en": "Wahat Al Sarooj District"
     },
     "svgPath": "M70,60 L330,45 L360,180 L250,250 L90,215 Z",
     "centroid": [
@@ -99,109 +99,10 @@
     }
   },
   {
-    "id": "rimal",
-    "name": {
-      "ar": "حي الرمال",
-      "en": "Al Rimal District"
-    },
-    "svgPath": "M330,45 L620,70 L700,190 L520,245 L360,180 Z",
-    "centroid": [
-      505,
-      148
-    ],
-    "establishedYear": 2024,
-    "byYear": {
-      "2024": {
-        "population": 8374,
-        "energy": 38,
-        "water": 762.6,
-        "air": 60,
-        "requests": 114
-      },
-      "2025": {
-        "population": 12637,
-        "energy": 58,
-        "water": 1163.7,
-        "air": 63,
-        "requests": 192
-      },
-      "2026": {
-        "population": 17536,
-        "energy": 79,
-        "water": 1537.7,
-        "air": 68,
-        "requests": 265
-      },
-      "2027": {
-        "population": 24628,
-        "energy": 104,
-        "water": 2187.2,
-        "air": 72,
-        "requests": 347
-      },
-      "2028": {
-        "population": 32006,
-        "energy": 139,
-        "water": 2737.5,
-        "air": 73,
-        "requests": 424
-      },
-      "2029": {
-        "population": 37940,
-        "energy": 158,
-        "water": 3260.3,
-        "air": 75,
-        "requests": 540
-      },
-      "2030": {
-        "population": 43113,
-        "energy": 180,
-        "water": 3604.5,
-        "air": 75,
-        "requests": 648
-      },
-      "2031": {
-        "population": 45028,
-        "energy": 192,
-        "water": 3557.3,
-        "air": 75,
-        "requests": 655
-      },
-      "2032": {
-        "population": 49052,
-        "energy": 205,
-        "water": 3845.5,
-        "air": 75,
-        "requests": 728
-      },
-      "2033": {
-        "population": 49232,
-        "energy": 199,
-        "water": 3922.8,
-        "air": 76,
-        "requests": 741
-      },
-      "2034": {
-        "population": 49186,
-        "energy": 188,
-        "water": 3773.6,
-        "air": 78,
-        "requests": 686
-      },
-      "2035": {
-        "population": 50561,
-        "energy": 192,
-        "water": 3784,
-        "air": 77,
-        "requests": 754
-      }
-    }
-  },
-  {
     "id": "nahda",
     "name": {
-      "ar": "حي النهضة",
-      "en": "Al Nahda District"
+      "ar": "حي وادي الزها",
+      "en": "Wadi Al Zaha District"
     },
     "svgPath": "M90,215 L250,250 L300,400 L150,450 L55,330 Z",
     "centroid": [
@@ -299,8 +200,8 @@
   {
     "id": "sidra",
     "name": {
-      "ar": "حي السدرة",
-      "en": "Al Sidra District"
+      "ar": "حي الوفا",
+      "en": "Al Wafa District"
     },
     "svgPath": "M360,180 L520,245 L700,190 L730,360 L560,430 L400,370 Z",
     "centroid": [
@@ -398,8 +299,8 @@
   {
     "id": "fanar",
     "name": {
-      "ar": "حي الفنار",
-      "en": "Al Fanar District"
+      "ar": "حي النهى",
+      "en": "Al Nuha District"
     },
     "svgPath": "M150,450 L300,400 L420,500 L330,560 L160,545 Z",
     "centroid": [
@@ -497,8 +398,8 @@
   {
     "id": "marjan",
     "name": {
-      "ar": "حي المرجان",
-      "en": "Al Marjan District"
+      "ar": "حي الاحلام",
+      "en": "Al Ahlam District"
     },
     "svgPath": "M420,500 L560,430 L730,360 L745,520 L600,570 Z",
     "centroid": [

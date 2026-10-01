@@ -127,7 +127,7 @@
   },
   {
     "id": "REQ-2026-1204",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "مسار حافلة",
       "en": "Bus route request"
@@ -211,7 +211,7 @@
   },
   {
     "id": "REQ-2026-1225",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "شهادة إتمام",
       "en": "Completion certificate"
@@ -274,7 +274,7 @@
   },
   {
     "id": "REQ-2026-1197",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "توصيل مياه",
       "en": "Water connection"
@@ -358,7 +358,7 @@
   },
   {
     "id": "REQ-2026-1085",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "طلب موقف",
       "en": "Parking permit"
@@ -400,7 +400,7 @@
   },
   {
     "id": "REQ-2026-1134",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "تشجير حديقة",
       "en": "Park landscaping"
@@ -421,7 +421,7 @@
   },
   {
     "id": "REQ-2026-1155",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "طلب رخصة بناء",
       "en": "Building permit application"
@@ -484,7 +484,7 @@
   },
   {
     "id": "REQ-2026-1050",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "إصلاح إنارة شارع",
       "en": "Street light repair"
@@ -526,7 +526,7 @@
   },
   {
     "id": "REQ-2026-1148",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "إصلاح حفرة",
       "en": "Pothole repair"
@@ -568,7 +568,7 @@
   },
   {
     "id": "REQ-2026-1078",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "إصلاح حفرة",
       "en": "Pothole repair"
@@ -589,7 +589,7 @@
   },
   {
     "id": "REQ-2026-1106",
-    "districtId": "rimal",
+    "districtId": "waha",
     "service": {
       "ar": "طلب رخصة بناء",
       "en": "Building permit application"
