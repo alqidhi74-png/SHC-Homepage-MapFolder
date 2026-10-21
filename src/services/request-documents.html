@@ -314,8 +314,6 @@ const uploading = {};
 const rejected = {};
 const objectUrls = {};
 
-let pendingDocKey = null;
-
 const docInput = document.getElementById('doc-file-input');
 const docDrop = document.getElementById('doc-dropzone');
 const docList = document.getElementById('doc-list');
@@ -389,6 +387,7 @@ function docCardHTML(label, i){
         ${extra}
       </div>
       <div class="sys-doc-actions">${actions}</div>
+      <input class="doc-card-file-input" type="file" data-key="${key}" accept="image/jpeg,image/png,image/webp,application/pdf,.pdf" hidden>
     </div>`;
 }
 
@@ -502,9 +501,6 @@ function simulateUpload(key, file, work){
 }
 
 async function handleDocFile(file, key){
-
-  key = key || pendingDocKey;
-
   if(!file || !key) return;
 
   const label = docKeys()[Number(key.replace('doc', ''))] || '';
@@ -602,9 +598,7 @@ document.addEventListener('sh:langchange', () => {
    فتح اختيار الملف
 ========================================================= */
 
-function openDocPicker(key, multiple = false){
-  pendingDocKey = key;
-  docInput.dataset.docKey = key || '';
+function openDocPicker(multiple = false){
   docInput.multiple = multiple;
   docInput.value = '';
   docInput.click();
@@ -612,12 +606,7 @@ function openDocPicker(key, multiple = false){
 
 docInput?.addEventListener('change', e => {
   const files = [...(e.target.files || [])];
-  const selectedKey = e.target.dataset.docKey || null;
-  const isMultiple = e.target.multiple;
-  pendingDocKey = null;
-  e.target.dataset.docKey = '';
-  if(isMultiple) handleManyFiles(files);
-  else handleDocFile(files[0], selectedKey);
+  handleManyFiles(files);
 });
 
 
@@ -625,7 +614,7 @@ docInput?.addEventListener('change', e => {
    منطقة الرفع (نقر / لوحة مفاتيح / سحب وإفلات)
 ========================================================= */
 
-docDrop?.addEventListener('click', () => openDocPicker(null, true));
+docDrop?.addEventListener('click', () => openDocPicker(true));
 
 docDrop?.addEventListener('keydown', e => {
   if(e.key === 'Enter' || e.key === ' '){
@@ -683,7 +672,10 @@ docList?.addEventListener('click', e => {
   const act = btn.dataset.act;
 
   if(act === 'upload' || act === 'replace'){
-    openDocPicker(key);
+    const input = btn.closest('.doc-card')?.querySelector('.doc-card-file-input');
+    if(!input) return;
+    input.value = '';
+    input.click();
     return;
   }
 
@@ -708,6 +700,15 @@ docList?.addEventListener('click', e => {
     openPreview(key);
   }
 
+});
+
+docList?.addEventListener('change', e => {
+  const input = e.target.closest('.doc-card-file-input');
+  if(!input) return;
+  const file = input.files?.[0];
+  const key = input.dataset.key;
+  input.value = '';
+  handleDocFile(file, key);
 });
 
 

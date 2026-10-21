@@ -277,12 +277,10 @@ function renderSaveBar(){
   saveBar.innerHTML = `
     <span class="hint" id="cz-hint">${hint}</span>
     <div class="end">
-      ${hasRequest ? `<button type="button" class="btn-ghost" id="cz-prev">${T('السابق', 'Back')}</button>` : ''}
       <button type="submit" class="btn-gold ${saving ? 'is-loading' : ''} ${saved ? 'is-success' : ''}" id="cz-save" ${saving || saved ? 'disabled' : ''} style="justify-content:center;">
         <span class="btn-spinner" aria-hidden="true"></span><span>${label}</span>
       </button>
     </div>`;
-  document.getElementById('cz-prev')?.addEventListener('click', () => document.getElementById('back-arrow-btn').click());
 
   saveErrorBox.innerHTML = saveFailed ? `
     <div class="ui-alert err fade-in" role="alert" style="margin-top:16px;">

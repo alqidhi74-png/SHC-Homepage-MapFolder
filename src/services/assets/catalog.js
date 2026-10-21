@@ -10,7 +10,7 @@
     services: { ar: 'خدمات', en: 'services' },
     fees: { ar: 'الرسوم', en: 'Fees' },
     duration: { ar: 'المدة', en: 'Duration' },
-    start: { ar: 'ابدأ الخدمات', en: 'Start Services' },
+    start: { ar: 'عرض التفاصيل', en: 'View Details' },
   };
 
   function renderLanguage(lang) {

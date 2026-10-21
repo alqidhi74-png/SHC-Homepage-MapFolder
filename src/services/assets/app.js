@@ -162,6 +162,14 @@ function flowByN(n) { return Object.keys(PAGE_FLOW).find(k => PAGE_FLOW[k].n ===
 function chapterLabel(info) { return currentLang === 'en' ? info.chEn : info.ch; }
 function chapterLine(info) { return currentLang === 'en' ? info.lineEn : info.line; }
 
+function headerBackHref() {
+  const file = currentPageFile();
+  if (file === 'citizen-data.html' && !loadState().type) return '/#direct-access';
+  const info = PAGE_FLOW[file];
+  const previousFile = info ? flowByN(info.n - 1) : '';
+  return previousFile || '/#direct-access';
+}
+
 /* يرسم شريط الفصل (الرقم، العنوان، السطر، شريط التقدم) من PAGE_FLOW */
 function renderChapterStrip() {
   const file = currentPageFile();
@@ -203,7 +211,7 @@ const DICT = {
   'filter-realestate': { ar: 'المعاملات العقارية', en: 'Real Estate' },
   'filter-business': { ar: 'تراخيص الأعمال', en: 'Business Licenses' },
   'filter-planning': { ar: 'الموافقات التخطيطية', en: 'Planning Approvals' },
-  'start-request': { ar: 'ابدأ الخدمات', en: 'Start Services' },
+  'start-request': { ar: 'ابدأ الخدمة', en: 'Start Service' },
   'services-guide': { ar: 'دليل الخدمات', en: 'Services Guide' },
   'req-docs-title': { ar: 'المستندات المطلوبة', en: 'Required Documents' },
   'expected-duration': { ar: 'المدة المتوقعة', en: 'Expected Duration' },
@@ -611,7 +619,7 @@ function buildHeaderExtras() {
 
     const accountWrap = document.createElement('div');
     accountWrap.className = 'header-dropdown-wrap header-account-wrap';
-    const backHref = '/#direct-access';
+    const backHref = headerBackHref();
     accountWrap.innerHTML = `<a class="header-home-link" href="${escapeHtml(backHref)}" aria-label="رجوع" title="رجوع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
       <button class="header-account-btn guest" id="header-account-btn" type="button"></button>
       <div class="header-dropdown" id="header-account-dropdown"></div>`;
@@ -809,13 +817,18 @@ function startServiceRequest(id) {
   });
 }
 
-/* زر "ابدأ الطلب" في بطاقات دليل الخدمات: يتحقق من تسجيل الدخول قبل الانتقال المباشر لتقديم الطلب */
+/* زر بطاقة الخدمة يفتح التفاصيل أولاً، ويحفظ الخدمة المختارة للخطوات التالية. */
 function wireStartButtons() {
   document.querySelectorAll('.svc-start').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const card = btn.closest('[data-service]');
-      startServiceRequest(card?.dataset.service);
+      const serviceId = card?.dataset.service;
+      if (!SERVICE_CATALOG[serviceId]) return;
+      const state = loadState();
+      state.serviceId = serviceId;
+      saveState(state);
+      navigateWithTransition('service-details.html', 'left');
     });
   });
 }

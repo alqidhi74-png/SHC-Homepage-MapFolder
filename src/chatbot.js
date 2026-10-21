@@ -15,6 +15,11 @@
       thinking: 'مساعد المدينة يكتب…',
       empty: 'الرجاء كتابة سؤال أولاً.',
       duplicate: 'تم إرسال هذا السؤال للتو.',
+      clear: 'بدء محادثة جديدة',
+      clearConfirm: 'هل تريد مسح المحادثة الحالية؟',
+      suggestions: 'أسئلة مقترحة',
+      source: 'المصدر الرسمي',
+      unavailable: 'تعذر الوصول إلى مصادر المشروع الآن. يرجى المحاولة بعد قليل.',
       user: 'أنت',
       assistant: 'مساعد المدينة',
     },
@@ -29,9 +34,19 @@
       thinking: 'City Assistant is typing…',
       empty: 'Please enter a question first.',
       duplicate: 'That question was just sent.',
+      clear: 'Start a new conversation',
+      clearConfirm: 'Clear the current conversation?',
+      suggestions: 'Suggested questions',
+      source: 'Official source',
+      unavailable: 'The project sources are temporarily unavailable. Please try again shortly.',
       user: 'You',
       assistant: 'City Assistant',
     },
+  };
+
+  const quickPrompts = {
+    ar: ['استكشف الخريطة', 'ما الخدمات المتاحة؟', 'أين تقع المدينة؟', 'اعرض المشاريع والعقارات'],
+    en: ['Explore the map', 'What services are available?', 'Where is the city?', 'Show projects and properties'],
   };
 
   const responseSets = {
@@ -262,6 +277,26 @@
     };
   }
 
+  async function getConnectedAssistantReply(message, lang, history) {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        language: lang,
+        history: history.slice(0, -1).map(({ role, text }) => ({ role, text })),
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || typeof payload.answer !== 'string') {
+      throw new Error(payload.error || `assistant_http_${response.status}`);
+    }
+    return {
+      text: payload.answer,
+      sources: Array.isArray(payload.sources) ? payload.sources : [],
+    };
+  }
+
   const host = document.createElement('div');
   host.id = 'shc-chatbot-root';
   host.setAttribute('data-shc-chatbot', '');
@@ -284,8 +319,9 @@
       .mark{display:grid;place-items:center;width:42px;height:42px;flex:0 0 auto;border:1px solid rgba(228,194,107,.55);border-radius:50%;color:var(--gold);background:rgba(255,255,255,.07)}
       .mark svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
       .title{min-width:0;flex:1}.title strong,.title small{display:block}.title strong{font-size:15px}.title small{margin-top:2px;color:rgba(255,255,255,.67);font-size:11px;font-weight:400}
-      .close{display:grid;place-items:center;width:36px;height:36px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(255,255,255,.06);color:white;cursor:pointer}
-      .close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+      .head-action{display:grid;place-items:center;width:36px;height:36px;flex:0 0 auto;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(255,255,255,.06);color:white;cursor:pointer;transition:background .18s ease,border-color .18s ease}
+      .head-action:hover,.head-action:focus-visible{border-color:rgba(228,194,107,.72);background:rgba(228,194,107,.14);outline:none}
+      .head-action svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
       .messages{flex:1;overflow:auto;padding:20px;background:linear-gradient(180deg,#fffdf8,#faf5eb);scrollbar-width:thin;overscroll-behavior:contain}
       .message{display:flex;flex-direction:column;align-items:flex-start;margin:0 0 14px}.message.user{align-items:flex-end}
       .who{margin:0 6px 5px;color:#8b7379;font-size:10px;font-weight:600}
@@ -293,7 +329,15 @@
       .user .bubble{border-color:transparent;border-radius:16px 16px 5px 16px;background:var(--wine);color:white}
       .bubble-action{display:inline-flex;align-items:center;justify-content:center;margin-top:10px;padding:8px 13px;border:1px solid #b88734;border-radius:999px;color:var(--wine);background:#fffaf0;font-size:11px;font-weight:600;line-height:1.35;text-decoration:none;transition:background .18s ease,color .18s ease}
       .bubble-action:hover,.bubble-action:focus-visible{background:var(--wine);color:white;outline:none}
+      .sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+      .source-link{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #d9c198;border-radius:999px;background:#fffaf0;color:var(--wine);font-size:10px;font-weight:600;line-height:1.35;text-decoration:none}
+      .source-link:hover,.source-link:focus-visible{border-color:var(--wine);background:var(--wine);color:#fff;outline:none}
+      .source-link svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
       .thinking .bubble{color:#826d72;font-style:italic}
+      .suggestions{display:flex;gap:7px;padding:10px 13px 11px;overflow-x:auto;border-top:1px solid #eee3d7;background:#fffdf9;scrollbar-width:none}
+      .suggestions::-webkit-scrollbar{display:none}
+      .suggestion{flex:0 0 auto;padding:8px 12px;border:1px solid #d9c198;border-radius:999px;background:#fffaf0;color:var(--wine);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
+      .suggestion:hover,.suggestion:focus-visible{border-color:var(--wine);background:var(--wine);color:#fff;outline:none}
       .form{display:flex;align-items:flex-end;gap:9px;padding:13px;border-top:1px solid #eadccd;background:white}
       .input{min-width:0;flex:1;min-height:46px;max-height:112px;padding:12px 14px;border:1px solid #dccbbc;border-radius:14px;outline:none;background:#fffdf9;color:#2f1d22;font-size:13px;resize:none;line-height:1.55}
       .input:focus{border-color:#b88734;box-shadow:0 0 0 3px rgba(228,194,107,.18)}
@@ -313,9 +357,11 @@
         <header class="head">
           <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H6l-4 2 1.4-4.2A8.5 8.5 0 1 1 21 12Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg></span>
           <span class="title"><strong id="shc-chat-title"></strong><small></small></span>
-          <button class="close" type="button"><span class="sr"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+          <button class="clear head-action" type="button"><span class="sr"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 10v6M14 10v6"/></svg></button>
+          <button class="close head-action" type="button"><span class="sr"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </header>
         <div class="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+        <div class="suggestions"></div>
         <form class="form">
           <label class="sr" for="shc-chat-input"></label>
           <textarea class="input" id="shc-chat-input" rows="1" maxlength="1200"></textarea>
@@ -327,14 +373,18 @@
   const launcher = shadow.querySelector('.launcher');
   const backdrop = shadow.querySelector('.backdrop');
   const panel = shadow.querySelector('.panel');
+  const clearButton = shadow.querySelector('.clear');
   const closeButton = shadow.querySelector('.close');
   const messages = shadow.querySelector('.messages');
+  const suggestions = shadow.querySelector('.suggestions');
   const form = shadow.querySelector('.form');
   const input = shadow.querySelector('.input');
   const send = shadow.querySelector('.send');
   let busy = false;
   let initialized = false;
   let lastSubmission = { message: '', time: 0 };
+  let transcript = [];
+  const storageKey = 'shc_chatbot_transcript_v1';
 
   const language = () => {
     try {
@@ -344,7 +394,11 @@
     return document.documentElement.lang === 'en' ? 'en' : 'ar';
   };
 
-  const addMessage = (role, text, extraClass = '', action = null) => {
+  const saveTranscript = () => {
+    try { sessionStorage.setItem(storageKey, JSON.stringify(transcript.slice(-30))); } catch (_) {}
+  };
+
+  const addMessage = (role, text, extraClass = '', action = null, persist = true, sourceLinks = []) => {
     const lang = language();
     const item = document.createElement('div');
     item.className = `message ${role} ${extraClass}`.trim();
@@ -361,10 +415,71 @@
       link.textContent = action.label;
       bubble.append(document.createElement('br'), link);
     }
+    if (Array.isArray(sourceLinks) && sourceLinks.length) {
+      const sourceList = document.createElement('div');
+      sourceList.className = 'sources';
+      sourceLinks.slice(0, 3).forEach((source) => {
+        if (!source?.url) return;
+        const link = document.createElement('a');
+        link.className = 'source-link';
+        link.href = source.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>';
+        link.append(document.createTextNode(source.title || copy[lang].source));
+        sourceList.appendChild(link);
+      });
+      bubble.appendChild(sourceList);
+    }
     item.append(who, bubble);
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
+    if (persist && !extraClass.includes('thinking')) {
+      transcript.push({ role, text, action, sources: sourceLinks });
+      saveTranscript();
+    }
     return item;
+  };
+
+  const resetConversation = () => {
+    transcript = [];
+    messages.replaceChildren();
+    try { sessionStorage.removeItem(storageKey); } catch (_) {}
+    addMessage('assistant', copy[language()].greeting);
+    lastSubmission = { message: '', time: 0 };
+  };
+
+  const restoreConversation = () => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+      if (Array.isArray(saved) && saved.length) {
+        transcript = [];
+        saved.slice(-30).forEach((entry) => {
+          if ((entry?.role === 'user' || entry?.role === 'assistant') && typeof entry?.text === 'string') {
+            addMessage(entry.role, entry.text, '', entry.action || null, false, entry.sources || []);
+            transcript.push({ role: entry.role, text: entry.text, action: entry.action || null, sources: entry.sources || [] });
+          }
+        });
+        return transcript.length > 0;
+      }
+    } catch (_) {}
+    return false;
+  };
+
+  const renderSuggestions = (lang) => {
+    suggestions.setAttribute('aria-label', copy[lang].suggestions);
+    suggestions.replaceChildren(...quickPrompts[lang].map((prompt) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'suggestion';
+      button.textContent = prompt;
+      button.addEventListener('click', () => {
+        input.value = prompt;
+        input.dispatchEvent(new Event('input'));
+        form.requestSubmit();
+      });
+      return button;
+    }));
   };
 
   const updateLanguage = () => {
@@ -378,17 +493,21 @@
     shadow.querySelector('.title small').textContent = text.subtitle;
     closeButton.setAttribute('aria-label', text.close);
     closeButton.querySelector('.sr').textContent = text.close;
+    clearButton.setAttribute('aria-label', text.clear);
+    clearButton.setAttribute('title', text.clear);
+    clearButton.querySelector('.sr').textContent = text.clear;
     input.placeholder = text.placeholder;
     shadow.querySelector('label[for="shc-chat-input"]').textContent = text.placeholder;
     send.setAttribute('aria-label', text.send);
     send.querySelector('.sr').textContent = text.send;
+    renderSuggestions(lang);
   };
 
   const open = () => {
     updateLanguage();
     if (!initialized) {
       initialized = true;
-      addMessage('assistant', copy[language()].greeting);
+      if (!restoreConversation()) addMessage('assistant', copy[language()].greeting);
     }
     backdrop.classList.add('open');
     backdrop.setAttribute('aria-hidden', 'false');
@@ -422,19 +541,32 @@
     }
     lastSubmission = { message, time: now };
     input.value = '';
+    input.style.height = 'auto';
     addMessage('user', message);
 
     busy = true;
     send.disabled = true;
-    const thinking = addMessage('assistant', copy[language()].thinking, 'thinking');
+    const thinking = addMessage('assistant', copy[language()].thinking, 'thinking', null, false);
     const delay = 500 + Math.floor(Math.random() * 401);
     await new Promise((resolve) => window.setTimeout(resolve, delay));
-    const reply = getMockAssistantReply(message, language());
-    thinking.remove();
-    addMessage('assistant', reply.text, '', reply.action);
-    busy = false;
-    send.disabled = false;
-    input.focus();
+    try {
+      const reply = await getConnectedAssistantReply(message, language(), transcript);
+      thinking.remove();
+      addMessage('assistant', reply.text, '', null, true, reply.sources);
+    } catch (error) {
+      console.warn('City assistant request failed:', error?.message || error);
+      thinking.remove();
+      addMessage('assistant', copy[language()].unavailable);
+    } finally {
+      busy = false;
+      send.disabled = false;
+      input.focus();
+    }
+  });
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = `${Math.min(input.scrollHeight, 112)}px`;
   });
 
   let drag = null;
@@ -481,6 +613,11 @@
     }
     open();
   });
+  clearButton.addEventListener('click', () => {
+    if (transcript.length > 1 && !window.confirm(copy[language()].clearConfirm)) return;
+    resetConversation();
+    input.focus();
+  });
   closeButton.addEventListener('click', close);
   backdrop.addEventListener('pointerdown', (event) => { if (event.target === backdrop) close(); });
   shadow.addEventListener('keydown', (event) => {
@@ -488,6 +625,18 @@
     if (event.key === 'Enter' && !event.shiftKey && event.target === input) {
       event.preventDefault();
       form.requestSubmit();
+    }
+    if (event.key === 'Tab' && backdrop.classList.contains('open')) {
+      const focusable = [...panel.querySelectorAll('button:not([disabled]),a[href],textarea')];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && shadow.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && shadow.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   });
 

@@ -86,7 +86,7 @@ const homeCopy = {
     pageTitle: 'مدينة السلطان هيثم', scroll: 'مرّر للاستكشاف', headerTools: 'أدوات الحساب واللغة', home: 'الصفحة الرئيسية',
     accountMenu: 'فتح قائمة الحساب', adminAccount: 'حساب إداري', citizenAccount: 'حساب مواطن', logout: 'تسجيل الخروج', login: 'تسجيل الدخول',
     language: 'اختيار اللغة', city: 'مدينة السلطان هيثم', cityView: 'مشهد جوي لمدينة السلطان هيثم',
-    legacyStart: 'رؤيةٌ تتحول', legacyEnd: 'إلى مدينة.', accessStart: 'دخول مباشر', accessEnd: 'إلى ما تحتاجه.', digitalGates: 'بوابات المدينة الرقمية',
+    legacyStart: 'رؤيةٌ تتحول', legacyEnd: 'إلى مدينة.', digitalGates: 'بوابات المدينة الرقمية',
     footerView: 'إطلالة مدينة السلطان هيثم وقت الغروب', contact: 'تواصل معنا', contactUs: 'اتصل بنا', faq: 'الأسئلة الشائعة', location: 'الموقع', social: 'حسابات التواصل الاجتماعي',
     services: 'الخدمات', eServices: 'الخدمات الإلكترونية', properties: 'العقارات', facilities: 'المرافق والخدمات',
     explore: 'استكشف', about: 'عن المدينة', interactiveMap: 'الخريطة التفاعلية', projects: 'المشاريع', districts: 'الأحياء السكنية', green: 'المساحات الخضراء',
@@ -97,7 +97,7 @@ const homeCopy = {
     pageTitle: 'Sultan Haitham City', scroll: 'Scroll to explore', headerTools: 'Account and language tools', home: 'Home',
     accountMenu: 'Open account menu', adminAccount: 'Administrator account', citizenAccount: 'Citizen account', logout: 'Sign out', login: 'Sign in',
     language: 'Choose language', city: 'Sultan Haitham City', cityView: 'Aerial view of Sultan Haitham City',
-    legacyStart: 'A vision transformed', legacyEnd: 'into a city.', accessStart: 'Direct access', accessEnd: 'to what you need.', digitalGates: 'Digital city gateways',
+    legacyStart: 'A vision transformed', legacyEnd: 'into a city.', digitalGates: 'Digital city gateways',
     footerView: 'Sultan Haitham City at sunset', contact: 'Contact us', contactUs: 'Get in touch', faq: 'Frequently asked questions', location: 'Location', social: 'Social media accounts',
     services: 'Services', eServices: 'Digital services', properties: 'Properties', facilities: 'Facilities and services',
     explore: 'Explore', about: 'About the city', interactiveMap: 'Interactive map', projects: 'Projects', districts: 'Residential districts', green: 'Green spaces',
@@ -258,8 +258,7 @@ export default function App() {
 
         // 03 — بوابات المدينة
         .fromTo('.access-stage', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 3.02)
-        .fromTo('.access-head', { opacity: 0, x: () => document.documentElement.dir === 'rtl' ? 24 : -24 }, { opacity: 1, x: 0, duration: 0.45 }, 3.1)
-        .fromTo('.access-link', { opacity: 0, y: 24, filter: 'blur(5px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', stagger: 0.1, duration: 0.5 }, 3.2)
+        .fromTo('.access-link', { opacity: 0, y: 24, filter: 'blur(5px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', stagger: 0.1, duration: 0.5 }, 3.1)
         .to('.access-stage', { autoAlpha: 0, y: -16, duration: 0.5 }, 4.5)
 
         // 04 — انتقال الهوية من الهيدر إلى الفوتر
@@ -564,10 +563,6 @@ if (supportsAccessHover && accessRail) {
           className="access-stage story-stage"
           style={{ '--access-background': `url(${accessBackground})` }}
         >
-          <div className="access-head">
-            <h2>{copy.accessStart}<br /><em>{copy.accessEnd}</em></h2>
-          </div>
-
           <nav className="access-rail" aria-label={copy.digitalGates}>
             {services.map(({ id, icon: Icon, title, text, action, href, requiresAuth }) => (
               <button
