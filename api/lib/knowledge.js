@@ -1,31 +1,10 @@
+import { SITE_KNOWLEDGE_DOCUMENTS } from './site-knowledge.js';
+
 const DEFAULT_SOURCE_URLS = [
   'https://oman.housing.gov.om/city-details/sultan-haitham-city',
   'https://oman.housing.gov.om/greater-muscat',
   'https://oman.housing.gov.om/onss',
 ];
-
-const SITE_KNOWLEDGE_DOCUMENT = {
-  url: 'internal://sultan-haitham-city-website',
-  title: 'Sultan Haitham City website',
-  authority: 'website',
-  text: `
-معلومات الموقع الداخلية المعتمدة:
-يوفر موقع مدينة السلطان هيثم خريطة ذكية تفاعلية لاستكشاف الأحياء والمشاريع والمرافق ومواقعها داخل المدينة.
-يتضمن الموقع خريطة ثنائية الأبعاد وعرضاً ثلاثي الأبعاد للمدينة.
-توجد بوابة للمشاريع والعقارات لاستعراض المشاريع والوحدات وربطها بمواقعها داخل المدينة.
-توجد بوابة للخدمات الإلكترونية لبدء الطلبات ومراجعة بيانات المواطن والمستندات ومتابعة المعاملات.
-توجد صفحة لتتبع الطلبات باستخدام رقم الطلب، إضافة إلى صفحات تفاصيل الخدمة والبيانات والمستندات ومراجعة الطلب وتأكيده.
-يدعم الموقع اللغتين العربية والإنجليزية.
-
-Approved internal website information:
-The Sultan Haitham City website provides an interactive smart map for exploring districts, projects, facilities, and their locations in the city.
-The website includes a 2D map and a 3D city view.
-The Projects and Properties portal presents projects and units and connects them to their city locations.
-The Digital Services portal supports starting requests, reviewing citizen details and documents, and following transactions.
-Request Tracking uses a request number. The service journey also includes service details, citizen data, documents, review, and confirmation pages.
-The website supports Arabic and English.
-  `.trim(),
-};
 
 // A bundled snapshot keeps the assistant useful when the Ministry website is
 // temporarily slow or unavailable. Live Ministry pages are still fetched on
@@ -201,7 +180,7 @@ export async function retrieveKnowledge(question) {
   const settled = await Promise.allSettled(configuredSources().map(fetchSource));
   const ministryDocuments = settled.filter((result) => result.status === 'fulfilled').map((result) => result.value);
 
-  const documents = [MINISTRY_SNAPSHOT_DOCUMENT, SITE_KNOWLEDGE_DOCUMENT, ...ministryDocuments];
+  const documents = [MINISTRY_SNAPSHOT_DOCUMENT, ...SITE_KNOWLEDGE_DOCUMENTS, ...ministryDocuments];
   const selected = rankChunks(documents.flatMap((document) => chunkDocument(document)), question);
   const context = selected.map((chunk, index) => (
     `[SOURCE ${index + 1}]\nAuthority: ${chunk.authority === 'ministry' ? 'Official Ministry of Housing and Urban Planning' : 'Sultan Haitham City website'}\nTitle: ${chunk.title}\nContent:\n${chunk.text}`

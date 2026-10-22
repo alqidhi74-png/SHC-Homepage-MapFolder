@@ -45,6 +45,24 @@ test('retrieval keeps verified Ministry facts available when live sources fail',
   }
 });
 
+test('retrieval includes the website overview and service data', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalSources = process.env.SHC_KNOWLEDGE_URLS;
+  process.env.SHC_KNOWLEDGE_URLS = 'https://oman.housing.gov.om/offline-site-test';
+  globalThis.fetch = async () => { throw new Error('network unavailable'); };
+
+  try {
+    const { context } = await knowledge.retrieveKnowledge('أعطني نبذة عن الموقع والخدمات الموجودة فيه');
+    assert.match(context, /بوابة رقمية ثنائية اللغة/);
+    assert.match(context, /تسجيل ملكية عقار/);
+    assert.doesNotMatch(context, /admin@190|alqidhi74@gmail\.com/);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalSources === undefined) delete process.env.SHC_KNOWLEDGE_URLS;
+    else process.env.SHC_KNOWLEDGE_URLS = originalSources;
+  }
+});
+
 test('OpenRouter chat-completion text extraction supports choice messages', () => {
   const text = chat.outputText({
     choices: [{ message: { role: 'assistant', content: 'Official answer' } }],
@@ -64,6 +82,7 @@ test('external links are removed from assistant answers', () => {
   const cleaned = chat.stripExternalLinks('راجع [المصدر الرسمي](https://example.com/page) أو https://example.com/details للمزيد.');
   assert.equal(cleaned, 'راجع المصدر الرسمي أو للمزيد.');
   assert.doesNotMatch(cleaned, /https?:\/\//);
+  assert.equal(chat.stripExternalLinks('**بوابة المشاريع** و`الخريطة`'), 'بوابة المشاريع والخريطة');
 });
 
 test('chat endpoint answers from official context without exposing source links', async () => {

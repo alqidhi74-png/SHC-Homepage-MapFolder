@@ -58,6 +58,10 @@
         'مدينة السلطان هيثم وجهة عمرانية متكاملة في مسقط، وتعرض هذه التجربة أحياءها ومرافقها ومشاريعها وخدماتها الرقمية.',
         'يمكنك هنا التعرف على مدينة السلطان هيثم واستكشاف أحيائها السكنية ومرافقها ومشاريعها عبر الخريطة التفاعلية.',
       ],
+      aboutSite: [
+        'موقع مدينة السلطان هيثم بوابة رقمية ثنائية اللغة تجمع معلومات المدينة في مكان واحد. يتيح استكشاف المخطط والأحياء والمرافق عبر خرائط ثنائية وثلاثية الأبعاد، وتصفح المشاريع والعقارات، وبدء الخدمات الإلكترونية ومتابعة الطلبات من داخل الموقع.',
+        'يوفر الموقع تجربة متكاملة للتعرف على مدينة السلطان هيثم: خريطة ذكية، عرض ثلاثي الأبعاد، مشاريع وعقارات، دليل خدمات إلكترونية، وتتبع للطلبات. أما بيانات العرض مثل الأسعار والتوفر وبعض تفاصيل الخريطة فقد تكون توضيحية وقابلة للتحديث.',
+      ],
       location: [
         'تقع مدينة السلطان هيثم غرب مسقط، ضمن المخطط الهيكلي لمسقط الكبرى. يمكنك استكشاف أحيائها ومرافقها على الخريطة التفاعلية داخل الموقع.',
         'مدينة السلطان هيثم مدينة جديدة تقع غرب مسقط، ويمكنك مشاهدة مخططها وأحيائها على الخريطة ثنائية الأبعاد داخل الموقع.',
@@ -114,8 +118,8 @@
         'اسألني عن الخريطة ثنائية أو ثلاثية الأبعاد، الأحياء، المدارس، المساجد، الحدائق، العقارات أو حالة الطلب.',
       ],
       fallback: [
-        'هذا النموذج التجريبي يجيب عن مدينة السلطان هيثم ومحتوى الموقع فقط. جرّب السؤال عن الخريطة أو المشاريع أو الخدمات أو المرافق.',
-        'لم أفهم الطلب ضمن معلومات الموقع. يمكنني مساعدتك في الخرائط والأحياء والمشاريع والعقارات والخدمات والمرافق.',
+        'لم أجد تفاصيل مؤكدة لهذا السؤال ضمن بيانات المدينة والموقع الحالية. يمكنني مساعدتك في الخرائط والأحياء والمشاريع والعقارات والخدمات والمرافق.',
+        'هذه المعلومة غير متاحة بوضوح في بيانات الموقع والوزارة المتصلة. أعد صياغة السؤال مع ذكر الخدمة أو المشروع أو الحي المطلوب.',
       ],
     },
     en: {
@@ -127,6 +131,10 @@
       city: [
         'Sultan Haitham City is an integrated urban destination in Muscat. This experience presents its districts, facilities, projects and digital services.',
         'You can explore Sultan Haitham City, its residential districts, facilities and projects through the interactive map.',
+      ],
+      aboutSite: [
+        'The Sultan Haitham City website is a bilingual digital portal combining city information in one place. It includes 2D and 3D maps, projects and properties, digital services, and request tracking inside the website.',
+        'The website provides a connected way to explore the city, its districts and facilities, property displays, and service journeys. Displayed prices, availability, and some detailed map data may be illustrative and subject to change.',
       ],
       location: [
         'Sultan Haitham City is west of Muscat, within the Greater Muscat Structure Plan. You can explore its districts and facilities on this website’s interactive map.',
@@ -184,8 +192,8 @@
         'Ask about the 2D or 3D map, districts, schools, mosques, parks, properties or request status.',
       ],
       fallback: [
-        'This demo assistant only covers Sultan Haitham City and this website. Try asking about maps, projects, services or facilities.',
-        'I could not match that to the website information. I can help with maps, districts, projects, properties, services and facilities.',
+        'I could not find confirmed details for that question in the current city and website data. I can help with maps, districts, projects, properties, services, and facilities.',
+        'That information is not clearly available in the connected website and Ministry data. Try naming the service, project, or district you mean.',
       ],
     },
   };
@@ -219,6 +227,7 @@
   const intentFor = (message) => {
     const text = normalize(message);
     if (/^(مرحبا|السلام عليكم|هلا|اهلا|hi|hello|hey)[\s!?.,،؟]*$/i.test(text)) return 'greeting';
+    if (has(text, ['نبذة عن الموقع', 'نبذه عن الموقع', 'عن الموقع', 'ما هو الموقع', 'ماذا يقدم الموقع', 'فكرة الموقع', 'website overview', 'about the website', 'what does the site'])) return 'aboutSite';
     if (has(text, ['3d', 'ثلاثية الأبعاد', 'ثلاثي الابعاد', 'three dimensional', '3d map', '3d city'])) return 'map3d';
     if (has(text, ['2d', 'ثنائية الأبعاد', 'ثنائي الابعاد', '2d map'])) return 'map2d';
     if (has(text, ['حالة الطلب', 'تتبع', 'متابعة الطلب', 'رقم الطلب', 'request status', 'track request', 'tracking', 'application status'])) return 'status';
