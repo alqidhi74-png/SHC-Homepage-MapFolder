@@ -227,7 +227,8 @@
   const intentFor = (message) => {
     const text = normalize(message);
     if (/^(مرحبا|السلام عليكم|هلا|اهلا|hi|hello|hey)[\s!?.,،؟]*$/i.test(text)) return 'greeting';
-    if (has(text, ['نبذة عن الموقع', 'نبذه عن الموقع', 'عن الموقع', 'ما هو الموقع', 'ماذا يقدم الموقع', 'فكرة الموقع', 'website overview', 'about the website', 'what does the site'])) return 'aboutSite';
+    if (/(?:ما|وش|ايش)\s*(?:هو\s*)?هذا\s*الموقع/.test(text)
+      || has(text, ['نبذة عن الموقع', 'نبذه عن الموقع', 'عن هذا الموقع', 'عرفني بالموقع', 'اشرح الموقع', 'ما هو الموقع', 'ماذا يقدم الموقع', 'فكرة الموقع', 'website overview', 'about the website', 'what is this website', 'what is this site', 'what does the site'])) return 'aboutSite';
     if (has(text, ['3d', 'ثلاثية الأبعاد', 'ثلاثي الابعاد', 'three dimensional', '3d map', '3d city'])) return 'map3d';
     if (has(text, ['2d', 'ثنائية الأبعاد', 'ثنائي الابعاد', '2d map'])) return 'map2d';
     if (has(text, ['حالة الطلب', 'تتبع', 'متابعة الطلب', 'رقم الطلب', 'request status', 'track request', 'tracking', 'application status'])) return 'status';
@@ -247,6 +248,7 @@
     if (has(text, ['المساحة', 'المساحه', 'عدد السكان', 'كم وحدة', 'احصائيات', 'area', 'population', 'statistics', 'how many units'])) return 'stats';
     if (has(text, ['مدينة ذكية', 'المدينه الذكيه', 'smart city', 'digital city'])) return 'smart';
     if (has(text, ['مدينة السلطان هيثم', 'السلطان هيثم', 'عن المدينة', 'عن المدينه', 'sultan haitham city', 'about the city'])) return 'city';
+    if (has(text, ['الموقع', 'هذا الموقع', 'website', 'this site'])) return 'aboutSite';
     if (has(text, ['مساعدة', 'مساعده', 'ماذا تستطيع', 'help', 'what can you do'])) return 'help';
     return 'fallback';
   };

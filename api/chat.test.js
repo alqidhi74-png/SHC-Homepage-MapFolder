@@ -127,6 +127,8 @@ test('chat endpoint answers from official context without exposing source links'
   assert.equal(responseState.body.answer, 'مساحة المدينة 14.8 كم².');
   assert.equal('sources' in responseState.body, false);
   assert.match(sentMessages[0].content, /Do not include links/);
+  assert.match(sentMessages[0].content, /spelling mistakes/);
+  assert.match(sentMessages[0].content, /broad questions/);
   assert.match(sentMessages.at(-1).content, /خريطة ذكية تفاعلية/);
   assert.doesNotMatch(sentMessages.at(-1).content, /URL:/);
 });
