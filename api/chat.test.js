@@ -27,6 +27,24 @@ test('source allowlist rejects unknown hosts', () => {
   assert.doesNotThrow(() => knowledge.assertSafeSource('https://oman.housing.gov.om/project'));
 });
 
+test('retrieval keeps verified Ministry facts available when live sources fail', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalSources = process.env.SHC_KNOWLEDGE_URLS;
+  process.env.SHC_KNOWLEDGE_URLS = 'https://oman.housing.gov.om/offline-test';
+  globalThis.fetch = async () => { throw new Error('network unavailable'); };
+
+  try {
+    const { context } = await knowledge.retrieveKnowledge('كم عدد الوحدات والسكان؟');
+    assert.match(context, /20,000/);
+    assert.match(context, /100,000/);
+    assert.match(context, /Official Ministry of Housing and Urban Planning/);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalSources === undefined) delete process.env.SHC_KNOWLEDGE_URLS;
+    else process.env.SHC_KNOWLEDGE_URLS = originalSources;
+  }
+});
+
 test('OpenRouter chat-completion text extraction supports choice messages', () => {
   const text = chat.outputText({
     choices: [{ message: { role: 'assistant', content: 'Official answer' } }],

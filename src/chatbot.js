@@ -59,8 +59,8 @@
         'يمكنك هنا التعرف على مدينة السلطان هيثم واستكشاف أحيائها السكنية ومرافقها ومشاريعها عبر الخريطة التفاعلية.',
       ],
       location: [
-        'تقع مدينة السلطان هيثم في مسقط. افتح الخريطة التفاعلية لاستكشاف موقع المدينة وأحيائها ومرافقها.',
-        'يمكنك مشاهدة موقع مدينة السلطان هيثم وتفاصيل أحيائها مباشرة على الخريطة ثنائية الأبعاد.',
+        'تقع مدينة السلطان هيثم غرب مسقط، ضمن المخطط الهيكلي لمسقط الكبرى. يمكنك استكشاف أحيائها ومرافقها على الخريطة التفاعلية داخل الموقع.',
+        'مدينة السلطان هيثم مدينة جديدة تقع غرب مسقط، ويمكنك مشاهدة مخططها وأحيائها على الخريطة ثنائية الأبعاد داخل الموقع.',
       ],
       map: [
         'الخريطة التفاعلية تعرض الأحياء والمشاريع والمرافق في تجربة مكانية مترابطة.',
@@ -108,7 +108,7 @@
         'تجمع التجربة الرقمية بين الخريطة ثنائية وثلاثية الأبعاد والمشاريع والعقارات والخدمات الإلكترونية.',
         'يوفر الموقع وصولاً مترابطاً إلى بيانات المدينة المكانية والمشاريع والخدمات الرقمية.',
       ],
-      stats: ['يعرض الموقع مساحة إجمالية قدرها 14.8 كم²، وأكثر من 12,000 وحدة سكنية، وأكثر من 60,000 من السكان المتوقعين، و40% مساحات خضراء.'],
+      stats: ['بحسب بيانات وزارة الإسكان والتخطيط العمراني: تبلغ مساحة المدينة 14.8 كم²، ويضم المخطط 20,000 وحدة سكنية تستهدف 100,000 نسمة، مع 2,900,000 م² من المساحات الخضراء و18 حيًا.'],
       help: [
         'يمكنني مساعدتك في استكشاف المدينة، الخريطة التفاعلية، المشاريع، العقارات، الخدمات والمرافق.',
         'اسألني عن الخريطة ثنائية أو ثلاثية الأبعاد، الأحياء، المدارس، المساجد، الحدائق، العقارات أو حالة الطلب.',
@@ -129,8 +129,8 @@
         'You can explore Sultan Haitham City, its residential districts, facilities and projects through the interactive map.',
       ],
       location: [
-        'Sultan Haitham City is in Muscat. Open the interactive map to explore the city, its districts and facilities.',
-        'You can view Sultan Haitham City and its districts directly on the 2D map.',
+        'Sultan Haitham City is west of Muscat, within the Greater Muscat Structure Plan. You can explore its districts and facilities on this website’s interactive map.',
+        'Sultan Haitham City is a new city west of Muscat. Its master plan and districts are available on the website’s 2D map.',
       ],
       map: [
         'The interactive map connects districts, projects and facilities in one spatial experience.',
@@ -178,7 +178,7 @@
         'The digital experience connects 2D and 3D maps with projects, properties and digital services.',
         'The website provides connected access to spatial city information, projects and digital services.',
       ],
-      stats: ['The website presents a total area of 14.8 km², more than 12,000 residential units, more than 60,000 expected residents, and 40% green spaces.'],
+      stats: ['According to Ministry of Housing and Urban Planning data, the city covers 14.8 km² and includes 20,000 residential units for 100,000 residents, 2,900,000 m² of green area, and 18 neighbourhoods.'],
       help: [
         'I can help you explore the city, interactive map, projects, properties, services and facilities.',
         'Ask about the 2D or 3D map, districts, schools, mosques, parks, properties or request status.',
@@ -533,7 +533,8 @@
     } catch (error) {
       console.warn('City assistant request failed:', error?.message || error);
       thinking.remove();
-      addMessage('assistant', copy[language()].unavailable);
+      const fallback = getMockAssistantReply(message, language());
+      addMessage('assistant', fallback.text, '', fallback.action);
     } finally {
       busy = false;
       send.disabled = false;

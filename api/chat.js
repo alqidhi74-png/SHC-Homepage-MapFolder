@@ -65,6 +65,45 @@ function stripExternalLinks(value) {
     .trim();
 }
 
+async function requestAssistant(messages) {
+  const openRouterHeaders = {
+    Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    'Content-Type': 'application/json',
+  };
+  if (process.env.OPENROUTER_SITE_URL) openRouterHeaders['HTTP-Referer'] = process.env.OPENROUTER_SITE_URL;
+  if (process.env.OPENROUTER_APP_NAME) openRouterHeaders['X-Title'] = process.env.OPENROUTER_APP_NAME;
+
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 11_000);
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: openRouterHeaders,
+        body: JSON.stringify({
+          model: attempt === 1 && process.env.OPENROUTER_FALLBACK_MODEL
+            ? process.env.OPENROUTER_FALLBACK_MODEL
+            : process.env.OPENROUTER_MODEL || 'openrouter/free',
+          messages,
+          max_completion_tokens: 500,
+          temperature: 0.2,
+        }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok && outputText(payload)) return payload;
+      lastError = new Error(`OpenRouter HTTP ${response.status}: ${payload?.error?.code || 'unknown'}`);
+      if (![408, 429, 500, 502, 503, 504].includes(response.status)) break;
+    } catch (error) {
+      lastError = error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  throw lastError || new Error('OpenRouter returned an empty response.');
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'method_not_allowed' });
   if (!withinRateLimit(req)) return json(res, 429, { error: 'rate_limited' });
@@ -106,29 +145,7 @@ export default async function handler(req, res) {
       },
     ];
 
-    const openRouterHeaders = {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json',
-    };
-    if (process.env.OPENROUTER_SITE_URL) openRouterHeaders['HTTP-Referer'] = process.env.OPENROUTER_SITE_URL;
-    if (process.env.OPENROUTER_APP_NAME) openRouterHeaders['X-Title'] = process.env.OPENROUTER_APP_NAME;
-
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: openRouterHeaders,
-      body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || 'openrouter/free',
-        messages,
-        max_completion_tokens: 500,
-        temperature: 0.2,
-      }),
-    });
-
-    const payload = await response.json();
-    if (!response.ok) {
-      console.error('OpenRouter response error', response.status, payload?.error?.code || 'unknown');
-      return json(res, 502, { error: 'assistant_unavailable' });
-    }
+    const payload = await requestAssistant(messages);
 
     const answer = stripExternalLinks(outputText(payload));
     if (!answer) return json(res, 502, { error: 'empty_assistant_response' });
@@ -139,4 +156,4 @@ export default async function handler(req, res) {
   }
 }
 
-export const __testables = { outputText, cleanHistory, stripExternalLinks };
+export const __testables = { outputText, cleanHistory, stripExternalLinks, requestAssistant };

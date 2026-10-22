@@ -29,9 +29,9 @@ const places = [
 ]
 
 const overview = [
-  { id: 'green', icon: Leaf, value: '40%', count: 40, suffix: '%', label: { ar: 'مساحات خضراء', en: 'Green spaces' } },
-  { id: 'homes', icon: Home, value: '12,000+', count: 12000, suffix: '+', label: { ar: 'وحدة سكنية', en: 'Residential units' } },
-  { id: 'people', icon: Users, value: '60,000+', count: 60000, suffix: '+', label: { ar: 'من السكان المتوقع', en: 'Expected residents' } },
+  { id: 'green', icon: Leaf, value: '2.9', count: 2.9, decimals: 1, unit: { ar: 'مليون م²', en: 'million m²' }, label: { ar: 'مساحات خضراء', en: 'Green spaces' } },
+  { id: 'homes', icon: Home, value: '20,000', count: 20000, label: { ar: 'وحدة سكنية', en: 'Residential units' } },
+  { id: 'people', icon: Users, value: '100,000', count: 100000, label: { ar: 'من السكان المستهدفين', en: 'Target residents' } },
   { id: 'area', icon: MapPin, value: '14.8', count: 14.8, decimals: 1, unit: { ar: 'كم²', en: 'km²' }, label: { ar: 'المساحة الإجمالية', en: 'Total area' } },
 ]
 
