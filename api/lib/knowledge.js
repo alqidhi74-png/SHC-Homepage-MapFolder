@@ -4,6 +4,29 @@ const DEFAULT_SOURCE_URLS = [
   'https://oman.housing.gov.om/onss',
 ];
 
+const SITE_KNOWLEDGE_DOCUMENT = {
+  url: 'internal://sultan-haitham-city-website',
+  title: 'Sultan Haitham City website',
+  authority: 'website',
+  text: `
+معلومات الموقع الداخلية المعتمدة:
+يوفر موقع مدينة السلطان هيثم خريطة ذكية تفاعلية لاستكشاف الأحياء والمشاريع والمرافق ومواقعها داخل المدينة.
+يتضمن الموقع خريطة ثنائية الأبعاد وعرضاً ثلاثي الأبعاد للمدينة.
+توجد بوابة للمشاريع والعقارات لاستعراض المشاريع والوحدات وربطها بمواقعها داخل المدينة.
+توجد بوابة للخدمات الإلكترونية لبدء الطلبات ومراجعة بيانات المواطن والمستندات ومتابعة المعاملات.
+توجد صفحة لتتبع الطلبات باستخدام رقم الطلب، إضافة إلى صفحات تفاصيل الخدمة والبيانات والمستندات ومراجعة الطلب وتأكيده.
+يدعم الموقع اللغتين العربية والإنجليزية.
+
+Approved internal website information:
+The Sultan Haitham City website provides an interactive smart map for exploring districts, projects, facilities, and their locations in the city.
+The website includes a 2D map and a 3D city view.
+The Projects and Properties portal presents projects and units and connects them to their city locations.
+The Digital Services portal supports starting requests, reviewing citizen details and documents, and following transactions.
+Request Tracking uses a request number. The service journey also includes service details, citizen data, documents, review, and confirmation pages.
+The website supports Arabic and English.
+  `.trim(),
+};
+
 const CACHE_TTL_MS = 15 * 60 * 1000;
 const MAX_SOURCE_BYTES = 750_000;
 const cache = new Map();
@@ -82,6 +105,7 @@ async function fetchSource(source) {
     const value = {
       url: url.href,
       title: contentType.includes('html') ? documentTitle(raw, url.hostname) : url.hostname,
+      authority: 'ministry',
       text: contentType.includes('html') ? htmlToText(raw) : raw.replace(/\s+/g, ' ').trim(),
     };
     cache.set(url.href, { fetchedAt: Date.now(), value });
@@ -139,18 +163,18 @@ function rankChunks(chunks, question) {
 
 export async function retrieveKnowledge(question) {
   const settled = await Promise.allSettled(configuredSources().map(fetchSource));
-  const documents = settled.filter((result) => result.status === 'fulfilled').map((result) => result.value);
-  if (!documents.length) {
+  const ministryDocuments = settled.filter((result) => result.status === 'fulfilled').map((result) => result.value);
+  if (!ministryDocuments.length) {
     const reason = settled.find((result) => result.status === 'rejected')?.reason;
     throw new Error(reason?.message || 'No knowledge source could be loaded.');
   }
 
+  const documents = [SITE_KNOWLEDGE_DOCUMENT, ...ministryDocuments];
   const selected = rankChunks(documents.flatMap((document) => chunkDocument(document)), question);
   const context = selected.map((chunk, index) => (
-    `[SOURCE ${index + 1}]\nTitle: ${chunk.title}\nURL: ${chunk.url}\nContent:\n${chunk.text}`
+    `[SOURCE ${index + 1}]\nAuthority: ${chunk.authority === 'ministry' ? 'Official Ministry of Housing and Urban Planning' : 'Sultan Haitham City website'}\nTitle: ${chunk.title}\nContent:\n${chunk.text}`
   )).join('\n\n');
-  const sources = [...new Map(selected.map((chunk) => [chunk.url, { title: chunk.title, url: chunk.url }])).values()];
-  return { context, sources };
+  return { context };
 }
 
 export const __testables = { htmlToText, normalize, chunkDocument, rankChunks, assertSafeSource };

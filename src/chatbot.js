@@ -18,7 +18,6 @@
       clear: 'بدء محادثة جديدة',
       clearConfirm: 'هل تريد مسح المحادثة الحالية؟',
       suggestions: 'أسئلة مقترحة',
-      source: 'المصدر الرسمي',
       unavailable: 'تعذر الوصول إلى مصادر المشروع الآن. يرجى المحاولة بعد قليل.',
       user: 'أنت',
       assistant: 'مساعد المدينة',
@@ -37,7 +36,6 @@
       clear: 'Start a new conversation',
       clearConfirm: 'Clear the current conversation?',
       suggestions: 'Suggested questions',
-      source: 'Official source',
       unavailable: 'The project sources are temporarily unavailable. Please try again shortly.',
       user: 'You',
       assistant: 'City Assistant',
@@ -293,7 +291,6 @@
     }
     return {
       text: payload.answer,
-      sources: Array.isArray(payload.sources) ? payload.sources : [],
     };
   }
 
@@ -329,10 +326,6 @@
       .user .bubble{border-color:transparent;border-radius:16px 16px 5px 16px;background:var(--wine);color:white}
       .bubble-action{display:inline-flex;align-items:center;justify-content:center;margin-top:10px;padding:8px 13px;border:1px solid #b88734;border-radius:999px;color:var(--wine);background:#fffaf0;font-size:11px;font-weight:600;line-height:1.35;text-decoration:none;transition:background .18s ease,color .18s ease}
       .bubble-action:hover,.bubble-action:focus-visible{background:var(--wine);color:white;outline:none}
-      .sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-      .source-link{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #d9c198;border-radius:999px;background:#fffaf0;color:var(--wine);font-size:10px;font-weight:600;line-height:1.35;text-decoration:none}
-      .source-link:hover,.source-link:focus-visible{border-color:var(--wine);background:var(--wine);color:#fff;outline:none}
-      .source-link svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
       .thinking .bubble{color:#826d72;font-style:italic}
       .suggestions{display:flex;gap:7px;padding:10px 13px 11px;overflow-x:auto;border-top:1px solid #eee3d7;background:#fffdf9;scrollbar-width:none}
       .suggestions::-webkit-scrollbar{display:none}
@@ -398,7 +391,7 @@
     try { sessionStorage.setItem(storageKey, JSON.stringify(transcript.slice(-30))); } catch (_) {}
   };
 
-  const addMessage = (role, text, extraClass = '', action = null, persist = true, sourceLinks = []) => {
+  const addMessage = (role, text, extraClass = '', action = null, persist = true) => {
     const lang = language();
     const item = document.createElement('div');
     item.className = `message ${role} ${extraClass}`.trim();
@@ -415,27 +408,11 @@
       link.textContent = action.label;
       bubble.append(document.createElement('br'), link);
     }
-    if (Array.isArray(sourceLinks) && sourceLinks.length) {
-      const sourceList = document.createElement('div');
-      sourceList.className = 'sources';
-      sourceLinks.slice(0, 3).forEach((source) => {
-        if (!source?.url) return;
-        const link = document.createElement('a');
-        link.className = 'source-link';
-        link.href = source.url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>';
-        link.append(document.createTextNode(source.title || copy[lang].source));
-        sourceList.appendChild(link);
-      });
-      bubble.appendChild(sourceList);
-    }
     item.append(who, bubble);
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
     if (persist && !extraClass.includes('thinking')) {
-      transcript.push({ role, text, action, sources: sourceLinks });
+      transcript.push({ role, text, action });
       saveTranscript();
     }
     return item;
@@ -456,8 +433,8 @@
         transcript = [];
         saved.slice(-30).forEach((entry) => {
           if ((entry?.role === 'user' || entry?.role === 'assistant') && typeof entry?.text === 'string') {
-            addMessage(entry.role, entry.text, '', entry.action || null, false, entry.sources || []);
-            transcript.push({ role: entry.role, text: entry.text, action: entry.action || null, sources: entry.sources || [] });
+            addMessage(entry.role, entry.text, '', entry.action || null, false);
+            transcript.push({ role: entry.role, text: entry.text, action: entry.action || null });
           }
         });
         return transcript.length > 0;
@@ -552,7 +529,7 @@
     try {
       const reply = await getConnectedAssistantReply(message, language(), transcript);
       thinking.remove();
-      addMessage('assistant', reply.text, '', null, true, reply.sources);
+      addMessage('assistant', reply.text);
     } catch (error) {
       console.warn('City assistant request failed:', error?.message || error);
       thinking.remove();

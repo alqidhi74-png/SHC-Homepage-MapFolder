@@ -42,14 +42,22 @@ test('conversation history is bounded and sanitized', () => {
   ]);
 });
 
-test('chat endpoint answers from retrieved official context and returns its sources', async () => {
+test('external links are removed from assistant answers', () => {
+  const cleaned = chat.stripExternalLinks('راجع [المصدر الرسمي](https://example.com/page) أو https://example.com/details للمزيد.');
+  assert.equal(cleaned, 'راجع المصدر الرسمي أو للمزيد.');
+  assert.doesNotMatch(cleaned, /https?:\/\//);
+});
+
+test('chat endpoint answers from official context without exposing source links', async () => {
   const originalFetch = globalThis.fetch;
   const originalKey = process.env.OPENROUTER_API_KEY;
+  let sentMessages = [];
   process.env.OPENROUTER_API_KEY = 'test-key';
-  globalThis.fetch = async (url) => {
+  globalThis.fetch = async (url, options = {}) => {
     if (String(url).includes('openrouter.ai/api/')) {
+      sentMessages = JSON.parse(options.body).messages;
       return new Response(JSON.stringify({
-        choices: [{ message: { role: 'assistant', content: 'مساحة المدينة 14.8 كم².' } }],
+        choices: [{ message: { role: 'assistant', content: 'مساحة المدينة 14.8 كم². https://example.com' } }],
       }), { status: 200, headers: { 'content-type': 'application/json' } });
     }
     return new Response('<html><title>Official plan</title><body><h1>Sultan Haitham City</h1><p>Total area 14.8 km².</p></body></html>', {
@@ -80,5 +88,8 @@ test('chat endpoint answers from retrieved official context and returns its sour
 
   assert.equal(responseState.statusCode, 200);
   assert.equal(responseState.body.answer, 'مساحة المدينة 14.8 كم².');
-  assert.equal(responseState.body.sources.length, 3);
+  assert.equal('sources' in responseState.body, false);
+  assert.match(sentMessages[0].content, /Do not include links/);
+  assert.match(sentMessages.at(-1).content, /خريطة ذكية تفاعلية/);
+  assert.doesNotMatch(sentMessages.at(-1).content, /URL:/);
 });
